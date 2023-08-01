@@ -19,8 +19,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -28,6 +31,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import org.ballistic.dreamjournalai.R
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
@@ -173,7 +177,7 @@ fun AIPage(
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color.White.copy(alpha = 0.2f))
+                .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
                 .verticalScroll(scrollState, true)
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -188,19 +192,19 @@ fun AIPage(
                     modifier = Modifier
                         .weight(1f)
                         .height(1.dp)
-                        .background(Color.Black)
+                        .background(color = colorResource(id = R.color.white))
                 )
                 Text(
                     modifier = Modifier.padding(8.dp),
                     text = "AI Results",
-                    style = typography.titleMedium,
+                    style = typography.titleMedium.copy(color = colorResource(id = R.color.white)),
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
                         .height(1.dp)
-                        .background(Color.Black)
+                        .background(color = colorResource(id = R.color.white))
                 )
                 DreamTokenLayout(mainScreenViewModelState = mainScreenViewModelState)
             }
@@ -211,7 +215,14 @@ fun AIPage(
                     .padding(8.dp)
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .background(color = Color.White.copy(.1f), RoundedCornerShape(8.dp)),
+                    .background(brush = Brush.linearGradient(
+                        colors = listOf(
+                            colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
+                            colorResource(id = R.color.white).copy(alpha = 0.1f),
+                            colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
+                        ),
+                    ))
+                ,
                 pagerSate2
             ) { page ->
 
@@ -242,7 +253,7 @@ fun AIPage(
             ) {
                 repeat(pages.size) { iteration ->
                     val color =
-                        if (pagerSate2.currentPage == iteration) Color.Black else Color.White.copy(
+                        if (pagerSate2.currentPage == iteration) colorResource(id = R.color.white) else Color.White.copy(
                             alpha = 0.5f
                         )
 

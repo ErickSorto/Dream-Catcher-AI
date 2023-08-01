@@ -20,9 +20,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.AlertSave
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.TabLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
@@ -40,9 +41,6 @@ fun AddEditDreamScreen(
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},
     onNavigateToDreamJournalScreen: () -> Unit = {},
 ) {
-
-    val scope = rememberCoroutineScope()
-
     //keyboard controller
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -102,7 +100,7 @@ fun AddEditDreamScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Dream Journal AI") },
+                title = { Text(text = "Dream Journal AI", color = colorResource(id = R.color.white)) },
                 navigationIcon = {
                     IconButton(
                         onClick = { addEditDreamState.dialogState.value = true },
@@ -111,7 +109,8 @@ fun AddEditDreamScreen(
                         Icon(
                             modifier = Modifier.rotate(180f),
                             imageVector = Icons.Filled.ArrowRightAlt,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = colorResource(id = R.color.white)
                         )
                     }
                 },
@@ -125,12 +124,13 @@ fun AddEditDreamScreen(
                     }, enabled = !addEditDreamState.dreamIsSavingLoading.value) {
                         Icon(
                             imageVector = Icons.Filled.Save,
-                            contentDescription = "Save Dream"
+                            contentDescription = "Save Dream",
+                            tint = colorResource(id = R.color.white)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White.copy(alpha = 0.4f),
+                    containerColor = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
                     navigationIconContentColor = Color.Black,
                     titleContentColor = Color.Black,
                     actionIconContentColor = Color.Black

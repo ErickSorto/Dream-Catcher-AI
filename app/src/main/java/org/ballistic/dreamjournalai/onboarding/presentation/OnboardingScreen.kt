@@ -1,65 +1,73 @@
 package org.ballistic.dreamjournalai.onboarding.presentation
 
-import android.app.Activity
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
-import com.google.accompanist.pager.*
-import com.google.android.gms.auth.api.identity.BeginSignInResult
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.GoogleAuthProvider
+import androidx.compose.ui.unit.sp
+import com.google.accompanist.pager.ExperimentalPagerApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.onboarding.presentation.viewmodel.WelcomeViewModel
-import org.ballistic.dreamjournalai.onboarding.util.OnBoardingPage
-import org.ballistic.dreamjournalai.user_authentication.presentation.components.SignUpSignInForgotPasswordLayout
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.AuthEvent
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.OneTapSignIn
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignInGoogleButton
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignInWithGoogle
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.AuthViewModelState
+import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.core.components.TypewriterText
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.GoogleSignInHandler
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserveLoginState
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignupLoginLayout
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.LoginEvent
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.SignupEvent
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModelState
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModelState
 
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
 fun OnboardingScreen(
-    welcomeViewModel: WelcomeViewModel = hiltViewModel(),
-    authViewModelState: AuthViewModelState,
+    loginViewModelState: LoginViewModelState,
+    signupViewModelState: SignupViewModelState,
     navigateToDreamJournalScreen: () -> Unit,
-    onEvent: (AuthEvent) -> Unit,
-    onDataLoaded: () -> Unit
+    onLoginEvent: (LoginEvent) -> Unit,
+    onSignupEvent: (SignupEvent) -> Unit,
+    onDataLoaded: () -> Unit,
 ) {
-    val isUserExist = authViewModelState.isUserExist.collectAsStateWithLifecycle().value
-    val isLoggedIn = authViewModelState.isLoggedIn.collectAsStateWithLifecycle().value
-    val emailVerificationState = authViewModelState.emailVerified.collectAsStateWithLifecycle().value
+    var onDataLoadedBoolean = remember { mutableStateOf(false) }
+    var showLoginLayout = remember { mutableStateOf(false) }
+    var titleText = remember { mutableStateOf("Welcome Dreamer!") }
+    var visible = remember { mutableStateOf(true) }
+    var transition = updateTransition(visible.value, label = "")
+    var showSubheader = remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = isUserExist, key2 = emailVerificationState, key3 = isLoggedIn) {
-        println("isUserExist: $isUserExist, emailVerificationState: $emailVerificationState")
-        Log.d("OnboardingScreen", "isUserExist: $isUserExist, emailVerificationState: $emailVerificationState")
+    val scope = CoroutineScope(Dispatchers.Main)
 
-        if (isUserExist && emailVerificationState && isLoggedIn) {
-            navigateToDreamJournalScreen()
-        }
+    LaunchedEffect(key1 = Unit) {
+        onLoginEvent(LoginEvent.UserAccountStatus)
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -67,18 +75,15 @@ fun OnboardingScreen(
         onDataLoaded()
     }
 
-
-    val pages = listOf(
-        OnBoardingPage.First,
-        OnBoardingPage.Second,
-        OnBoardingPage.Third,
-        OnBoardingPage.Fourth,
+    ObserveLoginState(
+        loginViewModelState = loginViewModelState,
+        signupViewModelState = signupViewModelState,
+        navigateToDreamJournalScreen = navigateToDreamJournalScreen
     )
-    val pagerState = rememberPagerState()
 
-    Box() {
+    Box {
         Image(
-            painter = rememberAsyncImagePainter(org.ballistic.dreamjournalai.R.drawable.blue_lighthouse),
+            painter = painterResource(org.ballistic.dreamjournalai.R.drawable.blue_lighthouse),
             contentDescription = "background",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -86,162 +91,88 @@ fun OnboardingScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost (authViewModelState.snackBarHostState.value) },
+        snackbarHost = {
+            SnackbarHost(hostState = signupViewModelState.snackBarHostState.value)
+            SnackbarHost(hostState = loginViewModelState.snackBarHostState.value)
+        },
         containerColor = Color.Transparent
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HorizontalPager(
-                modifier = Modifier.weight(10f),
-                count = 4,
-                state = pagerState,
-                verticalAlignment = Alignment.Top,
 
-                ) { position ->
-                PagerScreen(
-                    onBoardingPage = pages[position], authViewModelState = authViewModelState,
-                    pagerState = pagerState,
-                    onEvent = { onEvent(it) },
-                    navigateToDreamJournalScreen = { navigateToDreamJournalScreen() }
-                )
-            }
-            HorizontalPagerIndicator(
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 48.dp)
-                    .weight(1f),
-                pagerState = pagerState,
-                activeColor = Color.White,
-            )
-        }
-        val scope = rememberCoroutineScope()
-
-
-
-
-        LaunchedEffect(Unit) {
-            if (isLoggedIn && emailVerificationState) {
-                welcomeViewModel.saveOnBoardingState(completed = true)
-                navigateToDreamJournalScreen()
-            }
-        }
-
-        val launcher =
-            rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    try {
-                        val credentials =
-                            authViewModelState.oneTapClient?.getSignInCredentialFromIntent(result.data)
-                        val googleIdToken = credentials?.googleIdToken
-                        val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
-                        scope.launch {
-                            onEvent(AuthEvent.SignInWithGoogle(googleCredentials))
+                    .padding(top = 64.dp, bottom = 16.dp, start = 8.dp, end = 8.dp)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .background(
+                        color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                //invisible text font 32.sp and 16 padding filler
+                Text(
+                    text = "Dream Journal AI",
+                    modifier = Modifier.padding(16.dp),
+                    style = TextStyle(
+                        color = Color.Transparent,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    textAlign = TextAlign.Center
+                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    TypewriterText(
+                        text = if (visible.value) titleText.value else "Dream Journal AI",
+                        modifier = Modifier.padding(16.dp),
+                        style = TextStyle(
+                            color = transition.animateColor(label = "") { if (it) Color.White else Color.Transparent }.value,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        textAlign = TextAlign.Center,
+                        animationDuration = 5000,
+                        onAnimationComplete = {
+                            scope.launch {
+                                loginViewModelState.isLoginLayout.value = true
+                                showLoginLayout.value = true
+                                delay(1000)  // Delay for 1 second
+                                visible.value = !visible.value
+                                if (visible.value) {
+                                    titleText.value = "Dream Journal AI"
+                                    showSubheader.value = true
+                                }
+                            }
                         }
-                    } catch (it: ApiException) {
-                        print(it)
+                    )
+                    if (showSubheader.value) {
+                        TypewriterText(
+                            text = "Light the way to your unconscious. Paint, explore," +
+                                    " and understand your dreams with the help of AI",
+                            modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 16.dp),
+                        )
                     }
                 }
             }
 
-        fun launch(signInResult: BeginSignInResult) {
-            val intent = IntentSenderRequest.Builder(signInResult.pendingIntent.intentSender).build()
-            launcher.launch(intent)
-        }
-
-        OneTapSignIn(launch = {
-            launch(it)
-        }, authViewModelState = authViewModelState)
-
-        SignInWithGoogle(navigateToHomeScreen = { signedIn ->
-            if (signedIn) {
-                welcomeViewModel.saveOnBoardingState(completed = true)
-                navigateToDreamJournalScreen()
+            if(showLoginLayout.value){
+                SignupLoginLayout(
+                    loginViewModelState = loginViewModelState,
+                    signupViewModelState = signupViewModelState,
+                    onLoginEvent = { onLoginEvent(it) },
+                    onSignupEvent = { onSignupEvent(it) },
+                )
             }
-        }, authViewModelState = authViewModelState)
-    }
-}
 
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun PagerScreen(
-    onBoardingPage: OnBoardingPage,
-    authViewModelState: AuthViewModelState,
-    pagerState: PagerState,
-    onEvent: (AuthEvent) -> Unit,
-    navigateToDreamJournalScreen: () -> Unit
-) {
-    if (onBoardingPage == OnBoardingPage.Fourth) {
-        //sign in email and password text field
-        SignUpPage(
-            pagerState = pagerState,
-            authViewModelState = authViewModelState,
-            onEvent = { onEvent(it) },
-            navigateToDreamJournalScreen = navigateToDreamJournalScreen
-        )
-
-    } else {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Image(
-                modifier = Modifier
-                    .fillMaxWidth(0.7f),
-                painter = painterResource(id = onBoardingPage.image),
-                contentDescription = "Pager Image"
-            )
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = onBoardingPage.title,
-                fontSize = MaterialTheme.typography.h4.fontSize,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = Color.White
-            )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 40.dp)
-                    .padding(top = 10.dp),
-                text = onBoardingPage.description,
-                fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                color = Color.White
+            GoogleSignInHandler(
+                loginViewModelState = loginViewModelState,
+                onLoginEvent = { onLoginEvent(it) }
             )
         }
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun SignUpPage(
-    pagerState: PagerState,
-    authViewModelState: AuthViewModelState,
-    onEvent: (AuthEvent) -> Unit = {},
-    navigateToDreamJournalScreen: () -> Unit
-) {
-    Column(
-        Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        SignInGoogleButton(
-            onClick = {
-                onEvent(AuthEvent.OneTapSignIn)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            pagerState = pagerState,
-        )
-
-        SignUpSignInForgotPasswordLayout(
-            authViewModelState = authViewModelState, pagerState = pagerState,
-            authEvent = { onEvent(it) },
-            navigateToHomeScreen = { navigateToDreamJournalScreen() }
-        )
     }
 }

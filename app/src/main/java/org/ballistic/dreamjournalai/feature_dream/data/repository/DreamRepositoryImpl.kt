@@ -30,7 +30,6 @@ class DreamRepositoryImpl(
 
     private val dreamsCollection
         get() = getCollectionReferenceForDreams()
-    val ioScope = CoroutineScope(Dispatchers.IO)
 
     // Add this function to get the current user's UID
     private fun userID(): String? {
@@ -224,7 +223,7 @@ class DreamRepositoryImpl(
     private fun getCollectionReferenceForDreams(): CollectionReference? {
         val currentUser = FirebaseAuth.getInstance().currentUser
         return currentUser?.uid?.let {
-            db.collection(USERS).document(userID() ?: return null).collection("my_dreams")
+            db.collection(USERS).document(it).collection("my_dreams")
         }
     }
 }

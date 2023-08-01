@@ -17,5 +17,4 @@ data class PromptChat(
     @SerializedName("frequency_penalty")
     val frequencyPenalty: Int,
     val user: String? = null
-) {
-}
+)

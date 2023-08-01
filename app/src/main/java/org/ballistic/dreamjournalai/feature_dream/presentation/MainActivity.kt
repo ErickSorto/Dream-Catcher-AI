@@ -31,9 +31,6 @@ class MainActivity : ComponentActivity() {
             keepSplashOpened
         }
 
-
-
-
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
@@ -44,11 +41,12 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-
                     //  val screen by splashViewModel.state
-                    MainGraph(navController = navController, onDataLoaded = {
-                        keepSplashOpened = false
-                    })
+                    MainGraph(
+                        navController = navController,
+                        onDataLoaded = { keepSplashOpened = false },
+                        optionalDelay = keepSplashOpened
+                    )
                 }
             }
         }

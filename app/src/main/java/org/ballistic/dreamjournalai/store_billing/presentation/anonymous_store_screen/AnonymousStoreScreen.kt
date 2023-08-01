@@ -1,8 +1,15 @@
-package org.ballistic.dreamjournalai.core.components
+package org.ballistic.dreamjournalai.store_billing.presentation.anonymous_store_screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,11 +27,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.core.components.TypewriterText
 
 @Composable
-fun FeatureComingSoonScreen(
+fun AnonymousStoreScreen(
     paddingValues: PaddingValues,
-    onNavigateToAboutMeScreen: () -> Unit
+    navigateToAccountScreen: () -> Unit
 ) {
     val animationDuration = 5000
     val showButton = remember { mutableStateOf(false) }
@@ -36,8 +44,8 @@ fun FeatureComingSoonScreen(
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .background(
@@ -46,7 +54,7 @@ fun FeatureComingSoonScreen(
                 ),
         ) {
             TypewriterText(
-                text = "This feature is being actively worked on and will be available soon! Stay tuned!",
+                text = "In order to access store please log in! Anonymous users do not have access to the store!",
                 modifier = Modifier.padding(16.dp),
                 textAlign = TextAlign.Center,
                 animationDuration = animationDuration,
@@ -68,10 +76,10 @@ fun FeatureComingSoonScreen(
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = colorResource(R.color.RedOrange) // Replace with your desired color
                 ),
-                onClick = { onNavigateToAboutMeScreen() }
+                onClick = { navigateToAccountScreen() }
             ) {
                 Text(
-                    text = "About Me",
+                    text = "Login",
                     modifier = Modifier.padding(8.dp),
                     fontSize = 18.sp,
                     color = Color.White

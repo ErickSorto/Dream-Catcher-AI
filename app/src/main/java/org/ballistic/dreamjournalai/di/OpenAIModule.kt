@@ -11,6 +11,7 @@ import org.ballistic.dreamjournalai.feature_dream.data.repository.OpenAIReposito
 import org.ballistic.dreamjournalai.feature_dream.domain.repository.OpenAIRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -27,7 +28,10 @@ object OpenAIModule {
     @Provides
     fun providesOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient = OkHttpClient.Builder().addInterceptor(httpLoggingInterceptor).build()
+    ): OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(240, TimeUnit.SECONDS)
+        .readTimeout(240, TimeUnit.SECONDS)
+        .writeTimeout(240, TimeUnit.SECONDS).addInterceptor(httpLoggingInterceptor).build()
 
 
 //    @Provides

@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.user_authentication.presentation.profile
+package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,8 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.ScaffoldState
-import org.ballistic.dreamjournalai.feature_dream.presentation.signup_screen.components.ProgressBar
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.AuthViewModel
+
 
 
 // TODO: finish this

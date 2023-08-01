@@ -13,11 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -80,11 +79,11 @@ fun DateButton(
             modifier = Modifier.background(Color.Transparent),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Date", fontSize = 12.sp, color = Color.Black)
+            Text(text = "Date", fontSize = 12.sp, color = colorResource(id = org.ballistic.dreamjournalai.R.color.white))
             Text(
                 text = addEditDreamState.dreamInfo.dreamDate,
                 fontSize = 10.sp,
-                color = Color.Black,
+                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
                 modifier = Modifier.padding(vertical = 1.dp)
             )
         }
@@ -114,11 +113,11 @@ fun SleepTimeButton(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Text(text = "Sleep Time", fontSize = 12.sp, color = Color.Black)
+            Text(text = "Sleep Time", fontSize = 12.sp, color = colorResource(id =  org.ballistic.dreamjournalai.R.color.white))
             Text(
                 text = addEditDreamState.dreamInfo.dreamSleepTime,
                 fontSize = 14.sp,
-                color = Color.Black
+                color = colorResource(id =  org.ballistic.dreamjournalai.R.color.white)
             )
         }
     }
@@ -146,11 +145,11 @@ fun WakeTimeButton(
             modifier = Modifier.background(Color.Transparent),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Wake Time", fontSize = 12.sp, color = Color.Black)
+            Text(text = "Wake Time", fontSize = 12.sp, color = colorResource(id =  org.ballistic.dreamjournalai.R.color.white))
             Text(
                 text = addEditDreamState.dreamInfo.dreamWakeTime,
                 fontSize = 14.sp,
-                color = Color.Black
+                color = colorResource(id =  org.ballistic.dreamjournalai.R.color.white)
             )
         }
     }

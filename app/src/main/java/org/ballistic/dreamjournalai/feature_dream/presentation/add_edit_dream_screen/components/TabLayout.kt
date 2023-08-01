@@ -13,13 +13,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-
+import androidx.compose.ui.res.colorResource
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.DescriptionPage
@@ -54,11 +54,11 @@ fun TabLayout(
             TabRowDefaults.Indicator(
                 // custom indicator
                 Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                color = Color.Black,
+                color = colorResource(id = R.color.white),
             )
         },
-        contentColor = Color.Black,
-        containerColor = Color.White.copy(alpha = 0.4f),
+        contentColor = colorResource(id = R.color.white),
+        containerColor = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
     ) {
         pages.forEachIndexed { index, page ->
             Tab(

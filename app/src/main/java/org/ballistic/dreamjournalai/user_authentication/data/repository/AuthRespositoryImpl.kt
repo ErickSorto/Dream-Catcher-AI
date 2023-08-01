@@ -1,15 +1,20 @@
 package org.ballistic.dreamjournalai.user_authentication.data.repository
 
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FieldValue.serverTimestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
+import com.google.firebase.functions.ktx.functions
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
-import kotlinx.coroutines.GlobalScope.coroutineContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
@@ -34,10 +39,12 @@ class AuthRepositoryImpl @Inject constructor(
     @Named(SIGN_UP_REQUEST)
     private var signUpRequest: BeginSignInRequest,
     private var signInClient: GoogleSignInClient,
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
 ) : AuthRepository {
+    override val currentUser = MutableStateFlow(auth.currentUser)
 
-    override val currentUser get() = auth.currentUser
+    private var anonymousUserId: String? = null
+
     private val _isUserExist = MutableStateFlow(false)
     override val isUserExist: StateFlow<Boolean> = _isUserExist
 
@@ -45,9 +52,10 @@ class AuthRepositoryImpl @Inject constructor(
     override val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
     private val _emailVerified = MutableStateFlow(false)
-    override val emailVerified: StateFlow<Boolean> = _emailVerified
+    override val isEmailVerified: StateFlow<Boolean> = _emailVerified
 
-    // Other properties and functions
+    private val _isUserAnonymous = MutableStateFlow(false)
+    override val isUserAnonymous: StateFlow<Boolean> = _isUserAnonymous
 
     private val _dreamTokens = MutableStateFlow(0)
     override val dreamTokens: StateFlow<Int> = _dreamTokens
@@ -64,15 +72,13 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun consumeDreamTokens(tokensToConsume: Int): Resource<Boolean> {
         return withContext(Dispatchers.IO) {
             val user = currentUser
-            if (user == null) {
-                Resource.Error("User not found.")
-            } else {
-                val userDocRef = db.collection(USERS).document(user.uid)
-                val snapshot = userDocRef.get().await()
-                val currentDreamTokens = snapshot.getLong("dreamTokens")?.toInt() ?: 0
+            run {
+                val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
+                val snapshot = userDocRef?.get()?.await()
+                val currentDreamTokens = snapshot?.getLong("dreamTokens")?.toInt() ?: 0
 
                 if (currentDreamTokens >= tokensToConsume) {
-                    userDocRef.update("dreamTokens", currentDreamTokens - tokensToConsume).await()
+                    userDocRef?.update("dreamTokens", currentDreamTokens - tokensToConsume)?.await()
                     Resource.Success(true)
                 } else {
                     Resource.Error("Not enough dream tokens available.")
@@ -86,6 +92,7 @@ class AuthRepositoryImpl @Inject constructor(
         _isUserExist.value = user != null
         _emailVerified.value = user?.isEmailVerified ?: false
         _isLoggedIn.value = user != null && user.isEmailVerified
+        _isUserAnonymous.value = user?.isAnonymous ?: false
 
         // Update the emailVerified field in Firestore
         if (user != null && user.isEmailVerified) {
@@ -103,7 +110,6 @@ class AuthRepositoryImpl @Inject constructor(
     private fun setupUserDataListener() {
         auth.currentUser?.let { user ->
             val userDocRef = db.collection(USERS).document(user.uid)
-
             userDocRef.addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
                     // Handle the error case
@@ -120,6 +126,12 @@ class AuthRepositoryImpl @Inject constructor(
 
 
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInResponse {
+        anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
+            auth.currentUser?.uid
+        } else {
+            null
+        }
+
         return try {
             val signInResult = oneTapClient.beginSignIn(signInRequest).await()
             Resource.Success(signInResult)
@@ -133,18 +145,44 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun firebaseSignInWithGoogle(
         googleCredential: AuthCredential
-    ): Flow<Resource<AuthResult>> {
+    ): Flow<Resource<Pair<AuthResult, String?>>> {
         return flow {
             emit(Resource.Loading())
-            emit(
-                Resource.Success(
-                    auth.signInWithCredential(googleCredential).await()
-                )
-            )
+            try {
+                val result = auth.signInWithCredential(googleCredential).await()
+                if (anonymousUserId != null) {
+                    Log.d("SignIn", "result ${result.user?.uid} ${result.user?.isAnonymous} anonymousUserId $anonymousUserId")
+                    emit(Resource.Success(Pair(result, anonymousUserId)))
+                } else{
+                    emit(Resource.Success(Pair(result, null)))
+                }
+            } catch (e: FirebaseAuthUserCollisionException) {
+                val result = auth.signInWithCredential(googleCredential).await()
+
+                if (anonymousUserId != null) {
+                    Log.d("SignIn", "result ${result.user?.uid} ${result.user?.isAnonymous} anonymousUserId $anonymousUserId")
+                    emit(Resource.Success(Pair(result, anonymousUserId)))
+                } else {
+                    emit(Resource.Success(Pair(result, null)))
+                }
+            } catch (e: Exception) {
+                emit(Resource.Error(e.toString()))
+            }
+        }
+    }
+
+
+    override suspend fun anonymousSignIn(): Flow<Resource<AuthResult>> {
+        return flow {
+            Log.i("AnonymousSignIn", "User signed in anonymously")
+            emit(Resource.Loading())
+            emit(Resource.Success(auth.signInAnonymously().await()))
         }.catch { e ->
             emit(Resource.Error(e.toString()))
+            Log.e("AnonymousSignIn", "Error signing in anonymously: ", e)
         }
     }
 
@@ -157,50 +195,99 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String, password: String
-    ): Flow<Resource<AuthResult>> {
+    ): Flow<Resource<String>> {
+        anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
+            auth.currentUser?.uid
+        } else {
+            null
+        }
+
         return flow {
             emit(Resource.Loading())
-            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            Log.d("SignUp", "User created successfully: $authResult")
-            // Add the user to Firestore with the additional fields
-            addUserToFirestore(
-                registrationTimestamp = System.currentTimeMillis()
-            )
-            emit(Resource.Success(authResult))
-        }.catch { e ->
-            Log.e("SignUp", "Error creating user: $e")
-            emit(Resource.Error(e.toString()))
+            try {
+                val firebaseFunctions = FirebaseFunctions.getInstance()
+
+                // Call the createAccount function
+                val data = hashMapOf(
+                    "email" to email,
+                    "password" to password
+                )
+                val result = firebaseFunctions
+                    .getHttpsCallable("createAccount")
+                    .call(data)
+                    .await()
+
+                val uid = result.data as String
+
+                Log.d("SignUp", "User created successfully: $uid")
+
+                // Add the user to Firestore with the additional fields
+                addUserToFirestore(
+                    registrationTimestamp = System.currentTimeMillis()
+                )
+
+                emit(Resource.Success(uid))
+            } catch (e: Exception) {
+                Log.e("SignUp", "Error creating user: $e")
+                emit(Resource.Error(e.toString()))
+            }
         }
     }
+
 
     override suspend fun sendEmailVerification(): Flow<Resource<Boolean>> {
         return flow {
             emit(Resource.Loading())
-            val isEmailSent = auth.currentUser?.sendEmailVerification()?.await() != null
-            Log.d("EmailVerification", "Email verification sent: $isEmailSent")
-            emit(Resource.Success(isEmailSent))
-        }.catch { e ->
-            Log.e("EmailVerification", "Error sending email verification: $e")
-            emit(Resource.Error(e.toString()))
+            try {
+                auth.currentUser?.sendEmailVerification()?.await()
+                Log.d("EmailVerification", "Email verification sent")
+                emit(Resource.Success(true))
+            } catch (e: Exception) {
+                Log.e("EmailVerification", "Error sending email verification: $e")
+                emit(Resource.Error(e.toString()))
+            }
         }
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun firebaseSignInWithEmailAndPassword(
         email: String,
         password: String,
     ): Flow<Resource<AuthResult>> {
+        anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
+            auth.currentUser?.uid
+        } else {
+            null
+        }
         return flow {
             emit(Resource.Loading())
-            emit(
-                Resource.Success(
-                    auth.signInWithEmailAndPassword(email, password).await()
-                )
-            )
+            try {
+                val currentUser = auth.currentUser
+
+                if (currentUser != null && anonymousUserId != null) {
+                    val result = auth.signInWithEmailAndPassword(email, password).await()
+
+                    result.user?.let {
+                        transferDreamsFromAnonymousToPermanent(
+                            it.uid, anonymousUserId ?: ""
+                        )
+                    }
+                    emit(Resource.Success(result))
+                } else {
+                    val result = auth.signInWithEmailAndPassword(email, password).await()
+                    emit(Resource.Success(result))
+                }
+            } catch (e: FirebaseAuthUserCollisionException) {
+                val result = auth.signInWithEmailAndPassword(email, password).await()
+                emit(Resource.Success(result))
+            } catch (e: Exception) {
+                emit(Resource.Error(e.toString()))
+            }
             validateUser()
-        }.catch { e ->
-            emit(Resource.Error(e.toString()))
         }
     }
+
 
     override suspend fun reloadFirebaseUser(): ReloadUserResponse {
         return try {
@@ -252,12 +339,50 @@ class AuthRepositoryImpl @Inject constructor(
             auth.removeAuthStateListener(authStateListener)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), auth.currentUser == null)
+
+    override suspend fun transferDreamsFromAnonymousToPermanent(
+        permanentUid: String,
+        anonymousUid: String,
+    ) {
+        try {
+            val result = Firebase.functions
+                .getHttpsCallable("handleAccountLinking")
+                .call(mapOf("permanentUid" to permanentUid, "anonymousUid" to anonymousUid))
+                .await()
+
+            val data = result.data as? Map<*, *>
+            if (data?.get("success") == true) {
+                // The dreams were transferred successfully
+                (data["message"] as? String)?.let { Log.i("TransferDreams", it) }
+            } else {
+                // There was a problem
+                Log.e("TransferDreams", "Error transferring dreams: ${data?.get("message")}")
+            }
+        } catch (e: Exception) {
+            when (e) {
+                is FirebaseFunctionsException -> {
+                    val code = e.code
+                    val details = e.details
+                    // Handle Firebase Functions specific error
+                    Log.e(
+                        "TransferDreams",
+                        "Firebase Functions error: code=$code, details=$details"
+                    )
+                }
+
+                else -> {
+                    Log.e("TransferDreams", "Error transferring dreams: $e")
+                }
+            }
+        }
+    }
 }
+
 
 fun FirebaseUser.toUser(registrationTimestamp: Long) = mapOf(
     DISPLAY_NAME to displayName,
     EMAIL to email,
     CREATED_AT to serverTimestamp(),
     "registrationTimestamp" to registrationTimestamp,
-    "dreamTokens" to 10,
+    "dreamTokens" to 50,
 )

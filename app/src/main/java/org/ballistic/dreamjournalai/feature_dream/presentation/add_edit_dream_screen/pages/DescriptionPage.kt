@@ -17,10 +17,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.DelicateCoroutinesApi
+import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateButtonsLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.TransparentHintTextField
@@ -42,9 +44,10 @@ fun DescriptionPage(
             .padding(bottom = 16.dp, start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
 
+
         TransparentHintTextField(
             text = addEditDreamState.dreamTitle,
-            hint = LocalContext.current.getString(org.ballistic.dreamjournalai.R.string.hint_title),
+            hint = LocalContext.current.getString(R.string.hint_title),
             onValueChange = {
                 onAddEditDreamEvent(AddEditDreamEvent.EnteredTitle(it))
             },
@@ -53,10 +56,11 @@ fun DescriptionPage(
             },
             isHintVisible = addEditDreamState.dreamTitle.isBlank(),
             singleLine = true,
-            textStyle = MaterialTheme.typography.headlineLarge,
+            textStyle = MaterialTheme.typography.headlineLarge.copy(color = colorResource(id = R.color.white)),
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color.White.copy(alpha = 0.2f))
+                .background(
+                    colorResource(id = R.color.dark_blue).copy(.7f))
                 .padding(16.dp)
                 .onFocusEvent {
                 }
@@ -66,7 +70,7 @@ fun DescriptionPage(
 
         TransparentHintTextField(
             text = addEditDreamState.dreamContent,
-            hint = LocalContext.current.getString(org.ballistic.dreamjournalai.R.string.hint_description),
+            hint = LocalContext.current.getString(R.string.hint_description),
             onValueChange = {
                 onAddEditDreamEvent(AddEditDreamEvent.EnteredContent(it))
             },
@@ -74,14 +78,16 @@ fun DescriptionPage(
                 onAddEditDreamEvent(AddEditDreamEvent.EnteredContent(addEditDreamState.dreamContent))
             },
             isHintVisible = addEditDreamState.dreamContent.isBlank(),
-            textStyle = MaterialTheme.typography.bodyLarge,
+            textStyle = MaterialTheme.typography.bodyLarge.copy(color = colorResource(id = R.color.white)),
             modifier = Modifier
                 .weight(1f)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color.White.copy(alpha = 0.2f))
+                .background(
+                    colorResource(id = R.color.dark_blue).copy(.7f))
                 .padding(8.dp)
                 .onFocusEvent {
-                }.focusable()
+                }
+                .focusable()
         )
 
         if (addEditDreamState.dreamContent.isNotBlank() && addEditDreamState.dreamContent.length > 10) {

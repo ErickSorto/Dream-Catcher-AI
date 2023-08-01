@@ -22,7 +22,8 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainS
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreEvent
 import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreScreen
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.AuthViewModel
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -56,7 +57,12 @@ fun ScreenGraph(
             StoreScreen(
                 mainScreenViewModelState = mainScreenViewModelState,
                 onMainEvent = { onMainEvent(it) },
-                onStoreEvent = { onStoreEvent(it) })
+                onStoreEvent = { onStoreEvent(it) },
+                navigateToAccountScreen = {
+                    navController.popBackStack()
+                    navController.navigate(Screens.AccountSettings.route)
+                }
+            )
         }
 
 
@@ -83,7 +89,8 @@ fun ScreenGraph(
             AddEditDreamScreen(
                 dreamImage = image,
                 mainScreenViewModelState = mainScreenViewModelState,
-                addEditDreamState = addEditDreamViewModel.addEditDreamState.collectAsStateWithLifecycle().value,
+                addEditDreamState = addEditDreamViewModel.addEditDreamState
+                    .collectAsStateWithLifecycle().value,
                 onMainEvent = { onMainEvent(it) },
                 onAddEditDreamEvent = { addEditDreamViewModel.onEvent(it) },
                 onNavigateToDreamJournalScreen = {
@@ -102,12 +109,20 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.AccountSettings.route) {
-            val authViewModel: AuthViewModel = hiltViewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            val signupViewModel: SignupViewModel = hiltViewModel()
+
             AccountSettingsScreen(
-                authViewModel.state.collectAsStateWithLifecycle().value,
+                loginViewModel.state.collectAsStateWithLifecycle().value,
+                signupViewModel.state.collectAsStateWithLifecycle().value,
                 paddingValues = innerPadding,
-                onNavigateToOnboardingScreen = onNavigateToOnboardingScreen,
-                authEvent = { authViewModel.onEvent(it) }
+                navigateToOnboardingScreen = onNavigateToOnboardingScreen,
+                onLoginEvent = { loginViewModel.onEvent(it) },
+                onSignupEvent = { signupViewModel.onEvent(it) },
+                navigateToDreamJournalScreen = {
+                    navController.popBackStack()
+                    navController.navigate(Screens.DreamJournalScreen.route)
+                }
             )
         }
 

@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,7 @@ import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
+import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.DateAndTimeButtonsLayout
@@ -54,7 +56,7 @@ fun InfoPage(
         yearSelection = true,
     ), selection = CalendarSelection.Date { date ->
         onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamDate(date))
-    })
+    },)
     ClockDialog(state = addEditDreamState.sleepTimePickerState,
         config = ClockConfig(
             //default time 12:00am
@@ -89,7 +91,7 @@ fun InfoPage(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color.White.copy(alpha = 0.2f))
+                .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
         ) {
             Column {
                 Text(
@@ -98,7 +100,7 @@ fun InfoPage(
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp, 16.dp, 16.dp, 0.dp), //bold
-                    style = typography.titleMedium,
+                    style = typography.titleMedium.copy(color = colorResource(id = R.color.white)),
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold
                 )
@@ -115,7 +117,7 @@ fun InfoPage(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color.White.copy(alpha = 0.2f))
+                .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
         ) {
             //row for isLucid
             Column(
@@ -136,7 +138,7 @@ fun InfoPage(
                         modifier = Modifier
                             .align(alignment = Alignment.CenterVertically)
                             .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        style = typography.bodyLarge
+                        style = typography.bodyLarge.copy(color = colorResource(id = R.color.white)),
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -153,7 +155,7 @@ fun InfoPage(
                             checkedThumbColor = Color.Red,
                             uncheckedThumbColor = Color.White,
                             checkedTrackColor = Color.Red.copy(alpha = 0.5f),
-                            uncheckedTrackColor = Color.Black.copy(alpha = 0.3f),
+                            uncheckedTrackColor = Color.White.copy(alpha = 0.3f),
                         )
                     )
                 }
@@ -165,7 +167,7 @@ fun InfoPage(
                         modifier = Modifier
                             .align(alignment = Alignment.CenterVertically)
                             .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        style = typography.bodyLarge
+                        style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -182,7 +184,7 @@ fun InfoPage(
                             checkedThumbColor = Color.Red,
                             uncheckedThumbColor = Color.White,
                             checkedTrackColor = Color.Red.copy(alpha = 0.5f),
-                            uncheckedTrackColor = Color.Black.copy(alpha = 0.3f),
+                            uncheckedTrackColor = Color.White.copy(alpha = 0.3f),
                         )
                     )
                 }
@@ -193,7 +195,7 @@ fun InfoPage(
                         modifier = Modifier
                             .align(alignment = Alignment.CenterVertically)
                             .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        style = typography.bodyLarge
+                        style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -210,7 +212,7 @@ fun InfoPage(
                             checkedThumbColor = Color.Red,
                             uncheckedThumbColor = Color.White,
                             checkedTrackColor = Color.Red.copy(alpha = 0.5f),
-                            uncheckedTrackColor = Color.Black.copy(alpha = 0.3f),
+                            uncheckedTrackColor = Color.White.copy(alpha = 0.3f),
                         )
                     )
                 }
@@ -222,7 +224,7 @@ fun InfoPage(
                         modifier = Modifier
                             .align(alignment = Alignment.CenterVertically)
                             .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        style = typography.bodyLarge
+                        style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -239,7 +241,7 @@ fun InfoPage(
                             checkedThumbColor = Color.Red,
                             uncheckedThumbColor = Color.White,
                             checkedTrackColor = Color.Red.copy(alpha = 0.5f),
-                            uncheckedTrackColor = Color.Black.copy(alpha = 0.3f),
+                            uncheckedTrackColor = Color.White.copy(alpha = 0.3f),
                         )
                     )
                 }
@@ -251,7 +253,7 @@ fun InfoPage(
                         .fillMaxWidth()
                         .align(alignment = Alignment.CenterHorizontally)
                         .padding(16.dp, 16.dp, 16.dp, 0.dp),
-                    style = typography.bodyLarge
+                    style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
                 )
 
                 Slider(
@@ -273,9 +275,9 @@ fun InfoPage(
                         )
                     },
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Black,
-                        activeTrackColor = Color.Black,
-                        inactiveTrackColor = Color.Black.copy(alpha = 0.3f)
+                        thumbColor = colorResource(id = R.color.white),
+                        activeTrackColor = Color.Red.copy(alpha = 0.5f),
+                        inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
                     )
                 )
 
@@ -286,7 +288,7 @@ fun InfoPage(
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp, 8.dp, 16.dp, 0.dp),
-                    style = typography.bodyLarge
+                    style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
                 )
 
                 Slider(
@@ -308,9 +310,9 @@ fun InfoPage(
                         )
                     },
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Black,
-                        activeTrackColor = Color.Black,
-                        inactiveTrackColor = Color.Black.copy(alpha = 0.3f)
+                        thumbColor = colorResource(id = R.color.white),
+                        activeTrackColor = Color.Red.copy(alpha = 0.5f),
+                        inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
                     )
                 )
 
@@ -321,7 +323,7 @@ fun InfoPage(
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp, 8.dp, 16.dp, 0.dp),
-                    style = typography.bodyLarge
+                    style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
                 )
 
                 Slider(
@@ -343,9 +345,9 @@ fun InfoPage(
                         )
                     },
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Black,
-                        activeTrackColor = Color.Black,
-                        inactiveTrackColor = Color.Black.copy(alpha = 0.3f)
+                        thumbColor = colorResource(id = R.color.white),
+                        activeTrackColor = Color.Red.copy(alpha = 0.5f),
+                        inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
                     )
                 )
                 //AI details text field
@@ -359,18 +361,18 @@ fun InfoPage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp, 0.dp, 8.dp, 16.dp),
-                    textStyle = typography.bodyLarge,
+                    textStyle = typography.bodyLarge.copy(color = colorResource(id = R.color.white)),
                     singleLine = false,
                     maxLines = 5,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.Black,
                         unfocusedBorderColor = Color.Black,
-                        cursorColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
+                        cursorColor = colorResource(id = R.color.white),
+                        focusedLabelColor = colorResource(id = R.color.white),
+                        unfocusedLabelColor = colorResource(id = R.color.white),
                         disabledLabelColor = Color.Black,
                         disabledBorderColor = Color.Black,
-                        textColor = Color.Black,
+                        textColor = colorResource(id = R.color.white),
                         backgroundColor = Color.White.copy(alpha = 0.3f),
                         leadingIconColor = Color.Black,
                         trailingIconColor = Color.Black,

@@ -10,8 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import org.ballistic.dreamjournalai.R
 
 @Composable
 fun TransparentHintTextField(
@@ -39,11 +42,17 @@ fun TransparentHintTextField(
                 .fillMaxWidth()
                 .onFocusChanged {
                     onFocusChange(it)
-                }
+                },
+            cursorBrush = Brush.verticalGradient(
+                colors = listOf(
+                    colorResource(id = R.color.white),
+                    colorResource(id = R.color.white)
+                )
+            )
         )
 
         if (isHintVisible) {
-            Text(text = hint, style = textStyle, color = Color.Black.copy(alpha = 0.8f))
+            Text(text = hint, style = textStyle, color = colorResource(id = R.color.white))
         }
     }
 }

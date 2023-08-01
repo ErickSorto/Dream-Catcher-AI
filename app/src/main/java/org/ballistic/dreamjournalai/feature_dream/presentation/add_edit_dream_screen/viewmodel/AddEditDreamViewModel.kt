@@ -150,12 +150,12 @@ class AddEditDreamViewModel @Inject constructor(
                     //snack bar
                     viewModelScope.launch {
                         if (addEditDreamState.value.dreamContent.length in 1..9) {
-                            addEditDreamState.value.snackBarHostState.value?.showSnackbar(
+                            addEditDreamState.value.snackBarHostState.value.showSnackbar(
                                 "Dream content is too short",
                                 duration = SnackbarDuration.Short
                             )
                         } else if (addEditDreamState.value.dreamContent.isEmpty()) {
-                            addEditDreamState.value.snackBarHostState.value?.showSnackbar(
+                            addEditDreamState.value.snackBarHostState.value.showSnackbar(
                                 "Dream content is empty",
                                 duration = SnackbarDuration.Short
                             )
@@ -173,7 +173,7 @@ class AddEditDreamViewModel @Inject constructor(
                             getOpenAIImageResponse()
                         }, onAdFailed = {
                             viewModelScope.launch {
-                                addEditDreamState.value.snackBarHostState.value?.showSnackbar(
+                                addEditDreamState.value.snackBarHostState.value.showSnackbar(
                                     "Ad failed to load",
                                     duration = SnackbarDuration.Short
                                 )

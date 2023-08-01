@@ -1,12 +1,11 @@
-package org.ballistic.dreamjournalai.user_authentication.presentation.sign_up.components
+package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.feature_dream.presentation.signup_screen.components.ProgressBar
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.AuthViewModel
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.AuthViewModelState
+
+
 
 
 //@Composable

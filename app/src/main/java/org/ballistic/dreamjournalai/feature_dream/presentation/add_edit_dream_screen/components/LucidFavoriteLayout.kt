@@ -53,7 +53,7 @@ fun LucidCustomButton(
                 painter = rememberAsyncImagePainter(R.drawable.lighthouse_vector),
                 contentDescription = "Lucid",
                 modifier = Modifier.size(40.dp),
-                tint = if (isLucid) colorResource(R.color.sky_blue) else Color.Black
+                tint = if (isLucid) colorResource(R.color.sky_blue) else colorResource(id = R.color.white).copy(alpha = 0.5f)
             )
 
         }
@@ -77,7 +77,7 @@ fun FavoriteCustomButton(
                 painter = rememberAsyncImagePainter(R.drawable.baseline_star_24),
                 contentDescription = "Favorite",
                 modifier = Modifier.size(40.dp),
-                tint = if (isFavorite) colorResource(R.color.Yellow) else Color.Black
+                tint = if (isFavorite) colorResource(R.color.Yellow) else colorResource(id = R.color.white).copy(alpha = 0.5f)
             )
         }
         Text(text = "Favorite")

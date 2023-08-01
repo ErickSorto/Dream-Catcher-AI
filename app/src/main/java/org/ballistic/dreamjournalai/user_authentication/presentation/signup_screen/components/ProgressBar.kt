@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.feature_dream.presentation.signup_screen.components
+package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

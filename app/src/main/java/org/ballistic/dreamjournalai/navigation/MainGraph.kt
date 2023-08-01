@@ -10,12 +10,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
-import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.viewmodel.DreamJournalListViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenView
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModel
 import org.ballistic.dreamjournalai.onboarding.presentation.OnboardingScreen
 import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreScreenViewModel
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.AuthViewModel
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
@@ -23,6 +23,7 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 fun MainGraph(
     navController: NavHostController,
     onDataLoaded: () -> Unit,
+    optionalDelay : Boolean = false,
 ) {
     NavHost(
         navController = navController,
@@ -30,7 +31,11 @@ fun MainGraph(
     ) {
         //welcome
         composable(route = Screens.OnboardingScreen.route) {
-            val authViewModel: AuthViewModel = hiltViewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            val signupViewModel: SignupViewModel = hiltViewModel()
+
+            val loginViewModelState = loginViewModel.state.collectAsStateWithLifecycle().value
+            val signupViewModelState = signupViewModel.state.collectAsStateWithLifecycle().value
 
             OnboardingScreen(
                 navigateToDreamJournalScreen = {
@@ -40,10 +45,14 @@ fun MainGraph(
                 onDataLoaded = {
                     onDataLoaded()
                 },
-                authViewModelState = authViewModel.state.collectAsStateWithLifecycle().value,
-                onEvent = {
-                    authViewModel.onEvent(it)
-                }
+                loginViewModelState = loginViewModelState,
+                signupViewModelState = signupViewModelState,
+                onLoginEvent = {
+                    loginViewModel.onEvent(it)
+                },
+                onSignupEvent = {
+                    signupViewModel.onEvent(it)
+                },
             )
         }
 

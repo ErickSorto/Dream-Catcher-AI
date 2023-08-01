@@ -3,11 +3,15 @@ package org.ballistic.dreamjournalai.core.components
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -19,6 +23,7 @@ fun TypewriterText(
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Center,
     style: TextStyle = MaterialTheme.typography.bodyLarge,
+    color: Color = Color.White,
     animationDuration: Int = 3000,
     onAnimationComplete: () -> Unit = {}
 ) {
@@ -39,12 +44,11 @@ fun TypewriterText(
         onAnimationComplete()
     }
 
-    Column {
-        Text(
-            text = typedText.value,
-            modifier = modifier,
-            textAlign = textAlign,
-            style = style
-        )
-    }
+    Text(
+        text = typedText.value,
+        modifier = modifier,
+        textAlign = textAlign,
+        style = style,
+        color = color
+    )
 }

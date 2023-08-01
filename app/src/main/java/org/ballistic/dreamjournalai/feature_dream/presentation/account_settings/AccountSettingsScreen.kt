@@ -1,12 +1,17 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.account_settings
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -15,106 +20,115 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.firebase.auth.GoogleAuthProvider
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.user_authentication.presentation.components.PasswordField
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.AuthEvent
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ReauthenticateSignInGoogleButton
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignInGoogleButton
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.AuthViewModelState
+import org.ballistic.dreamjournalai.core.components.TypewriterText
+import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.components.LogoutDeleteLayout
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.GoogleSignInHandler
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserveLoginState
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignupLoginLayout
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.LoginEvent
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.SignupEvent
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModelState
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModelState
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun AccountSettingsScreen(
-    authViewModelState: AuthViewModelState,
+    loginViewModelState: LoginViewModelState,
+    signupViewModelState: SignupViewModelState,
+    onLoginEvent: (LoginEvent) -> Unit = {},
+    onSignupEvent: (SignupEvent) -> Unit = {},
     paddingValues: PaddingValues,
-    authEvent: (AuthEvent) -> Unit = {},
-    onNavigateToOnboardingScreen: () -> Unit = {},
+    navigateToOnboardingScreen: () -> Unit = {},
+    navigateToDreamJournalScreen: () -> Unit = {}
 ) {
-    // Add a mutable state for user password input and a flag for Google account users
-    val userPassword = remember { mutableStateOf("") }
-    val isGoogleAccount = remember { mutableStateOf(false) }
+    val animationDisplay = remember { mutableStateOf(false) }
 
-    // Check the user's provider ID to determine if they are using a Google account
-    fun checkIfGoogleAccount(): Boolean {
-        //email log
-        Log.d(
-            "AccountSettingsScreen",
-            "checkIfGoogleAccount: ${authViewModelState.user?.providerData?.get(0)?.email}"
-        )
-        Log.d(
-            "AccountSettingsScreen",
-            "checkIfGoogleAccount: ${authViewModelState.user?.providerData?.get(1)?.email}"
-        )
-        return authViewModelState.user?.providerData?.get(1)?.providerId == GoogleAuthProvider.PROVIDER_ID
+    LaunchedEffect(Unit) {
+        onLoginEvent(LoginEvent.UserAccountStatus)
     }
 
-    Box(
-        modifier = Modifier
-            .padding(paddingValues)
-            .fillMaxSize()
-            .background(Color.Transparent)
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = signupViewModelState.snackBarHostState.value)
+            SnackbarHost(hostState = loginViewModelState.snackBarHostState.value)
+        },
+        containerColor = Color.Transparent
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        if (loginViewModelState.isEmailVerified &&
+            loginViewModelState.isLoggedIn &&
+            !loginViewModelState.isUserAnonymous
         ) {
-
-            Button(
-                onClick = {
-                    authEvent(AuthEvent.SignOut)
-                    onNavigateToOnboardingScreen()
-                },
-                modifier = Modifier.fillMaxWidth(.5f),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(id = R.color.sky_blue)
-                )
+            LogoutDeleteLayout(
+                loginViewModelState = loginViewModelState,
+                paddingValues = paddingValues,
+                onLoginEvent = onLoginEvent,
+                navigateToOnboardingScreen = navigateToOnboardingScreen
+            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(paddingValues = paddingValues)
+                    .fillMaxSize(),
             ) {
-                Text(
-                    text = "Logout",
-                    fontSize = 15.sp,
-                    color = Color.Black
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-
-
-            Button(
-                onClick = {
-                    // Call RevokeAccess with the user password for email/password users or null for Google users
-                    authEvent(
-                        AuthEvent.RevokeAccess(
-                            password = null,
-                            onSuccess = { onNavigateToOnboardingScreen() })
+                Box(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .background(
+                            color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                ) {
+                    Text(
+                        text = "Log in to save your dreams! \n" +
+                                "You are currently using a guest account.",
+                        modifier = Modifier.padding(16.dp),
+                        textAlign = TextAlign.Center,
                     )
-                },
-                modifier = Modifier.fillMaxWidth(.5f),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(id = R.color.RedOrange)
-                )
-            ) {
-                Text(
-                    text = "Delete Account",
-                    fontSize = 15.sp,
-                    color = Color.White
-                )
-            }
-
-            // Show a password input field if the user is not signed in with a Google account
-            if (!checkIfGoogleAccount()) {
-                PasswordField(
-                    isLoginLayout = false,
-                    password = userPassword.value,
-                    onValueChange = { userPassword.value = it }) {
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                ObserveLoginState(
+                    loginViewModelState = loginViewModelState,
+                    signupViewModelState = signupViewModelState,
+                    isUserAnonymousAlready = true,
+                    navigateToDreamJournalScreen = navigateToDreamJournalScreen
+                )
+
+                SignupLoginLayout(
+                    loginViewModelState = loginViewModelState,
+                    signupViewModelState = signupViewModelState,
+                    onLoginEvent = { onLoginEvent(it) },
+                    onSignupEvent = { onSignupEvent(it) },
+                    onAnimationComplete = {
+                         animationDisplay.value = true                    },
+                )
+
+                if(
+                   animationDisplay.value
+                ){
+                    Box(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .background(
+                                color = colorResource(id = R.color.RedOrange).copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                    ) {
+                        TypewriterText(
+                            text = "Warning: Guest accounts are deleted after 30 days of inactivity.",
+                            modifier = Modifier.padding(16.dp),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+
+                GoogleSignInHandler(
+                    loginViewModelState = loginViewModelState,
+                    onLoginEvent = { onLoginEvent(it) }
+                )
             }
         }
     }

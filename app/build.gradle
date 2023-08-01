@@ -18,8 +18,8 @@ android {
         applicationId "org.ballistic.dreamjournalai"
         minSdk 23
         targetSdk 33
-        versionCode 17
-        versionName "1.0.7"
+        versionCode 18
+        versionName "1.0.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
@@ -151,4 +151,6 @@ dependencies {
 
     //billing client
     implementation 'com.android.billingclient:billing:5.2.0'
+
+    implementation "com.github.skydoves:cloudy:0.1.2"
 }

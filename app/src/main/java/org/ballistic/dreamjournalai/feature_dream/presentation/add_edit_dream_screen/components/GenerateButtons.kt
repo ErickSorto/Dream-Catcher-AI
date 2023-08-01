@@ -42,7 +42,10 @@ fun GenerateButtonsLayout(
         modifier = Modifier
             .padding(0.dp, 16.dp, 0.dp, 0.dp)
             .fillMaxWidth()
-            .background(shape = RoundedCornerShape(10.dp), color = Color.White.copy(alpha = 0.2f)),
+            .background(
+                shape = RoundedCornerShape(10.dp),
+                color = colorResource(id = R.color.dark_blue).copy(alpha = 0.7f)
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -87,11 +90,13 @@ fun PaintCustomButton(
                 modifier = Modifier
                     .size(size)
                     .rotate(45f),
-                tint = if (addEditDreamState.dreamInfo.dreamIsLucid) colorResource(R.color.sky_blue) else Color.Black
+                tint = if (addEditDreamState.dreamInfo.dreamIsLucid) colorResource(R.color.sky_blue) else colorResource(
+                    id = R.color.white
+                )
             )
 
         }
-        Text(text = "Paint Dream", fontSize = fontSize)
+        Text(text = "Paint Dream", fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
 
@@ -125,10 +130,12 @@ fun InterpretCustomButton(
                 modifier = Modifier
                     .size(size)
                     .rotate(45f),
-                tint = if (addEditDreamState.dreamInfo.dreamIsFavorite) colorResource(R.color.Yellow) else Color.Black
+                tint = if (addEditDreamState.dreamInfo.dreamIsFavorite) colorResource(R.color.Yellow) else colorResource(
+                    id = R.color.white
+                )
             )
         }
-        Text(text = "Interpret Dream", fontSize = fontSize)
+        Text(text = "Interpret Dream", fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
 

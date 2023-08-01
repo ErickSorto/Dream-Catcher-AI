@@ -20,21 +20,23 @@ typealias SendPasswordResetEmailResponse = Resource<Boolean>
 typealias AuthStateResponse = StateFlow<Boolean>
 
 interface AuthRepository {
-    val currentUser: FirebaseUser?
-
+    val currentUser: StateFlow<FirebaseUser?>
     val isUserExist: StateFlow<Boolean>
-    val emailVerified: StateFlow<Boolean>
+    val isEmailVerified: StateFlow<Boolean>
     val isLoggedIn: StateFlow<Boolean>
+    val isUserAnonymous: StateFlow<Boolean>
 
     suspend fun oneTapSignInWithGoogle(): OneTapSignInResponse
 
-    suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): Flow<Resource<AuthResult>>
+    suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): Flow<Resource<Pair<AuthResult, String?>>>
 
-    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): Flow<Resource<AuthResult>>
+    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): Flow<Resource<String>>
 
     suspend fun sendEmailVerification(): Flow <Resource<Boolean>>
 
     suspend fun firebaseSignInWithEmailAndPassword(email: String, password: String): Flow<Resource<AuthResult>>
+
+    suspend fun anonymousSignIn(): Flow<Resource<AuthResult>>
 
     suspend fun reloadFirebaseUser(): ReloadUserResponse
 
@@ -45,6 +47,8 @@ interface AuthRepository {
     suspend fun revokeAccess(password: String?): Flow<RevokeAccessResponse>
 
     fun getAuthState(viewModelScope: CoroutineScope): AuthStateResponse
+
+    suspend fun transferDreamsFromAnonymousToPermanent(permanentUid: String, anonymousUid: String)
 
     val dreamTokens: StateFlow<Int>
 

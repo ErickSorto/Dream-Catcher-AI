@@ -1,5 +1,7 @@
-package org.ballistic.dreamjournalai.user_authentication.presentation.components
+package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,24 +14,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.core.Constants.PASSWORD_LABEL
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.AuthViewModel
 
 @Composable
 fun PasswordField(
     isLoginLayout: Boolean,
     password: String,
     onValueChange: (String) -> Unit,
-    forgotPassword: () -> Unit
+    forgotPassword: () -> Unit,
+    modifier: Modifier = Modifier,
+    isVisible: MutableState<Boolean> = remember { mutableStateOf(false ) }
 ) {
     var passwordIsVisible by remember { mutableStateOf(false) }
+    AnimatedVisibility(
+        visible = isVisible.value,
+        enter = slideInHorizontally(initialOffsetX = { 1000 })
+    ) {
         OutlinedTextField(
             value = password,
             onValueChange = {
-               onValueChange(it)
+                onValueChange(it)
             },
             label = {
                 Text(
@@ -69,7 +75,7 @@ fun PasswordField(
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            modifier = modifier.fillMaxWidth().padding(bottom = 8.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White.copy(alpha = 0.1f),
                 unfocusedBorderColor = Color.Transparent,
@@ -87,4 +93,5 @@ fun PasswordField(
                 errorCursorColor = Color.Red
             )
         )
+    }
 }

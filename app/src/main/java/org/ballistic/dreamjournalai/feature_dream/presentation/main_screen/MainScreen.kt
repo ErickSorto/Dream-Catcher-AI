@@ -7,6 +7,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -17,11 +18,13 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,20 +35,18 @@ import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.navigation.ScreenGraph
-import org.ballistic.dreamjournalai.navigation.Screens
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.TransparentHintTextField
-import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.DreamListEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.viewmodel.DreamJournalListState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.components.BottomNavigation
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.components.DrawerGroupHeading
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.navigation.ScreenGraph
+import org.ballistic.dreamjournalai.navigation.Screens
 import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreEvent
 import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class
 )
 @Composable
 fun MainScreenView(
@@ -55,6 +56,7 @@ fun MainScreenView(
     onNavigateToOnboardingScreen : () -> Unit = {},
     onDataLoaded: () -> Unit
 ) {
+
     LaunchedEffect(key1 = Unit) {
         delay(1500)
         onDataLoaded()
@@ -117,9 +119,6 @@ fun MainScreenView(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-
-
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -155,7 +154,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.0.6",
+                        text = "Version: 1.0.8",
                         color = Color.White,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)
@@ -169,7 +168,7 @@ fun MainScreenView(
             Scaffold(
                 modifier = if (!mainScreenViewModelState.scaffoldState.bottomBarState) {
                     Modifier
-                        .padding(bottom = 16.dp)
+                        .padding(bottom = 0.dp)
                 } else {
                     Modifier
                         .navigationBarsPadding()
@@ -228,7 +227,7 @@ fun MainScreenView(
                                             textStyle = MaterialTheme.typography.headlineSmall,
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(10.dp))
-                                                .background(Color.White.copy(alpha = 0.4f))
+                                                .background(color = colorResource(id = R.color.white).copy(alpha = 0.2f))
                                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                                                 .fillMaxWidth()
                                                 .padding(4.dp)
@@ -268,12 +267,10 @@ fun MainScreenView(
                                         )
                                     }
                                 }
-
-
                             },
                             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                                 //animate content color
-                                containerColor = Color.White.copy(alpha = 0.4f),
+                                containerColor = colorResource(id = R.color.white).copy(alpha = 0.4f),
                                 navigationIconContentColor = Color.Black,
                                 titleContentColor = Color.Black,
                                 actionIconContentColor = Color.Black
