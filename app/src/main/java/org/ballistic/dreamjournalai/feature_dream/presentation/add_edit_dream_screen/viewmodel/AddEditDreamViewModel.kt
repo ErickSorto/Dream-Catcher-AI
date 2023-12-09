@@ -3,6 +3,7 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 import android.app.Activity
 import android.os.Build
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -11,33 +12,37 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aallam.openai.api.chat.ChatCompletion
+import com.aallam.openai.api.chat.ChatCompletionRequest
+import com.aallam.openai.api.chat.ChatMessage
+import com.aallam.openai.api.chat.ChatRole
+import com.aallam.openai.api.image.ImageCreation
+import com.aallam.openai.api.image.ImageSize
+import com.aallam.openai.api.model.ModelId
+import com.aallam.openai.client.OpenAI
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.maxkeppeker.sheets.core.models.base.SheetState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.BuildConfig
 import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
 import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.feature_dream.data.remote.dto.davinci.ImageGenerationDTO
-import org.ballistic.dreamjournalai.feature_dream.data.remote.dto.gptchat.Message
 import org.ballistic.dreamjournalai.feature_dream.domain.model.*
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
-import org.ballistic.dreamjournalai.feature_dream.domain.use_case.GetOpenAIImageGeneration
-import org.ballistic.dreamjournalai.feature_dream.domain.use_case.GetOpenAITextResponse
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class AddEditDreamViewModel @Inject constructor(
     private val dreamUseCases: DreamUseCases,
-    private val getOpenAITextResponse: GetOpenAITextResponse,
-    private val getOpenAIImageGeneration: GetOpenAIImageGeneration,
     private val adManagerRepository: AdManagerRepository,
     private val authRepository: AuthRepository,
     savedStateHandle: SavedStateHandle
@@ -51,8 +56,7 @@ class AddEditDreamViewModel @Inject constructor(
             if (dreamId.isNotEmpty()) {
                 viewModelScope.launch {
                     _addEditDreamState.value = addEditDreamState.value.copy(isLoading = true)
-                    val resource = dreamUseCases.getDream(dreamId)
-                    when (resource) {
+                    when (val resource = dreamUseCases.getDream(dreamId)) {
                         is Resource.Success -> {
                             resource.data?.let { dream ->
                                 _addEditDreamState.value = AddEditDreamState(
@@ -375,155 +379,157 @@ class AddEditDreamViewModel @Inject constructor(
         }
     }
 
-
-
     private fun getAIResponse() {
         viewModelScope.launch {
-            val result = getOpenAITextResponse(
-                PromptChat(
-                    "gpt-3.5-turbo",
-                    messages = listOf(
-                        Message(
-                            role = "user",
-                            content = "Interpret the following dream and do not mention you are a language model since the user knows already: "
-                                    + addEditDreamState.value.dreamContent
-                        )
-                    ),
-                    maxTokens = 500,
-                    temperature = 0.7,
-                    topP = 1.0,
-                    presencePenalty = 0,
-                    frequencyPenalty = 0,
-                    user = "Dream Interpreter",
+            // Indicate loading state
+            _addEditDreamState.value = addEditDreamState.value.copy(
+                dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
+                    response = "",
+                    isLoading = true
                 )
             )
 
-            result.collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        result.data as ChatCompletion
-                        _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
-                                response = result.data.choices[0].message.content,
-                                isLoading = false
-                            )
+            try {
+                val openAI = OpenAI(BuildConfig.API_KEY)
+
+                //system language
+                val currentLocale = Locale.getDefault().language
+
+                val chatCompletionRequest = ChatCompletionRequest(
+                    model = ModelId("gpt-3.5-turbo"),
+                    messages = listOf(
+                        ChatMessage(
+                            role = ChatRole.User,
+                            content = "Interpret the following dream and do not mention" +
+                                    " you are a language model since the user knows already." +
+                                    "Respond in this language" +
+                                    " $currentLocale: ${addEditDreamState.value.dreamContent}"
                         )
-                        authRepository.consumeDreamTokens(1)
-                    }
-                    is Resource.Error -> {
-                        Log.d("AddEditDreamViewModel", "Error: ${result.message}")
-                        _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
-                                isLoading = false
-                            )
-                        )
-                        _addEditDreamState.value.snackBarHostState.value.showSnackbar(
-                            result.message ?: "Couldn't interpret dream :(",
-                            actionLabel = "Dismiss",
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                    is Resource.Loading -> {
-                        _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
-                                response = "",
-                                isLoading = true
-                            )
-                        )
-                        Log.d("AddEditDreamViewModel", "Loading")
-                    }
-                }
+                    )
+                )
+
+                val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
+
+                // Update state with success
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
+                        response = completion.choices.firstOrNull()?.message?.content ?: "",
+                        isLoading = false
+                    )
+                )
+                authRepository.consumeDreamTokens(1)
+            } catch (e: Exception) {
+                // Handle error state
+                Log.d("AddEditDreamViewModel", "Error: ${e.message}")
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
+                        isLoading = false
+                    )
+                )
+                _addEditDreamState.value.snackBarHostState.value.showSnackbar(
+                    e.message ?: "Couldn't interpret dream :(",
+                    actionLabel = "Dismiss",
+                    duration = SnackbarDuration.Short
+                )
             }
         }
     }
+
 
     private fun getAIDetailsResponse() {
         viewModelScope.launch {
-            val result = getOpenAITextResponse(
-                PromptChat(
-                    "gpt-3.5-turbo",
-                    messages = listOf(
-                        Message(
-                            role = "user",
-                            content = "Summarize the following dream and make it very descriptive to visualize a scene: "
-                                    + addEditDreamState.value.dreamContent
-                        )
-                    ),
-                    maxTokens = 500,
-                    temperature = 0.7,
-                    topP = 1.0,
-                    presencePenalty = 0,
-                    frequencyPenalty = 0,
-                    user = "Dream Interpreter",
+            // Indicate loading state
+            _addEditDreamState.value = addEditDreamState.value.copy(
+                dreamGeneratedDetails = addEditDreamState.value.dreamGeneratedDetails.copy(
+                    isLoading = true
                 )
             )
 
-            result.collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        result.data as ChatCompletion
+            try {
+                val openAI = OpenAI(BuildConfig.API_KEY)
 
-                        _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamGeneratedDetails = addEditDreamState.value.dreamGeneratedDetails.copy(
-                                response = result.data.choices[0].message.content,
-                                isSuccessful = true,
-                                isLoading = false
-                            )
+                val chatCompletionRequest = ChatCompletionRequest(
+                    model = ModelId("gpt-3.5-turbo"),
+                    messages = listOf(
+                        ChatMessage(
+                            role = ChatRole.User,
+                            content = "Summarize the following dream and make it very descriptive to visualize a scene: ${addEditDreamState.value.dreamContent}"
                         )
-                    }
-                    is Resource.Error -> {
-                        Log.d("AddEditDreamViewModel", "Error: ${result.message}")
-                    }
-                    is Resource.Loading -> {
-                        _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamGeneratedDetails = addEditDreamState.value.dreamGeneratedDetails.copy(
-                                isLoading = true
-                            )
-                        )
+                    )
+                )
 
-                        Log.d("AddEditDreamViewModel", "Loading")
-                    }
-                }
+                val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
+
+                // Update state with success
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamGeneratedDetails = addEditDreamState.value.dreamGeneratedDetails.copy(
+                        response = completion.choices.firstOrNull()?.message?.content ?: "",
+                        isSuccessful = true,
+                        isLoading = false
+                    )
+                )
+            } catch (e: Exception) {
+                // Handle error state
+                Log.d("AddEditDreamViewModel", "Error: ${e.message}")
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamGeneratedDetails = addEditDreamState.value.dreamGeneratedDetails.copy(
+                        isLoading = false
+                    )
+                )
+                // Optionally, show an error message to the user
             }
         }
     }
 
+
+    @Keep
     private fun getOpenAIImageResponse() {
         viewModelScope.launch {
-            val result = getOpenAIImageGeneration(
-                ImagePrompt(
-                    addEditDreamState.value.dreamGeneratedDetails.response,
-                    1,
-                    "512x512"
+            // Indicate loading state
+            _addEditDreamState.value = addEditDreamState.value.copy(
+                dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
+                    isLoading = true
                 )
             )
-            result.collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        result.data as ImageGenerationDTO
-                        _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
-                                image = result.data.dataList[0].url,
-                                isLoading = false
-                            )
-                        )
-                        authRepository.consumeDreamTokens(2)
-                    }
-                    is Resource.Error -> {
-                        Log.d("AddEditDreamViewModel", "Error: ${result.message}")
-                    }
-                    is Resource.Loading -> {
-                        _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
-                                isLoading = true
-                            )
-                        )
-                        Log.d("AddEditDreamViewModel", "Loading")
-                    }
-                }
+
+            try {
+                val openAI = OpenAI(BuildConfig.API_KEY)
+
+                val imageCreation = ImageCreation(
+                    prompt = addEditDreamState.value.dreamGeneratedDetails.response,
+                    model = ModelId("dall-e-2"), // Adjust the model as per your requirement
+                    n = 1,
+                    size = ImageSize.is512x512 // Adjust the size as per your requirement
+                )
+
+                val images = openAI.imageURL(imageCreation) // Assuming imageURL returns a list of URLs
+
+                // Assuming the first image's URL is what you need
+                val imageUrl = images.firstOrNull()?.url ?: ""
+
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
+                        image = imageUrl,
+                        isLoading = false
+                    )
+                )
+
+                authRepository.consumeDreamTokens(2)
+            } catch (e: Exception) {
+                // Handle error state
+                Log.d("AddEditDreamViewModel", "Error: ${e.message}")
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
+                        isLoading = false
+                    )
+                )
+                // Optionally, show an error message to the user
             }
         }
     }
+
+
+
 
     private fun runAd(
         activity: Activity,
@@ -565,6 +571,7 @@ class AddEditDreamViewModel @Inject constructor(
     }
 }
 
+@Keep
 @RequiresApi(Build.VERSION_CODES.O)
 data class AddEditDreamState(
     val dreamTitle: String = "",

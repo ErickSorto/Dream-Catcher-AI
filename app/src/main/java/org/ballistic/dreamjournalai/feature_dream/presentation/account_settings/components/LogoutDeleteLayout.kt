@@ -24,9 +24,7 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 @Composable
 fun LogoutDeleteLayout(
     loginViewModelState: LoginViewModelState,
-    paddingValues: PaddingValues,
     onLoginEvent: (LoginEvent) -> Unit = {},
-    navigateToOnboardingScreen: () -> Unit = {},
 ) {
 // Add a mutable state for user password input and a flag for Google account users
     val userPassword = remember { mutableStateOf("") }
@@ -46,8 +44,7 @@ fun LogoutDeleteLayout(
     }
 
     Box(
-        modifier = androidx.compose.ui.Modifier
-            .padding(paddingValues)
+        modifier = Modifier
             .fillMaxSize()
             .background(Color.Transparent)
     ) {
@@ -60,7 +57,6 @@ fun LogoutDeleteLayout(
             Button(
                 onClick = {
                     onLoginEvent(LoginEvent.SignOut)
-                    navigateToOnboardingScreen()
                 },
                 modifier = Modifier.fillMaxWidth(.5f),
                 colors = ButtonDefaults.buttonColors(
@@ -83,8 +79,8 @@ fun LogoutDeleteLayout(
                     // Call RevokeAccess with the user password for email/password users or null for Google users
                     onLoginEvent(
                         LoginEvent.RevokeAccess(
-                            password = null,
-                            onSuccess = { navigateToOnboardingScreen() })
+                            password = null
+                            )
                     )
                 },
                 modifier = Modifier.fillMaxWidth(.5f),

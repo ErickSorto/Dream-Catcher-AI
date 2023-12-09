@@ -10,6 +10,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FieldValue.serverTimestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.google.firebase.functions.ktx.functions
@@ -60,7 +61,6 @@ class AuthRepositoryImpl @Inject constructor(
     private val _dreamTokens = MutableStateFlow(0)
     override val dreamTokens: StateFlow<Int> = _dreamTokens
 
-
     init {
         setupUserDataListener()
     }
@@ -86,6 +86,18 @@ class AuthRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun recordUserInteraction() {
+        reloadFirebaseUser()
+        val user = currentUser.value
+        user?.let {
+            val userDocRef = db.collection(USERS).document(it.uid)
+
+            // Update the lastActiveTimestamp field, or create it if it doesn't exist
+            userDocRef.set(mapOf("lastActiveTimestamp" to serverTimestamp()), SetOptions.merge()).await()
+        }
+    }
+
 
     private fun validateUser() {
         val user = auth.currentUser
@@ -196,6 +208,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String, password: String
     ): Flow<Resource<String>> {
+
         anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
             auth.currentUser?.uid
         } else {
@@ -212,23 +225,28 @@ class AuthRepositoryImpl @Inject constructor(
                     "email" to email,
                     "password" to password
                 )
+
+                Log.d("SignUp", "data: $data")
                 val result = firebaseFunctions
-                    .getHttpsCallable("createAccount")
+                    .getHttpsCallable("createAccountAndSendEmailVerification")
                     .call(data)
                     .await()
 
-                val uid = result.data as String
+                val dataMap = result.data as? HashMap<*, *>
+                val message = dataMap?.get("message") as? String
 
-                Log.d("SignUp", "User created successfully: $uid")
-
-                // Add the user to Firestore with the additional fields
-                addUserToFirestore(
-                    registrationTimestamp = System.currentTimeMillis()
-                )
-
-                emit(Resource.Success(uid))
+                if (message != null) {
+                    // If you still want to add the user to Firestore after receiving the message, you can keep the next lines
+                    addUserToFirestore(
+                        registrationTimestamp = System.currentTimeMillis()
+                    )
+                    Log.d("SignUp", "Response: $message")
+                    emit(Resource.Success(message))
+                } else {
+                    throw Exception("Invalid response from Firebase Function")
+                }
             } catch (e: Exception) {
-                Log.e("SignUp", "Error creating user: $e")
+                Log.e("SignUp", "Error: $e")
                 emit(Resource.Error(e.toString()))
             }
         }
@@ -384,5 +402,6 @@ fun FirebaseUser.toUser(registrationTimestamp: Long) = mapOf(
     EMAIL to email,
     CREATED_AT to serverTimestamp(),
     "registrationTimestamp" to registrationTimestamp,
+    "lastSignInTimestamp" to serverTimestamp(),
     "dreamTokens" to 50,
 )

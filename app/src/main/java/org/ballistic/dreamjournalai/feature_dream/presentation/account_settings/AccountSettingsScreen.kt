@@ -27,6 +27,7 @@ import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.components.LogoutDeleteLayout
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.GoogleSignInHandler
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserveLoginState
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserverLogoutDeleteState
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignupLoginLayout
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.LoginEvent
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.SignupEvent
@@ -54,7 +55,8 @@ fun AccountSettingsScreen(
             SnackbarHost(hostState = signupViewModelState.snackBarHostState.value)
             SnackbarHost(hostState = loginViewModelState.snackBarHostState.value)
         },
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
+        modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
     ) {
         if (loginViewModelState.isEmailVerified &&
             loginViewModelState.isLoggedIn &&
@@ -62,17 +64,27 @@ fun AccountSettingsScreen(
         ) {
             LogoutDeleteLayout(
                 loginViewModelState = loginViewModelState,
-                paddingValues = paddingValues,
-                onLoginEvent = onLoginEvent,
-                navigateToOnboardingScreen = navigateToOnboardingScreen
+                onLoginEvent = onLoginEvent
             )
         } else {
+            ObserveLoginState(
+                loginViewModelState = loginViewModelState,
+                signupViewModelState = signupViewModelState,
+                isUserAnonymousAlready = true,
+                navigateToDreamJournalScreen = navigateToDreamJournalScreen
+            )
+
+            ObserverLogoutDeleteState(loginViewModelState = loginViewModelState) {
+                navigateToOnboardingScreen()
+            }
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .padding(paddingValues = paddingValues)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .padding(),
             ) {
                 Box(
                     modifier = Modifier
@@ -89,13 +101,6 @@ fun AccountSettingsScreen(
                         textAlign = TextAlign.Center,
                     )
                 }
-
-                ObserveLoginState(
-                    loginViewModelState = loginViewModelState,
-                    signupViewModelState = signupViewModelState,
-                    isUserAnonymousAlready = true,
-                    navigateToDreamJournalScreen = navigateToDreamJournalScreen
-                )
 
                 SignupLoginLayout(
                     loginViewModelState = loginViewModelState,

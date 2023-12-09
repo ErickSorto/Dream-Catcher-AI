@@ -7,7 +7,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -18,13 +17,11 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,9 +42,7 @@ import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.Stor
 import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreenView(
     mainScreenViewModelState: MainScreenViewModelState,
@@ -60,6 +55,11 @@ fun MainScreenView(
     LaunchedEffect(key1 = Unit) {
         delay(1500)
         onDataLoaded()
+    }
+
+    LaunchedEffect(Unit){
+        onMainEvent(MainScreenEvent.GetAuthState)
+        onMainEvent(MainScreenEvent.UserInteracted)
     }
 
     val navController = rememberNavController()
@@ -154,7 +154,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.0.8",
+                        text = "Version: 1.1.0",
                         color = Color.White,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)
@@ -227,7 +227,11 @@ fun MainScreenView(
                                             textStyle = MaterialTheme.typography.headlineSmall,
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(10.dp))
-                                                .background(color = colorResource(id = R.color.white).copy(alpha = 0.2f))
+                                                .background(
+                                                    color = colorResource(id = R.color.white).copy(
+                                                        alpha = 0.2f
+                                                    )
+                                                )
                                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                                                 .fillMaxWidth()
                                                 .padding(4.dp)

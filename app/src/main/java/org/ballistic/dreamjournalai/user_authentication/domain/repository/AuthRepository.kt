@@ -53,4 +53,6 @@ interface AuthRepository {
     val dreamTokens: StateFlow<Int>
 
     suspend fun consumeDreamTokens(tokensToConsume: Int): Resource<Boolean>
+
+    suspend fun recordUserInteraction()
 }

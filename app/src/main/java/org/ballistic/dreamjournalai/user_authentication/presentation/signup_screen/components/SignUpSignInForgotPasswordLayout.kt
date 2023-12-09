@@ -30,7 +30,9 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 @Composable
 fun SignupLoginTabLayout(loginViewModelState: LoginViewModelState) {
     if (!loginViewModelState.isForgotPasswordLayout.value) {
-        Row {
+        Row(
+
+        ) {
             LoginOrSignupTab(
                 text = "Login",
                 isLoginLayout = loginViewModelState.isLoginLayout.value,
@@ -73,6 +75,9 @@ fun ForgotPasswordLayout(
             onValueChange = {
                 authEvent(LoginEvent.EnteredForgotPasswordEmail(it))
             },
+            isVisible = remember {
+                mutableStateOf(true)
+            }
         )
 
         Button(

@@ -33,5 +33,6 @@ module.exports = {
    "comma-dangle": "off",
    "no-trailing-spaces": "off",
    "linebreak-style": 0,
+   "require-jsdoc": "off"
   },
 };

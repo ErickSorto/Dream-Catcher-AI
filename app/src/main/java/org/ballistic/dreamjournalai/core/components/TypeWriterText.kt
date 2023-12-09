@@ -1,13 +1,11 @@
 package org.ballistic.dreamjournalai.core.components
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,7 +27,6 @@ fun TypewriterText(
 ) {
     val typedText = remember { mutableStateOf(AnnotatedString("")) }
     val animatedIndex = remember { Animatable(0f) }
-    val animationProgress by animateFloatAsState(targetValue = animatedIndex.value)
 
     LaunchedEffect(text) {
         animatedIndex.snapTo(0f)

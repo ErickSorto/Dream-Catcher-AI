@@ -58,11 +58,11 @@ fun OnboardingScreen(
     onDataLoaded: () -> Unit,
 ) {
     var onDataLoadedBoolean = remember { mutableStateOf(false) }
-    var showLoginLayout = remember { mutableStateOf(false) }
-    var titleText = remember { mutableStateOf("Welcome Dreamer!") }
-    var visible = remember { mutableStateOf(true) }
-    var transition = updateTransition(visible.value, label = "")
-    var showSubheader = remember { mutableStateOf(false) }
+    val showLoginLayout = remember { mutableStateOf(false) }
+    val titleText = remember { mutableStateOf("Welcome Dreamer!") }
+    val visible = remember { mutableStateOf(true) }
+    val transition = updateTransition(visible.value, label = "")
+    val showSubheader = remember { mutableStateOf(false) }
 
     val scope = CoroutineScope(Dispatchers.Main)
 
@@ -139,7 +139,9 @@ fun OnboardingScreen(
                         animationDuration = 5000,
                         onAnimationComplete = {
                             scope.launch {
-                                loginViewModelState.isLoginLayout.value = true
+                                if(!showLoginLayout.value) {
+                                    loginViewModelState.isLoginLayout.value = true
+                                }
                                 showLoginLayout.value = true
                                 delay(1000)  // Delay for 1 second
                                 visible.value = !visible.value

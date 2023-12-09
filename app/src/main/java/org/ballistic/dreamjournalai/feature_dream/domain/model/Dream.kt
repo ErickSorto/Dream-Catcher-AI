@@ -2,6 +2,7 @@ package org.ballistic.dreamjournalai.feature_dream.domain.model
 
 import android.os.Build
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.PropertyName
 import kotlinx.parcelize.Parcelize
@@ -10,6 +11,7 @@ import java.time.Clock
 import java.time.LocalDate
 import java.util.*
 
+@Keep
 @RequiresApi(Build.VERSION_CODES.O)
 @Parcelize
 data class Dream @RequiresApi(Build.VERSION_CODES.O) constructor(
@@ -47,7 +49,7 @@ data class Dream @RequiresApi(Build.VERSION_CODES.O) constructor(
         return matchingCombination.any { it.contains(query, true) }
     }
 
-    companion object { //backgroundssss
+    companion object {
         val dreamBackgroundImages = listOf(
             R.drawable.purple_skies_lighthouse,
             R.drawable.red_lighthouse_background,

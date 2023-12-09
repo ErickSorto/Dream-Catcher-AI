@@ -3,6 +3,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as corsFactory from "cors";
 import * as nodemailer from "nodemailer";
+import { google } from "googleapis";
 
 admin.initializeApp();
 
@@ -46,25 +47,26 @@ export const deleteUnverifiedUsers =
     functions.logger.info(`Processed ${usersSnapshot.size} users.`);
   });
 
-export const deleteAnonymousUsers = functions.pubsub.schedule("every 24 hours").onRun(async () => {
+export const deleteAnonymousInactiveUsers = functions.pubsub.schedule("every 24 hours").onRun(async () => {
     const currentTime = admin.firestore.Timestamp.now();
-    const cutoffTime = currentTime.toMillis() - (1 * 1 * 60 * 60 * 1000); // 31 days in milliseconds
+    // 30 days in milliseconds: 30 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 ms/second
+    const cutoffTime = currentTime.toMillis() - (30 * 24 * 60 * 60 * 1000);
     const cutoffTimestamp = admin.firestore.Timestamp.fromMillis(cutoffTime);
 
     const usersSnapshot = await firestore
         .collection("users")
-        .where("registrationTimestamp", "<=", cutoffTimestamp)
+        .where("lastActiveTimestamp", "<=", cutoffTimestamp)
         .get();
 
     const deletePromises = usersSnapshot.docs.map(async (doc) => {
         const uid = doc.id;
         const userRecord = await admin.auth().getUser(uid);
 
-        // Only delete if it's an anonymous account
+        // Only delete if it's an anonymous account and if the user hasn't interacted in the last 30 days
         if (userRecord.providerData.length === 0) {
             await admin.auth().deleteUser(uid);
             await doc.ref.delete();
-            functions.logger.info(`Deleted anonymous user with UID: ${uid}.`);
+            functions.logger.info(`Deleted anonymous user with UID: ${uid} due to inactivity.`);
         }
     });
 
@@ -72,6 +74,7 @@ export const deleteAnonymousUsers = functions.pubsub.schedule("every 24 hours").
 
     functions.logger.info(`Processed ${usersSnapshot.size} users.`);
 });
+
 
 export const handleAccountLinking = functions.https.onCall(async (data, context) => {
     const {permanentUid, anonymousUid} = data;
@@ -95,9 +98,9 @@ export const handleAccountLinking = functions.https.onCall(async (data, context)
     let lastSnapshot = null;
 
     do {
-        const anonymousDreamsSnapshot = await (lastSnapshot ?
-            anonymousDreamsRef.startAfter(lastSnapshot.docs[lastSnapshot.docs.length - 1]).limit(500).get() :
-            anonymousDreamsRef.limit(500).get());
+        const anonymousDreamsSnapshot: FirebaseFirestore.QuerySnapshot = await (lastSnapshot ?
+                anonymousDreamsRef.startAfter(lastSnapshot.docs[lastSnapshot.docs.length - 1]).limit(500).get() :
+                anonymousDreamsRef.limit(500).get());
 
         const batch = firestore.batch();
 
@@ -105,7 +108,7 @@ export const handleAccountLinking = functions.https.onCall(async (data, context)
         functions.logger.info("Anon UID " + anonymousUid + " has " + anonymousDreamsSnapshot.size + " dreams.");
 
         // Create new dream docs in the permanent account and keep in the anonymous account
-        anonymousDreamsSnapshot.forEach((doc) => {
+        anonymousDreamsSnapshot.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
             const newDreamRef = permanentDreamsRef.doc(doc.id);
             functions.logger.info("Transferring dream with ID " + doc.id + " to permanent account (" + permanentUid + ").");
             batch.set(newDreamRef, doc.data());
@@ -148,8 +151,8 @@ export const handleUserCreate = functions.auth.user().onCreate(async (user) => {
         email: user.email || "",
         emailVerified: isGoogleSignIn || user.emailVerified || false,
         registrationTimestamp: admin.firestore.FieldValue.serverTimestamp(),
-        dreamTokens: isAnonymous ? 0 : 50, // No dreamTokens for anonymous users
-        // Add any other fields you need
+        lastActiveTimestamp: admin.firestore.FieldValue.serverTimestamp(),
+        dreamTokens: isAnonymous ? 0 : 25, // No dreamTokens for anonymous users
     };
 
     // Write the user document to Firestore
@@ -169,7 +172,7 @@ exports.handlePurchaseVerification = functions.https.onRequest(async (req, res) 
     const userId = data.userId;
     const dreamTokens = data.dreamTokens;
 
-    console.log(`handlePurchaseVerification - userId: ${userId}, dreamTokens: ${dreamTokens}`);
+    console.log("handlePurchaseVerification - userId:" + userId + ", dreamTokens:" + dreamTokens);
 
     const isPurchaseValid = true; // This should be the result of your purchase verification process
 
@@ -187,62 +190,110 @@ exports.handlePurchaseVerification = functions.https.onRequest(async (req, res) 
   });
 });
 
-export const createAccount = functions.https.onCall(async (data, context) => {
-    // Get the user's email and password from the data passed to the function
+type FirebaseAuthError = {
+    code: string;
+    message: string;
+};
+
+function isFirebaseAuthError(error: any): error is FirebaseAuthError {
+    return typeof error.code === "string" && typeof error.message === "string";
+}
+
+export const createAccountAndSendEmailVerification = functions.https.onCall(async (data, context) => {
+    console.log("Starting createAccount function");
+
     const userEmail = data.email;
     const userPassword = data.password;
+    console.log(`Processing for Email: ${userEmail}`);
 
-    // Create the user with the Firebase Admin SDK
-    const userRecord = await admin.auth().createUser({
-        email: userEmail,
-        password: userPassword,
-        emailVerified: false
-    });
+    try {
+        const existingUser = await admin.auth().getUserByEmail(userEmail);
+        if (existingUser.emailVerified) {
+            console.log("Account exists and is verified");
+            return { message: "Account exists already" };
+        } else {
+            console.log("Account exists but is not verified, sending verification email");
+            const verificationLink = await admin.auth().generateEmailVerificationLink(userEmail);
+            await sendVerificationEmail(userEmail, verificationLink); // Extracted the email sending logic to its own function
+            return { message: "Verification email sent!" };
+        }
+    } catch (error) {
+        if (isFirebaseAuthError(error) && error.code === "auth/user-not-found") {
+            // User does not exist, create the user
+            const userRecord = await admin.auth().createUser({
+                email: userEmail,
+                password: userPassword,
+                emailVerified: false
+            });
+            console.log(`User created with UID: ${userRecord.uid}`);
 
-    // Generate the verification email link
-    const verificationLink = await admin.auth().generateEmailVerificationLink(userEmail);
+            const verificationLink = await admin.auth().generateEmailVerificationLink(userEmail);
+            await sendVerificationEmail(userEmail, verificationLink); // Use the extracted email sending logic
 
-    // Get the application's email and password from Firebase environment variables
-    const appEmail = functions.config().email.credentials;
-    const appPassword = functions.config().password.credentials;
+            return { message: "Verification email sent and account created! Please verify email to log in." };
+        } else {
+            throw error; // Re-throw the error if it's not a 'user-not-found' error
+        }
+    }
+});
 
-    // Get the OAuth2 client ID and client secret from Firebase environment variables
-    const clientID = functions.config().oauth.client_id;
-    const clientSecret = functions.config().oauth.client_secret;
+async function sendVerificationEmail(userEmail: string, verificationLink: string) {
+    const emailConfig = functions.config().email || {};
+    const appEmail = emailConfig.credentials;
+
+    const oauthConfig = functions.config().oauth || {};
+    const clientID = oauthConfig.client_id;
+    const clientSecret = oauthConfig.client_secret;
+
+    const refreshTokenConfig = functions.config().refreshtoken || {};
+    const refreshToken = refreshTokenConfig.token;
 
     const oauth2Client = new google.auth.OAuth2(
-        clientID, // Client ID
-        clientSecret, // Client Secret
-        'https://developers.google.com/oauthplayground' // Redirect URL
+        clientID,
+        clientSecret,
+        "https://developers.google.com/oauthplayground"
     );
 
-    // Replace the following line with the method to get the refresh token
-    // const refreshToken = 'YOUR_REFRESH_TOKEN';
+    oauth2Client.setCredentials({
+        refresh_token: refreshToken
+    });
 
-    const { token } = await oauth2Client.getAccessToken();
+    const result = await oauth2Client.getAccessToken();
+    const token = result.token;
 
-    // Set up nodemailer with your SMTP details
     const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
         auth: {
-            type: 'OAuth2',
+            type: "OAuth2",
             user: appEmail,
             clientId: clientID,
             clientSecret: clientSecret,
             refreshToken: refreshToken,
             accessToken: token
         }
-    });
+    } as nodemailer.TransportOptions);
 
-    // Send the verification email
     await transporter.sendMail({
-        from: appEmail,
+        from: `"Dream Journal AI" <${appEmail}>`, // Added app name for clarity
         to: userEmail,
-        subject: "Email Verification",
-        text: `Please verify your email by clicking on the following link: ${verificationLink}`,
-        html: `<p>Please verify your email by clicking on the following link: <a href="${verificationLink}">${verificationLink}</a></p>`
+        subject: "Complete Your Registration with Dream Journal AI",
+        text: `Welcome to Dream Journal AI!\n\nThanks for signing up. Please verify your email by clicking on this link:
+        ${verificationLink}\n\nIf you did not sign up for a Dream Journal AI account, you can safely
+        ignore this email.\n\nBest,\nDream Journal AI Team`,
+        html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2>Welcome to Dream Journal AI!</h2>
+            <p>Thanks for signing up. Please click the button below to verify your email address and complete your registration.</p>
+            <a href="${verificationLink}" style="background-color: #4CAF50; color: white;
+             padding: 14px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 4px;">Verify Email</a>
+            <p>If you did not sign up for a Dream Journal AI account, you can safely ignore this email.</p>
+            <p>Best,<br>Dream Journal AI Team</p>
+            <hr>
+            <p style="font-size: 0.8em;">If the button above doesn't work, copy and paste this link into your browser:
+             <a href="${verificationLink}">${verificationLink}</a></p>
+        </div>
+        `
     });
-
-    return { uid: userRecord.uid };
-});
-
+}

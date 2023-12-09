@@ -8,4 +8,7 @@ sealed class MainScreenEvent {
     data class SearchDreams(val query: String) : MainScreenEvent()
     data class ConsumeDreamTokens(val tokensToConsume: Int) : MainScreenEvent()
     data class ShowSnackBar(val message: String) : MainScreenEvent()
+    object UserInteracted : MainScreenEvent()
+
+    object GetAuthState : MainScreenEvent()
 }

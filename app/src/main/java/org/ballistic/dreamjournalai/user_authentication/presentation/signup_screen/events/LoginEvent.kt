@@ -9,7 +9,7 @@ sealed class LoginEvent {
     data class SendPasswordResetEmail(val email: String) : LoginEvent()
     object ReloadUser : LoginEvent()
     object SignOut : LoginEvent()
-    data class RevokeAccess(val password: String?,  val onSuccess: () -> Unit) : LoginEvent()
+    data class RevokeAccess(val password: String?) : LoginEvent()
     data class EnteredLoginEmail(val email: String) : LoginEvent()
     data class EnteredLoginPassword(val password: String) : LoginEvent()
     data class EnteredForgotPasswordEmail(val email: String) : LoginEvent()

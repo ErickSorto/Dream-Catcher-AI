@@ -21,8 +21,7 @@ fun ObserveLoginState(
 
     //login state observer
     LaunchedEffect((isLoggedIn && isEmailVerified) || isUserAnonymous) {
-        if ((isLoggedIn &&
-                    isEmailVerified) || isUserAnonymous) {
+        if ((isLoggedIn && isEmailVerified) || isUserAnonymous) {
             navigateToDreamJournalScreen()
         }
     }
@@ -35,7 +34,6 @@ fun ObserveLoginState(
             }
         }
     }
-
 
     //signup state observer
     LaunchedEffect(isEmailVerified2, isLoggedIn2) {

@@ -24,6 +24,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.AlertSave
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.TabLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
@@ -57,7 +58,14 @@ fun AddEditDreamScreen(
 
     val dreamBackgroundImage = remember {
         mutableStateOf(
-            if (dreamImage != -1) dreamImage else addEditDreamState.dreamInfo.dreamBackgroundImage
+            if (dreamImage != -1){
+                if (dreamImage in Dream.dreamBackgroundImages) {
+                    dreamImage
+                } else {
+                    R.drawable.background_during_day
+                }
+            }
+            else addEditDreamState.dreamInfo.dreamBackgroundImage
         )
     }
 

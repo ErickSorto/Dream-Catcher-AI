@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel
 
+import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -26,11 +27,11 @@ class LoginViewModel @Inject constructor(
     private val _state = MutableStateFlow(
         LoginViewModelState(
             oneTapClient = signInClient,
+            isLoggedIn = repo.isLoggedIn.value,
+            isUserAnonymous = repo.isUserAnonymous.value,
         )
     )
     val state: StateFlow<LoginViewModelState> = _state.asStateFlow()
-
-
 
     fun onEvent(event: LoginEvent) = viewModelScope.launch {
 
@@ -63,7 +64,7 @@ class LoginViewModel @Inject constructor(
                 signOut()
             }
             is LoginEvent.RevokeAccess -> {
-                revokeAccess(event.password, onSuccess = event.onSuccess)
+                revokeAccess(event.password)
             }
             is LoginEvent.UserAccountStatus -> {
                 checkUserAccountStatus()
@@ -125,7 +126,7 @@ class LoginViewModel @Inject constructor(
     private suspend fun loginWithEmailAndPassword(email: String, password: String) {
         handleResource(
             resourceFlow = repo.firebaseSignInWithEmailAndPassword(email, password),
-            transform = { result ->
+            transform = {
                 _state.value.copy(
                     isLoggedIn = true,
                     isUserExist = true,
@@ -153,16 +154,20 @@ class LoginViewModel @Inject constructor(
 
     private fun signOut() = viewModelScope.launch {
         repo.signOut()
+        Log.d("LoginViewModel", "signOut called")
+        _state.value = _state.value.copy(isLoggedIn = false)
+        Log.d("LoginViewModel", "signOut completed! logged in:${_state.value.isLoggedIn}")
     }
 
-    private suspend fun revokeAccess(password: String?, onSuccess: () -> Unit) {
+    private suspend fun revokeAccess(password: String?) {
         handleResource(
             resourceFlow = repo.revokeAccess(password),
             transform = {
                 _state.value.copy(
                     revokeAccess = MutableStateFlow(
                         RevokeAccessState(isRevoked = true)
-                    )
+                    ),
+                    isLoggedIn = false,
                 )
             },
             errorTransform = { error ->
@@ -182,7 +187,6 @@ class LoginViewModel @Inject constructor(
                 )
             }
         )
-        onSuccess()
     }
 
     private fun checkUserAccountStatus() = viewModelScope.launch {

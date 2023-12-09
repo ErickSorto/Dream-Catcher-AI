@@ -29,12 +29,6 @@ class MainScreenViewModel @Inject constructor(
     private val _mainScreenViewModelState = MutableStateFlow(MainScreenViewModelState(authRepo = repo))
     val mainScreenViewModelState: StateFlow<MainScreenViewModelState> = _mainScreenViewModelState.asStateFlow()
 
-    init {
-        getAuthState()
-    }
-
-    private fun getAuthState() = repo.getAuthState(viewModelScope)
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getBackgroundResource(): Int {
         val currentTime = LocalDateTime.now()
@@ -105,6 +99,12 @@ class MainScreenViewModel @Inject constructor(
                         actionLabel = "Dismiss"
                     )
                 }
+            }
+            is MainScreenEvent.UserInteracted -> {
+                repo.recordUserInteraction()
+            }
+            is MainScreenEvent.GetAuthState -> {
+                repo.getAuthState(viewModelScope)
             }
         }
     }
