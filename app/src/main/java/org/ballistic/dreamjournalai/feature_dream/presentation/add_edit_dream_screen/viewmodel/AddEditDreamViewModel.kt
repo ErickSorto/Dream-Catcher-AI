@@ -606,10 +606,20 @@ data class AddEditDreamState(
         isLoading = false,
         error = ""
     ),
+    val dreamAIAdvice: DreamAIAdvice = DreamAIAdvice(
+        advice = "",
+        isLoading = false,
+        error = "",
+    ),
     val dreamGeneratedDetails: DreamAIGeneratedDetails = DreamAIGeneratedDetails(
         response = "",
         isLoading = false,
         isSuccessful = false,
+        error = ""
+    ),
+    val dreamQuestionAIAnswer: DreamQuestionAIAnswer = DreamQuestionAIAnswer(
+        answer = "",
+        isLoading = false,
         error = ""
     ),
     val dreamIsSavingLoading: MutableState<Boolean> = mutableStateOf(false),
@@ -621,6 +631,8 @@ data class AddEditDreamState(
     val wakeTimePickerState: SheetState = SheetState(),
     val imageGenerationPopUpState: MutableState<Boolean> = mutableStateOf(false),
     val dreamInterpretationPopUpState: MutableState<Boolean> = mutableStateOf(false),
+    val dreamAdvicePopUpState: MutableState<Boolean> = mutableStateOf(false),
+    val questionPopUpState: MutableState<Boolean> = mutableStateOf(false),
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
 )
 
@@ -639,6 +651,18 @@ data class DreamAIGeneratedDetails(
 
 data class DreamAIImage(
     val image: String? = null,
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
+data class DreamAIAdvice(
+    val advice: String? = null,
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
+data class DreamQuestionAIAnswer(
+    val answer: String? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )

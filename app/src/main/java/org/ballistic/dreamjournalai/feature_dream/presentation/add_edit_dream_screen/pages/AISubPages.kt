@@ -27,6 +27,8 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.InterpretCustomButton
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.PaintCustomButton
 import org.ballistic.dreamjournalai.core.components.TypewriterText
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.AskQuestionButton
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateAdviceButton
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 @OptIn(ExperimentalPagerApi::class)
@@ -133,3 +135,118 @@ fun AIPainterPage(
         }
     }
 }
+
+@OptIn(ExperimentalPagerApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun AIDreamAdvicePage(
+    addEditDreamState: AddEditDreamState,
+    infiniteTransition: InfiniteTransition,
+    pagerState: PagerState,
+) {
+    val adviceState = addEditDreamState.dreamAIAdvice
+
+    if (adviceState.advice != "") {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding()
+                .verticalScroll(rememberScrollState())
+        ) {
+            adviceState.advice?.let {
+                TypewriterText(
+                    text = it.trim(),
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
+                    color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+                )
+            }
+        }
+    }
+
+    // Button to generate advice
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (adviceState.advice == "" && !adviceState.isLoading) {
+            GenerateAdviceButton(
+                addEditDreamState = addEditDreamState,
+                pagerState = pagerState,
+                size = 120.dp,
+                fontSize = 24.sp
+            )
+        }
+    }
+
+    // Loading animation while AI is generating advice
+    if (adviceState.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            ArcRotationAnimation(
+                infiniteTransition = infiniteTransition,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun AIQuestionPage(
+    addEditDreamState: AddEditDreamState,
+    infiniteTransition: InfiniteTransition,
+    pagerState: PagerState,
+) {
+    val questionState = addEditDreamState.dreamQuestionAIAnswer
+
+    if (questionState.answer != "") {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding()
+                .verticalScroll(rememberScrollState())
+        ) {
+            questionState.answer?.let {
+                TypewriterText(
+                    text = it.trim(),
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
+                    color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+                )
+            }
+        }
+
+        // Button to ask a new question
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            if (questionState.answer == "" && !questionState.isLoading) {
+                AskQuestionButton(
+                    addEditDreamState = addEditDreamState,
+                    pagerState = pagerState,
+                    size = 120.dp,
+                    fontSize = 24.sp
+                )
+            }
+        }
+
+        // Loading animation while AI is generating response
+        if (questionState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                    .clip(RoundedCornerShape(10.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                ArcRotationAnimation(
+                    infiniteTransition = infiniteTransition,
+                )
+            }
+        }
+    }
+}
+

@@ -50,7 +50,7 @@ fun AIPage(
     mainScreenViewModelState: MainScreenViewModelState
 ) {
 
-    val pages = listOf("Painting", "Interpretation")
+    val pages = listOf("Painting", "Interpretation", "Advice")
     val pagerSate2 = rememberPagerState()
 
     val responseState = addEditDreamState.dreamAIExplanation
@@ -215,13 +215,15 @@ fun AIPage(
                     .padding(8.dp)
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .background(brush = Brush.linearGradient(
-                        colors = listOf(
-                            colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
-                            colorResource(id = R.color.white).copy(alpha = 0.1f),
-                            colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
-                        ),
-                    ))
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
+                                colorResource(id = R.color.white).copy(alpha = 0.1f),
+                                colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
+                            ),
+                        )
+                    )
                 ,
                 pagerSate2
             ) { page ->
@@ -237,6 +239,13 @@ fun AIPage(
                     }
                     1 -> {
                         AIInterpreterPage(
+                            addEditDreamState = addEditDreamState,
+                            infiniteTransition = infiniteTransition,
+                            pagerState = pagerState,
+                        )
+                    }
+                    2 -> {
+                        AIDreamAdvicePage(
                             addEditDreamState = addEditDreamState,
                             infiniteTransition = infiniteTransition,
                             pagerState = pagerState,

@@ -28,11 +28,6 @@ fun DreamImageSelectionRow(
 
     val initialSelectedItem = dreamBackgroundImages.indexOf(dreamBackgroundImage.value)
 
-    var selectedItem by remember {
-        mutableStateOf(initialSelectedItem)
-    }
-
-
     AnimatedInfiniteLazyRow(
         modifier = Modifier
             .fillMaxWidth()
