@@ -1,4 +1,4 @@
-# Dream Journal AI <img src="https://cdn.midjourney.com/f6570e07-5f0f-470b-ab7a-271f899c5b74/0_0.png" alt="Dream Journal AI Logo" width="100" height="100" style="vertical-align: middle;">
+# Dream Journal AI <img src="https://play-lh.googleusercontent.com/8cmc0G7jBSifYgmKfkkxEhe6qm2tVp_sy7uNwzjIWYAkKZb3fIHSTdZEgbfnlhOO76xN=w480-h960-rw" alt="Dream Journal AI Logo" width="100" height="100" style="vertical-align: middle;">
 
 
 
