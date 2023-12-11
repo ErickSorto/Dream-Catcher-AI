@@ -85,6 +85,13 @@ class AddEditDreamViewModel @Inject constructor(
                                     dreamAIImage = DreamAIImage(
                                         image = dream.generatedImage,
                                     ),
+                                    dreamQuestionAIAnswer = DreamQuestionAIAnswer(
+                                        answer = dream.dreamAIQuestionAnswer,
+                                        question = dream.dreamQuestion
+                                    ),
+                                    dreamStoryGeneration = DreamStoryGeneration(
+                                        story = dream.dreamAIStory
+                                    ),
                                     dreamGeneratedDetails = DreamAIGeneratedDetails(
                                         response = dream.generatedDetails,
                                     ),
@@ -130,10 +137,10 @@ class AddEditDreamViewModel @Inject constructor(
             is AddEditDreamEvent.ClickGenerateAIResponse -> {
                 if (addEditDreamState.value.dreamContent.length >= 10) {
                     if (!event.isAd) {
-                        getAIResponse()
+                        getAIResponse(event.cost)
                     } else {
                         runAd(event.activity, onRewardedAd = {
-                            getAIResponse()
+                            getAIResponse(event.cost)
 
                             viewModelScope.launch {
                                 addEditDreamState.value.snackBarHostState.value.showSnackbar(
@@ -325,7 +332,13 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
-
+            is AddEditDreamEvent.ChangeQuestionOfDream -> {
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamQuestionAIAnswer = DreamQuestionAIAnswer(
+                        question = event.value
+                    )
+                )
+            }
             is AddEditDreamEvent.SaveDream-> {
                 Log.d("AddEditDreamViewModel", "Dream saved successfully")
                 _addEditDreamState.value.dreamIsSavingLoading.value = true
@@ -353,6 +366,10 @@ class AddEditDreamViewModel @Inject constructor(
                                 AIResponse = addEditDreamState.value.dreamAIExplanation.response,
                                 generatedDetails = addEditDreamState.value.dreamGeneratedDetails.response,
                                 generatedImage = addEditDreamState.value.dreamAIImage.image,
+                                dreamQuestion = addEditDreamState.value.dreamQuestionAIAnswer.question,
+                                dreamAIQuestionAnswer = addEditDreamState.value.dreamQuestionAIAnswer.answer,
+                                dreamAIAdvice = addEditDreamState.value.dreamAIAdvice.advice,
+                                dreamAIStory = addEditDreamState.value.dreamStoryGeneration.story,
                             )
                         )
                         _addEditDreamState.value = addEditDreamState.value.copy(
@@ -379,7 +396,9 @@ class AddEditDreamViewModel @Inject constructor(
         }
     }
 
-    private fun getAIResponse() {
+    private fun getAIResponse(
+        amount: Int
+    ) {
         viewModelScope.launch {
             // Indicate loading state
             _addEditDreamState.value = addEditDreamState.value.copy(
@@ -396,7 +415,7 @@ class AddEditDreamViewModel @Inject constructor(
                 val currentLocale = Locale.getDefault().language
 
                 val chatCompletionRequest = ChatCompletionRequest(
-                    model = ModelId("gpt-3.5-turbo"),
+                    model = ModelId(if (amount == 1) "gpt-3.5-turbo" else "gpt-4"),
                     messages = listOf(
                         ChatMessage(
                             role = ChatRole.User,
@@ -405,7 +424,8 @@ class AddEditDreamViewModel @Inject constructor(
                                     "Respond in this language" +
                                     " $currentLocale: ${addEditDreamState.value.dreamContent}"
                         )
-                    )
+                    ),
+                    maxTokens = 500,
                 )
 
                 val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
@@ -622,6 +642,16 @@ data class AddEditDreamState(
         isLoading = false,
         error = ""
     ),
+    val dreamStoryGeneration: DreamStoryGeneration = DreamStoryGeneration(
+        story = "",
+        isLoading = false,
+        error = ""
+    ),
+    val dreamMoodAIAnalyser: DreamMoodAIAnalyser = DreamMoodAIAnalyser(
+        mood = "",
+        isLoading = false,
+        error = ""
+    ),
     val dreamIsSavingLoading: MutableState<Boolean> = mutableStateOf(false),
     val isLoading: Boolean = false,
     val saveSuccess: MutableState<Boolean> = mutableStateOf(false),
@@ -633,6 +663,8 @@ data class AddEditDreamState(
     val dreamInterpretationPopUpState: MutableState<Boolean> = mutableStateOf(false),
     val dreamAdvicePopUpState: MutableState<Boolean> = mutableStateOf(false),
     val questionPopUpState: MutableState<Boolean> = mutableStateOf(false),
+    val storyPopupState: MutableState<Boolean> = mutableStateOf(false),
+    val moodPopupState: MutableState<Boolean> = mutableStateOf(false),
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
 )
 
@@ -656,13 +688,26 @@ data class DreamAIImage(
 )
 
 data class DreamAIAdvice(
-    val advice: String? = null,
+    val advice: String = "",
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
 data class DreamQuestionAIAnswer(
-    val answer: String? = null,
+    val answer: String = "",
+    val question: String = "",
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
+data class DreamStoryGeneration(
+    val story: String = "",
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
+data class DreamMoodAIAnalyser(
+    val mood: String = "",
     val isLoading: Boolean = false,
     val error: String? = null
 )

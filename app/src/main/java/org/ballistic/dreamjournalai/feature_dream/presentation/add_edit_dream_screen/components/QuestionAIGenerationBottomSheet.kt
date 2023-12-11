@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +42,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ImageGenerationPopUp(
+fun QuestionAIGenerationBottomSheet(
     mainScreenViewModelState: MainScreenViewModelState,
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
@@ -51,11 +52,9 @@ fun ImageGenerationPopUp(
     modifier: Modifier = Modifier
 ) {
     var state by remember { mutableStateOf(true) }
-    var amount by remember { mutableIntStateOf(2) }
+    var amount by remember { mutableIntStateOf(1) }
     ModalBottomSheet(
-        onDismissRequest = {
-            onClickOutside()
-        },
+        onDismissRequest = onClickOutside,
         windowInsets = WindowInsets.ime,
         content = {
             Column(
@@ -66,12 +65,11 @@ fun ImageGenerationPopUp(
                     .padding(16.dp, 8.dp, 16.dp, 64.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                ){
+                ) {
                     Text(
-                        text = "Dream Painter",
+                        text = "Dream Question",
                         style = MaterialTheme.typography.headlineMedium,
                         color = colorResource(id = R.color.white),
                         modifier = Modifier.padding(8.dp)
@@ -80,15 +78,14 @@ fun ImageGenerationPopUp(
                         mainScreenViewModelState = mainScreenViewModelState,
                     )
                 }
-
                 OutlinedTextField(
-                    value = addEditDreamState.dreamGeneratedDetails.response,
+                    value = addEditDreamState.dreamQuestionAIAnswer.question,
                     onValueChange = {
-                        onAddEditDreamEvent(AddEditDreamEvent.ChangeDetailsOfDream(it))
+                        onAddEditDreamEvent(AddEditDreamEvent.ChangeQuestionOfDream(it))
                     },
                     label = {
                         Text(
-                            text = "Explanation for Image",
+                            text = "Ask your Question",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     },
@@ -98,6 +95,11 @@ fun ImageGenerationPopUp(
                     textStyle = MaterialTheme.typography.bodyLarge,
                     singleLine = false,
                     maxLines = 2,
+                    // Define the colors for the text field
+                    colors = // Define the colors as per your theme
+                    OutlinedTextFieldDefaults.colors(
+
+                    )
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -107,14 +109,15 @@ fun ImageGenerationPopUp(
                         selected = state,
                         onClick = {
                             state = true
-                            amount = 2
+                            amount = 1
                         },
-                        modifier = Modifier.semantics {
-                            contentDescription = "Localized Description"
-                        }
+                        modifier = Modifier.semantics { contentDescription = "Localized Description" }
                     )
 
-                    Text(text = "Standard AI", color = colorResource(id = R.color.white))
+                   Text(
+                        text = "Standard AI",
+                        color = colorResource(id = R.color.white)
+                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -122,20 +125,20 @@ fun ImageGenerationPopUp(
                         selected = !state,
                         onClick = {
                             state = false
-                            amount = 5
+                            amount = 2
                         },
-                        modifier = Modifier.semantics {
-                            contentDescription = "Localized Description"
-                        }
+                        modifier = Modifier.semantics { contentDescription = "Localized Description" }
                     )
+
                     Text(
                         text = "Advanced AI",
                         color = colorResource(id = R.color.white),
                         modifier = Modifier.padding(end = 8.dp)
                     )
                 }
+                // AdTokenLayout for managing Ads and Tokens
                 AdTokenLayout(
-                    isAdButtonVisible = amount <= 2,
+                    isAdButtonVisible = amount <= 1,
                     onAdClick = { amount ->
                         onAdClick(amount)
                     },

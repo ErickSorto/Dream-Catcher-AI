@@ -17,7 +17,8 @@ sealed class AddEditDreamEvent {
     data class ChangeFalseAwakening(val boolean: Boolean) : AddEditDreamEvent()
     data class ChangeTimeOfDay(val timeOfDay: String) : AddEditDreamEvent()
     data class ChangeFavorite(val boolean: Boolean) : AddEditDreamEvent()
-    data class ClickGenerateAIResponse(val value: String, val activity: Activity, val isAd: Boolean) : AddEditDreamEvent()
+    data class ClickGenerateAIResponse(val value: String, val activity: Activity, val isAd: Boolean,
+                                       val cost: Int) : AddEditDreamEvent()
     data class ClickGenerateAIImage(val value: String, val activity: Activity, val isAd: Boolean) : AddEditDreamEvent()
     data class ClickGenerateDetails(val value: String) : AddEditDreamEvent()
     data class ClickGenerateFromDescription(val value: Boolean) : AddEditDreamEvent()
@@ -25,6 +26,8 @@ sealed class AddEditDreamEvent {
     data class ChangeDreamWakeTime(val value: LocalTime) : AddEditDreamEvent()
     data class ChangeDreamSleepTime(val value: LocalTime) : AddEditDreamEvent()
     data class ChangeDreamDate(val value: LocalDate) : AddEditDreamEvent()
+
+    data class ChangeQuestionOfDream(val value: String) : AddEditDreamEvent()
     data class SaveDream(val onSaveSuccess : () -> Unit) : AddEditDreamEvent()
     object DeleteDream : AddEditDreamEvent()
 }

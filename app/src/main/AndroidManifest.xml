@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.android.vending.BILLING" />
     <application
-
         android:windowSoftInputMode="adjustResize"
         android:name="org.ballistic.dreamjournalai.DreamJournalAiApp"
         android:allowBackup="true"
@@ -20,6 +19,7 @@
         <activity
             android:name="org.ballistic.dreamjournalai.feature_dream.presentation.MainActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.CustomSplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

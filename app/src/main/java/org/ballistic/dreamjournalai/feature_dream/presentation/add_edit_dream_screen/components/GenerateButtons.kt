@@ -6,10 +6,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,8 +45,9 @@ fun GenerateButtonsLayout(
         "Paint",
         "Interpret",
         "Advice",
-        "Question"
-        // Add any other button labels here
+        "Question",
+        "Story",
+        "Mood"
     )
 
     val initialSelectedItem = -1 // Define the initial selected button index
@@ -75,6 +77,8 @@ fun GenerateButtonsLayout(
                     "Interpret" -> InterpretCustomButton(addEditDreamState, pagerState, "Interpret")
                     "Advice" -> GenerateAdviceButton(addEditDreamState, pagerState, "Advice")
                     "Question" -> AskQuestionButton(addEditDreamState, pagerState, "Question")
+                    "Story" -> GenerateStoryButton(addEditDreamState, pagerState, "Story")
+                    "Mood" -> MoodAnalyzerButton(addEditDreamState, pagerState, "Mood")
                 }
             }
         )
@@ -113,7 +117,7 @@ fun PaintCustomButton(
                 modifier = Modifier
                     .size(size)
                     .rotate(45f),
-                tint = if (addEditDreamState.dreamInfo.dreamIsLucid) colorResource(R.color.sky_blue) else colorResource(
+                tint = if (addEditDreamState.dreamContent.length >= 10) colorResource(R.color.sky_blue) else colorResource(
                     id = R.color.white
                 )
             )
@@ -154,7 +158,7 @@ fun InterpretCustomButton(
                 modifier = Modifier
                     .size(size)
                     .rotate(45f),
-                tint = if (addEditDreamState.dreamInfo.dreamIsFavorite) colorResource(R.color.Yellow) else colorResource(
+                tint = if (addEditDreamState.dreamContent.length >= 10) colorResource(R.color.purple) else colorResource(
                     id = R.color.white
                 )
             )
@@ -162,6 +166,46 @@ fun InterpretCustomButton(
         Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun GenerateStoryButton(
+    addEditDreamState: AddEditDreamState,
+    pagerState: PagerState,
+    subtitle: String = "Generate Story",
+    size: Dp = 40.dp,
+    fontSize: TextUnit = 16.sp
+) {
+    val scope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier.padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        androidx.compose.material3.IconButton(
+            onClick = {
+                scope.launch {
+                    delay(100)
+                    pagerState.animateScrollToPage(1) // Change to the appropriate page for story generation
+                }
+                addEditDreamState.storyPopupState.value = true // Update the state to show the story generation popup
+            },
+            modifier = Modifier.size(size),
+        ) {
+            Icon(
+                painter = rememberAsyncImagePainter(R.drawable.baseline_auto_fix_high_24), // Replace with appropriate vector graphic
+                contentDescription = "Generate Story",
+                modifier = Modifier
+                    .size(size),
+                tint = if (addEditDreamState.dreamContent.length >= 10) colorResource(R.color.lighter_yellow) else colorResource(
+                    id = R.color.white
+                )
+            )
+        }
+        Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
+    }
+}
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
@@ -182,7 +226,7 @@ fun GenerateAdviceButton(
             onClick = {
                 scope.launch {
                     delay(100)
-                    pagerState.animateScrollToPage(3)
+                    pagerState.animateScrollToPage(1)
                 }
                 addEditDreamState.dreamAdvicePopUpState.value = true
             },
@@ -213,7 +257,7 @@ fun GenerateAdviceButton(
 fun AskQuestionButton(
     addEditDreamState: AddEditDreamState,
     pagerState: PagerState,
-    subtitle: String = "Ask Question",
+    subtitle: String = "Ask a Question",
     size: Dp = 40.dp,
     fontSize: TextUnit = 16.sp
 ) {
@@ -226,7 +270,7 @@ fun AskQuestionButton(
             onClick = {
                 scope.launch {
                     delay(100)
-                    pagerState.animateScrollToPage(4) // Update the page index as needed
+                    pagerState.animateScrollToPage(1) // Update the page index as needed
                 }
                 addEditDreamState.questionPopUpState.value = true // Handle the state for asking a question
             },
@@ -238,7 +282,7 @@ fun AskQuestionButton(
                 modifier = Modifier
                     .size(size),
                 tint = if (addEditDreamState.dreamContent.length >= 10){
-                    colorResource(R.color.sky_blue) // Choose an appropriate color
+                    colorResource(R.color.RedOrange) // Choose an appropriate color
                 } else{
                     colorResource(id = R.color.white)
                 }
@@ -247,13 +291,53 @@ fun AskQuestionButton(
         Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun MoodAnalyzerButton(
+    addEditDreamState: AddEditDreamState, // Define a class to manage the state related to mood analysis
+    pagerState: PagerState,
+    subtitle: String = "Analyze Mood",
+    size: Dp = 40.dp,
+    fontSize: TextUnit = 16.sp
+) {
+    val scope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier.padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        IconButton(
+            onClick = {
+                scope.launch {
+                    delay(100)
+                    pagerState.animateScrollToPage(1) // Change to the appropriate page for mood analysis
+                }
+                addEditDreamState.moodPopupState.value = true // Update the state to show the mood analyzer popup
+            },
+            modifier = Modifier.size(size)
+        ) {
+            Icon(
+                painter = rememberAsyncImagePainter(R.drawable.baseline_mood_24), // Replace with an appropriate mood analyzer icon
+                contentDescription = "Analyze Mood",
+                modifier = Modifier
+                    .size(size),
+                tint = if (addEditDreamState.dreamContent.length >= 10) colorResource(R.color.green) else colorResource(
+                    id = R.color.white
+                )
+            )
+        }
+        Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
+    }
+}
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AdTokenLayout(
-    onAdClick: () -> Unit = {},
-    onDreamTokenClick: () -> Unit = {},
+    onAdClick: (amount: Int) -> Unit = {},
+    onDreamTokenClick: (amount: Int) -> Unit = {},
+    isAdButtonVisible: Boolean = true,
     amount: Int
 ) {
     Column(
@@ -263,9 +347,11 @@ fun AdTokenLayout(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        WatchAdButton(onClick = { onAdClick() })
-        Spacer(modifier = Modifier.height(8.dp))
-        DreamTokenGenerateButton(onClick = { onDreamTokenClick() }, amount = amount)
+        if (isAdButtonVisible) {
+            WatchAdButton(onClick = { onAdClick(amount) })
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        DreamTokenGenerateButton(onClick = { onDreamTokenClick(amount) }, amount = amount)
     }
 }
 
@@ -280,7 +366,7 @@ fun WatchAdButton(
         },
         modifier = Modifier
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.sky_blue)),
+        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.sky_blue)),
         shape = RoundedCornerShape(10.dp)
     ) {
 
@@ -313,7 +399,7 @@ fun DreamTokenGenerateButton(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.Yellow)),
+        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.Yellow)),
         shape = RoundedCornerShape(10.dp)
     ) {
 

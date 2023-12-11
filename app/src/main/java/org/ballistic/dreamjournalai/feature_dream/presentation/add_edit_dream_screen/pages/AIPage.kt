@@ -5,12 +5,22 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
@@ -19,7 +29,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -31,11 +40,14 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import org.ballistic.dreamjournalai.R
 import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.*
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.DreamInterpretationPopUp
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateButtonsLayout
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.ImageGenerationPopUp
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.QuestionAIGenerationBottomSheet
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
@@ -50,14 +62,18 @@ fun AIPage(
     mainScreenViewModelState: MainScreenViewModelState
 ) {
 
-    val pages = listOf("Painting", "Interpretation", "Advice")
+    val pages = listOf("Painting", "Interpretation", "Advice", "Question", "Story", "Mood")
     val pagerSate2 = rememberPagerState()
 
     val responseState = addEditDreamState.dreamAIExplanation
     val imageState = addEditDreamState.dreamAIImage
+    val questionState = addEditDreamState.dreamQuestionAIAnswer
+    val adviceState = addEditDreamState.dreamAIAdvice
     val contentState = addEditDreamState.dreamContent
+    val storyState = addEditDreamState.dreamStoryGeneration
+    val moodState = addEditDreamState.dreamMoodAIAnalyser
     val detailState = addEditDreamState.dreamGeneratedDetails.response
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition = rememberInfiniteTransition(label = "")
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val activity = LocalContext.current as Activity
@@ -80,9 +96,41 @@ fun AIPage(
         }
     }
 
+    LaunchedEffect(key1 = questionState) {
+        if (questionState.isLoading) {
+            scope.launch {
+                pagerSate2.animateScrollToPage(3)
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = adviceState) {
+        if (adviceState.isLoading) {
+            scope.launch {
+                pagerSate2.animateScrollToPage(2)
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = storyState) {
+        if (storyState.isLoading) {
+            scope.launch {
+                pagerSate2.animateScrollToPage(4)
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = moodState) {
+        if (moodState.isLoading) {
+            scope.launch {
+                pagerSate2.animateScrollToPage(1)
+            }
+        }
+    }
 
     if (addEditDreamState.imageGenerationPopUpState.value) {
         ImageGenerationPopUp(
+            mainScreenViewModelState = mainScreenViewModelState,
             addEditDreamState = addEditDreamState,
             onDreamTokenClick = {
                 addEditDreamState.imageGenerationPopUpState.value = false
@@ -127,19 +175,22 @@ fun AIPage(
 
     if (addEditDreamState.dreamInterpretationPopUpState.value) {
         DreamInterpretationPopUp(
-            onAdClick = {
+            title = "Dream Interpreter",
+            mainScreenViewModelState = mainScreenViewModelState,
+            onAdClick = { amount ->
                 addEditDreamState.dreamInterpretationPopUpState.value = false
                 scope.launch {
                     onAddEditDreamEvent(
                         AddEditDreamEvent.ClickGenerateAIResponse(
                             contentState,
                             activity,
-                            true
+                            true,
+                            amount
                         )
                     )
                 }
             },
-            onDreamTokenClick = {
+            onDreamTokenClick = { amount ->
                 addEditDreamState.dreamInterpretationPopUpState.value = false
                 if (mainScreenViewModelState.dreamTokens.value <= 0) {
                     scope.launch {
@@ -155,7 +206,8 @@ fun AIPage(
                             AddEditDreamEvent.ClickGenerateAIResponse(
                                 contentState,
                                 activity,
-                                false
+                                false,
+                                amount
                             )
                         )
                     }
@@ -164,6 +216,195 @@ fun AIPage(
             },
             onClickOutside = {
                 addEditDreamState.dreamInterpretationPopUpState.value = false
+            },
+        )
+    }
+
+    if(addEditDreamState.dreamAdvicePopUpState.value){
+        DreamInterpretationPopUp(
+            title = "Dream Advice",
+            mainScreenViewModelState = mainScreenViewModelState,
+            onAdClick = { amount ->
+                addEditDreamState.dreamAdvicePopUpState.value = false
+                scope.launch {
+                    onAddEditDreamEvent(
+                        AddEditDreamEvent.ClickGenerateAIResponse(
+                            contentState,
+                            activity,
+                            true,
+                            amount
+                        )
+                    )
+                }
+            },
+            onDreamTokenClick = { amount ->
+                addEditDreamState.dreamAdvicePopUpState.value = false
+                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                    scope.launch {
+                        addEditDreamState.snackBarHostState.value.showSnackbar(
+                            message = "Not enough dream tokens",
+                            actionLabel = "Dismiss",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                } else {
+                    scope.launch {
+                        onAddEditDreamEvent(
+                            AddEditDreamEvent.ClickGenerateAIResponse(
+                                contentState,
+                                activity,
+                                false,
+                                amount
+                            )
+                        )
+                    }
+                }
+
+            },
+            onClickOutside = {
+                addEditDreamState.dreamAdvicePopUpState.value = false
+            },
+        )
+    }
+
+
+    if (addEditDreamState.questionPopUpState.value) {
+        QuestionAIGenerationBottomSheet(
+            mainScreenViewModelState = mainScreenViewModelState,
+            addEditDreamState = addEditDreamState,
+            onAddEditDreamEvent = onAddEditDreamEvent,
+            onDreamTokenClick = { amount ->
+                addEditDreamState.questionPopUpState.value = false
+                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                    scope.launch {
+                        addEditDreamState.snackBarHostState.value.showSnackbar(
+                            message = "Not enough dream tokens",
+                            actionLabel = "Dismiss",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                } else {
+                    scope.launch {
+                        onAddEditDreamEvent(
+                            AddEditDreamEvent.ClickGenerateAIResponse(
+                                contentState,
+                                activity,
+                                false,
+                                amount
+                            )
+                        )
+                    }
+                }
+            },
+            onAdClick = { amount ->
+                addEditDreamState.questionPopUpState.value = false
+                scope.launch {
+                    onAddEditDreamEvent(
+                        AddEditDreamEvent.ClickGenerateAIResponse(
+                            contentState,
+                            activity,
+                            true,
+                            amount
+                        )
+                    )
+                }
+            },
+            onClickOutside = {
+                addEditDreamState.questionPopUpState.value = false
+            },
+        )
+    }
+
+    if (addEditDreamState.storyPopupState.value) {
+        QuestionAIGenerationBottomSheet(
+            mainScreenViewModelState = mainScreenViewModelState,
+            addEditDreamState = addEditDreamState,
+            onAddEditDreamEvent = onAddEditDreamEvent,
+            onDreamTokenClick = { amount ->
+                addEditDreamState.storyPopupState.value = false
+                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                    scope.launch {
+                        addEditDreamState.snackBarHostState.value.showSnackbar(
+                            message = "Not enough dream tokens",
+                            actionLabel = "Dismiss",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                } else {
+                    scope.launch {
+                        onAddEditDreamEvent(
+                            AddEditDreamEvent.ClickGenerateAIResponse(
+                                contentState,
+                                activity,
+                                false,
+                                amount
+                            )
+                        )
+                    }
+                }
+            },
+            onAdClick = { amount ->
+                addEditDreamState.storyPopupState.value = false
+                scope.launch {
+                    onAddEditDreamEvent(
+                        AddEditDreamEvent.ClickGenerateAIResponse(
+                            contentState,
+                            activity,
+                            true,
+                            amount
+                        )
+                    )
+                }
+            },
+            onClickOutside = {
+                addEditDreamState.storyPopupState.value = false
+            },
+        )
+    }
+
+    if (addEditDreamState.moodPopupState.value) {
+        DreamInterpretationPopUp(
+            title = "Dream Mood",
+            mainScreenViewModelState = mainScreenViewModelState,
+            onAdClick = { amount ->
+                addEditDreamState.moodPopupState.value = false
+                scope.launch {
+                    onAddEditDreamEvent(
+                        AddEditDreamEvent.ClickGenerateAIResponse(
+                            contentState,
+                            activity,
+                            true,
+                            amount
+                        )
+                    )
+                }
+            },
+            onDreamTokenClick = { amount ->
+                addEditDreamState.moodPopupState.value = false
+                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                    scope.launch {
+                        addEditDreamState.snackBarHostState.value.showSnackbar(
+                            message = "Not enough dream tokens",
+                            actionLabel = "Dismiss",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                } else {
+                    scope.launch {
+                        onAddEditDreamEvent(
+                            AddEditDreamEvent.ClickGenerateAIResponse(
+                                contentState,
+                                activity,
+                                false,
+                                amount
+                            )
+                        )
+                    }
+                }
+
+            },
+            onClickOutside = {
+                addEditDreamState.moodPopupState.value = false
             },
         )
     }
@@ -223,8 +464,7 @@ fun AIPage(
                                 colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
                             ),
                         )
-                    )
-                ,
+                    ),
                 pagerSate2
             ) { page ->
 
@@ -237,6 +477,7 @@ fun AIPage(
                             pagerState = pagerState,
                         )
                     }
+
                     1 -> {
                         AIInterpreterPage(
                             addEditDreamState = addEditDreamState,
@@ -244,8 +485,30 @@ fun AIPage(
                             pagerState = pagerState,
                         )
                     }
+
                     2 -> {
                         AIDreamAdvicePage(
+                            addEditDreamState = addEditDreamState,
+                            infiniteTransition = infiniteTransition,
+                            pagerState = pagerState,
+                        )
+                    }
+                    3 -> {
+                        AIQuestionPage(
+                            addEditDreamState = addEditDreamState,
+                            infiniteTransition = infiniteTransition,
+                            pagerState = pagerState,
+                        )
+                    }
+                    4 -> {
+                        AIStoryPage(
+                            addEditDreamState = addEditDreamState,
+                            infiniteTransition = infiniteTransition,
+                            pagerState = pagerState,
+                        )
+                    }
+                    5 -> {
+                        AIMoodPage(
                             addEditDreamState = addEditDreamState,
                             infiniteTransition = infiniteTransition,
                             pagerState = pagerState,

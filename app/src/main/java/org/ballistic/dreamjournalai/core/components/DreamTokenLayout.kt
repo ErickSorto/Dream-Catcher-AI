@@ -1,15 +1,13 @@
 package org.ballistic.dreamjournalai.core.components
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +20,6 @@ import coil.compose.rememberAsyncImagePainter
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DreamTokenLayout(
     mainScreenViewModelState: MainScreenViewModelState
@@ -42,7 +39,7 @@ fun DreamTokenLayout(
                 .size(35.dp)
                 .padding(8.dp, 4.dp, 0.dp, 4.dp),
         )
-        AnimatedContent(targetState = token) {
+        AnimatedContent(targetState = token, label = "") { it
             Text(
                 modifier = Modifier.padding(4.dp, 4.dp, 8.dp, 4.dp),
                 text = token.toString(),

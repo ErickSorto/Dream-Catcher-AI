@@ -7,7 +7,13 @@ import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -23,12 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.ArcRotationAnimation
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.InterpretCustomButton
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.PaintCustomButton
 import org.ballistic.dreamjournalai.core.components.TypewriterText
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.ArcRotationAnimation
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.AskQuestionButton
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateAdviceButton
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateStoryButton
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.InterpretCustomButton
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.MoodAnalyzerButton
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.PaintCustomButton
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 @OptIn(ExperimentalPagerApi::class)
@@ -154,13 +161,11 @@ fun AIDreamAdvicePage(
                 .padding()
                 .verticalScroll(rememberScrollState())
         ) {
-            adviceState.advice?.let {
-                TypewriterText(
-                    text = it.trim(),
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
-                    color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
-                )
-            }
+            TypewriterText(
+                text = adviceState.advice.trim(),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
+                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+            )
         }
     }
 
@@ -211,42 +216,148 @@ fun AIQuestionPage(
                 .padding()
                 .verticalScroll(rememberScrollState())
         ) {
-            questionState.answer?.let {
-                TypewriterText(
-                    text = it.trim(),
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
-                    color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
-                )
-            }
+            TypewriterText(
+                text = questionState.answer.trim(),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
+                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+            )
         }
+    }
 
-        // Button to ask a new question
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            if (questionState.answer == "" && !questionState.isLoading) {
-                AskQuestionButton(
-                    addEditDreamState = addEditDreamState,
-                    pagerState = pagerState,
-                    size = 120.dp,
-                    fontSize = 24.sp
-                )
-            }
+    // Button to ask a new question
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (questionState.answer == "" && !questionState.isLoading) {
+            AskQuestionButton(
+                addEditDreamState = addEditDreamState,
+                pagerState = pagerState,
+                size = 120.dp,
+                fontSize = 24.sp
+            )
         }
+    }
 
-        // Loading animation while AI is generating response
-        if (questionState.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .padding(16.dp, 0.dp, 16.dp, 16.dp)
-                    .clip(RoundedCornerShape(10.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                ArcRotationAnimation(
-                    infiniteTransition = infiniteTransition,
-                )
-            }
+    // Loading animation while AI is generating response
+    if (questionState.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            ArcRotationAnimation(
+                infiniteTransition = infiniteTransition,
+            )
         }
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun AIStoryPage(
+    addEditDreamState: AddEditDreamState,
+    infiniteTransition: InfiniteTransition,
+    pagerState: PagerState,
+) {
+    val storyState = addEditDreamState.dreamStoryGeneration
+
+    if (storyState.story != "") {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding()
+                .verticalScroll(rememberScrollState())
+        ) {
+            TypewriterText(
+                text = storyState.story.trim(),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
+                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+            )
+        }
+    }
+
+    // Button to generate a new story
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (storyState.story == "" && !storyState.isLoading) {
+            GenerateStoryButton(
+                addEditDreamState = addEditDreamState,
+                pagerState = pagerState,
+                size = 120.dp,
+                fontSize = 24.sp
+            )
+        }
+    }
+
+    // Loading animation while AI is generating story
+    if (storyState.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            ArcRotationAnimation(
+                infiniteTransition = infiniteTransition,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun AIMoodPage(
+    addEditDreamState: AddEditDreamState,
+    infiniteTransition: InfiniteTransition,
+    pagerState: PagerState,
+) {
+    val moodState = addEditDreamState.dreamMoodAIAnalyser
+
+    if (moodState.mood != "") {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding()
+                .verticalScroll(rememberScrollState())
+        ) {
+            TypewriterText(
+                text = moodState.mood.trim(),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
+                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+            )
+        }
+    }
+
+    // Button to generate a new mood
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (moodState.mood == "" && !moodState.isLoading) {
+            MoodAnalyzerButton(
+                addEditDreamState = addEditDreamState,
+                pagerState = pagerState,
+                size = 120.dp,
+                fontSize = 24.sp
+            )
+        }
+    }
+    
+    if (moodState.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            ArcRotationAnimation(
+                infiniteTransition = infiniteTransition,
+            )
+        }
+    }
+}

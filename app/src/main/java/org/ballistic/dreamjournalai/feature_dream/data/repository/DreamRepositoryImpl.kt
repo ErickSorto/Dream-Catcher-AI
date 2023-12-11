@@ -67,6 +67,10 @@ class DreamRepositoryImpl(
                                 backgroundImage = (data["backgroundImage"] as Long?)?.toInt() ?: 0,
                                 generatedImage = data["generatedImage"] as String?,
                                 generatedDetails = data["generatedDetails"] as String? ?: "",
+                                dreamQuestion = data["dreamQuestion"] as String? ?: "",
+                                dreamAIStory = data["dreamAIStory"] as String? ?: "",
+                                dreamAIAdvice = data["dreamAIAdvice"] as String? ?: "",
+                                dreamAIQuestionAnswer = data["dreamAIQuestionAnswer"] as String? ?: "",
                                 id = document.id,
                                 uid = data["uid"] as String? ?: ""
                             )
@@ -108,6 +112,10 @@ class DreamRepositoryImpl(
                         backgroundImage = (data["backgroundImage"] as Long?)?.toInt() ?: 0,
                         generatedImage = data["generatedImage"] as String?,
                         generatedDetails = data["generatedDetails"] as String? ?: "",
+                        dreamQuestion = data["dreamQuestion"] as String? ?: "",
+                        dreamAIStory = data["dreamAIStory"] as String? ?: "",
+                        dreamAIAdvice = data["dreamAIAdvice"] as String? ?: "",
+                        dreamAIQuestionAnswer = data["dreamAIQuestionAnswer"] as String? ?: "",
                         id = document.id,
                         uid = data["uid"] as String? ?: ""
                     )
@@ -173,7 +181,9 @@ class DreamRepositoryImpl(
                     timeOfDay = dream.timeOfDay,
                     backgroundImage = dream.backgroundImage,
                     generatedImage = dream.generatedImage,
-                    generatedDetails = dream.generatedDetails
+                    generatedDetails = dream.generatedDetails,
+                    dreamQuestion = dream.dreamQuestion,
+                    dreamAIQuestionAnswer = dream.dreamAIQuestionAnswer,
                 )
                 val updatedDreamWithImage = uploadImageIfNeeded(updatedDream, existingDream.data.generatedImage)
                 dreamsCollection?.document(updatedDreamWithImage.id ?: "")?.set(updatedDreamWithImage)?.await()

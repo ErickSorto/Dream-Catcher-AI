@@ -66,26 +66,6 @@ fun SubInfoMonthlyYearlyPrice(
 }
 
 @Composable
-fun SavingsLabel(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .background(
-                color = colorResource(id = R.color.Yellow).copy(alpha = 0.8f),
-                shape = RoundedCornerShape(16.dp)
-            )
-    ) {
-        Text(
-            text = "Save 45%",
-            modifier = Modifier.padding(8.dp),
-            fontSize = 12.sp,
-            color = Color.White,
-            fontWeight = Bold,
-            maxLines = 1
-        )
-    }
-}
-
-@Composable
 fun SubInfoFeatures() {
     Column(
         modifier = Modifier
@@ -121,41 +101,6 @@ fun SubInfoFeatures() {
             subText = "Say goodbye to interruptions and enhance your dream journaling experience.",
             modifier = Modifier.padding(bottom = 8.dp)
         )
-    }
-}
-
-@Composable
-fun SubscriptionTabText(
-    text: String,
-    modifier: Modifier = Modifier,
-    isYearly: Boolean,
-    isClicked: () -> Unit
-) {
-    TextButton(
-        modifier = modifier
-            .background(
-                if (isYearly && text == "Annual" || !isYearly && text == "Monthly") {
-                    Color.White.copy(alpha = 0.3f)
-                } else {
-                    Color.White.copy(alpha = 0.1f)
-                },
-                shape = RoundedCornerShape(16.dp)
-            ),
-        onClick = { isClicked() },
-    )
-    {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            color = Color.Black,
-            fontWeight = Bold,
-            maxLines = 1,
-            modifier = Modifier.padding(4.dp, 8.dp, 8.dp, 8.dp)
-        )
-
-        if (text == "Annual") {
-            SavingsLabel()
-        }
     }
 }
 
@@ -267,7 +212,7 @@ fun DreamToken500ButtonBuy(
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "500 DreamTokens",
+                text = "500 Dream Tokens",
                 fontSize = 20.sp,
                 fontWeight = Bold,
                 maxLines = 1,
@@ -320,7 +265,7 @@ fun DreamToken100ButtonBuy(
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "100 DreamTokens",
+                text = "100 Dream Tokens",
                 fontSize = 20.sp,
                 fontWeight = Bold,
                 maxLines = 1,

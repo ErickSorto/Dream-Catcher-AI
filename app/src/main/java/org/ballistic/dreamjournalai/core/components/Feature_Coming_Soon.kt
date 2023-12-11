@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,7 +66,7 @@ fun FeatureComingSoonScreen(
                 modifier = Modifier.padding(16.dp),
                 shape = RoundedCornerShape(6.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(R.color.RedOrange) // Replace with your desired color
+                    containerColor = colorResource(R.color.RedOrange) // Replace with your desired color
                 ),
                 onClick = { onNavigateToAboutMeScreen() }
             ) {
