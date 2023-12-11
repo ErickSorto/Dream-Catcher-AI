@@ -1,6 +1,13 @@
-# Dream Journal AI <img src="https://play-lh.googleusercontent.com/8cmc0G7jBSifYgmKfkkxEhe6qm2tVp_sy7uNwzjIWYAkKZb3fIHSTdZEgbfnlhOO76xN=w480-h960-rw" alt="Dream Journal AI Logo" width="100" height="100" style="vertical-align: middle;">
-
-
+<table>
+  <tr>
+    <td align="center" style="border: none;">
+      <h2>Dream Journal AI</h2>
+    </td>
+    <td align="center" style="border: none;">
+      <img src="https://play-lh.googleusercontent.com/8cmc0G7jBSifYgmKfkkxEhe6qm2tVp_sy7uNwzjIWYAkKZb3fIHSTdZEgbfnlhOO76xN=w480-h960-rw" alt="Dream Journal AI Logo" width="100" height="100" style="border-radius: 50%;">
+    </td>
+  </tr>
+</table>
 
 
 <a href="https://ko-fi.com/ericksorto" target="_blank">
