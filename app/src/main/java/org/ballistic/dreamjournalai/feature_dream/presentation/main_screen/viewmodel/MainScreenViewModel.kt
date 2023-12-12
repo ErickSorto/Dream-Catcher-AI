@@ -78,6 +78,13 @@ class MainScreenViewModel @Inject constructor(
                     )
                 )
             }
+            is MainScreenEvent.SetDrawerState -> {
+                viewModelScope.launch {
+                    _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
+                        isDrawerEnabled = event.state
+                    )
+                }
+            }
             is MainScreenEvent.SearchDreams -> {
                 mainScreenViewModelState.value.searchedText.value = event.query
             }
@@ -113,6 +120,7 @@ class MainScreenViewModel @Inject constructor(
 
 data class MainScreenViewModelState(
     val scaffoldState: ScaffoldState = ScaffoldState(),
+    val isDrawerEnabled : Boolean = true,
     val authRepo: AuthRepository,
     val searchedText: MutableStateFlow<String> = MutableStateFlow(""),
     val dreamTokens: StateFlow<Int> = authRepo.dreamTokens,

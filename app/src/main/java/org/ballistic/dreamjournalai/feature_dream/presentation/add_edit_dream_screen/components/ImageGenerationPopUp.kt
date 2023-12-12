@@ -145,6 +145,7 @@ fun ImageGenerationPopUp(
                     amount = amount
                 )
             }
-        }
+        },
+        containerColor = colorResource(id = R.color.dark_purple)
     )
 }

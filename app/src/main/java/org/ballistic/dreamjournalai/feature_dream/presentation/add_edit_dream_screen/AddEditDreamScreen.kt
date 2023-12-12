@@ -7,13 +7,23 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.rotate
@@ -32,7 +42,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainS
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditDreamScreen(
     dreamImage: Int,
@@ -42,48 +52,37 @@ fun AddEditDreamScreen(
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},
     onNavigateToDreamJournalScreen: () -> Unit = {},
 ) {
-    //keyboard controller
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    onMainEvent(MainScreenEvent.SetBottomBarState(false))
-    onMainEvent(MainScreenEvent.SetFloatingActionButtonState(false))
-    onMainEvent(MainScreenEvent.SetTopBarState(false))
-    onMainEvent(MainScreenEvent.SetSearchingState(false))
+    listOf(
+        MainScreenEvent.SetBottomBarState(false),
+        MainScreenEvent.SetFloatingActionButtonState(false),
+        MainScreenEvent.SetTopBarState(false),
+        MainScreenEvent.SetSearchingState(false),
+        MainScreenEvent.SetDrawerState(false)
+    ).forEach(onMainEvent)
 
-    BackHandler {
-        if (!addEditDreamState.dreamIsSavingLoading.value) {
-            addEditDreamState.dialogState.value = !addEditDreamState.dialogState.value
-        }
+    BackHandler(enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading.value) {
+        addEditDreamState.dialogState.value = true
     }
 
     val dreamBackgroundImage = remember {
         mutableStateOf(
-            if (dreamImage != -1){
-                if (dreamImage in Dream.dreamBackgroundImages) {
-                    dreamImage
-                } else {
-                    R.drawable.background_during_day
-                }
+            when {
+                dreamImage != -1 && dreamImage in Dream.dreamBackgroundImages -> dreamImage
+                dreamImage != -1 -> R.drawable.background_during_day
+                else -> addEditDreamState.dreamInfo.dreamBackgroundImage
             }
-            else addEditDreamState.dreamInfo.dreamBackgroundImage
         )
     }
 
-    Crossfade(targetState = dreamBackgroundImage.value) { image ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding()
-        ) {
-            Image(
-                painter = painterResource(id = image),
-                contentDescription = "Dream Background",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(10.dp)
-            )
-        }
+    Crossfade(targetState = dreamBackgroundImage.value, label = "") { image ->
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = "Dream Background",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize().blur(10.dp)
+        )
     }
 
     if (addEditDreamState.dialogState.value) {
@@ -108,32 +107,46 @@ fun AddEditDreamScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Dream Journal AI", color = colorResource(id = R.color.white)) },
+                title = {
+                    Text(
+                        text = "Dream Journal AI",
+                        color = colorResource(id = R.color.white)
+                    )
+                },
                 navigationIcon = {
                     IconButton(
                         onClick = { addEditDreamState.dialogState.value = true },
-                        enabled = !addEditDreamState.dreamIsSavingLoading.value
+                        enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading.value
                     ) {
                         Icon(
                             modifier = Modifier.rotate(180f),
-                            imageVector = Icons.Filled.ArrowRightAlt,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
                             contentDescription = "Back",
-                            tint = colorResource(id = R.color.white)
+                            tint = if (!addEditDreamState.dreamIsSavingLoading.value && !addEditDreamState.isDreamExitOff
+                            ) colorResource(id = R.color.white)
+                            else Color.Gray.copy(alpha = 0.1f)
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        keyboardController?.hide()
-                        onAddEditDreamEvent(AddEditDreamEvent.SaveDream(onSaveSuccess = {
-                            onMainEvent(MainScreenEvent.ShowSnackBar("Dream Saved Successfully :)"))
-                            onNavigateToDreamJournalScreen()
-                        }))
-                    }, enabled = !addEditDreamState.dreamIsSavingLoading.value) {
+                    IconButton(
+                        onClick = {
+                            keyboardController?.hide()
+                            onAddEditDreamEvent(AddEditDreamEvent.SaveDream(onSaveSuccess = {
+                                onMainEvent(MainScreenEvent.ShowSnackBar("Dream Saved Successfully :)"))
+                                onNavigateToDreamJournalScreen()
+                            }))
+                        },
+                        enabled = !addEditDreamState.dreamIsSavingLoading.value && !addEditDreamState.isDreamExitOff
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Save,
                             contentDescription = "Save Dream",
-                            tint = colorResource(id = R.color.white)
+                            tint = if (!addEditDreamState.dreamIsSavingLoading.value && !addEditDreamState.isDreamExitOff
+                            ) colorResource(
+                                id = R.color.white
+                            )
+                            else Color.Gray.copy(alpha = 0.1f)
                         )
                     }
                 },
@@ -146,14 +159,9 @@ fun AddEditDreamScreen(
                 modifier = Modifier.padding()
             )
         },
-        snackbarHost = {
-            SnackbarHost(addEditDreamState.snackBarHostState.value)
-        },
-        containerColor = Color.Transparent,
-
-        ) { padding ->
-        //change bottom to 0.dp in padding
-
+        snackbarHost = { SnackbarHost(addEditDreamState.snackBarHostState.value) },
+        containerColor = Color.Transparent
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

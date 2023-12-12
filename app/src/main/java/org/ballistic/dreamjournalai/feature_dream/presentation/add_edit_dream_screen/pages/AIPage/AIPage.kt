@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages
+package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage
 
 import android.app.Activity
 import android.os.Build
@@ -48,6 +48,12 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateButtonsLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.ImageGenerationPopUp
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.QuestionAIGenerationBottomSheet
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIDreamAdvicePage
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIInterpreterPage
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIMoodPage
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIPainterPage
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIQuestionPage
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIStoryPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
@@ -123,7 +129,7 @@ fun AIPage(
     LaunchedEffect(key1 = moodState) {
         if (moodState.isLoading) {
             scope.launch {
-                pagerSate2.animateScrollToPage(1)
+                pagerSate2.animateScrollToPage(5)
             }
         }
     }
@@ -134,7 +140,7 @@ fun AIPage(
             addEditDreamState = addEditDreamState,
             onDreamTokenClick = {
                 addEditDreamState.imageGenerationPopUpState.value = false
-                if (mainScreenViewModelState.dreamTokens.value <= 1) {
+                if (mainScreenViewModelState.dreamTokens.value < 2) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -148,7 +154,8 @@ fun AIPage(
                             AddEditDreamEvent.ClickGenerateAIImage(
                                 detailState,
                                 activity,
-                                false
+                                false,
+                                it
                             )
                         )
                     }
@@ -161,7 +168,8 @@ fun AIPage(
                         AddEditDreamEvent.ClickGenerateAIImage(
                             detailState,
                             activity,
-                            true
+                            true,
+                            it
                         )
                     )
                 }
@@ -228,7 +236,7 @@ fun AIPage(
                 addEditDreamState.dreamAdvicePopUpState.value = false
                 scope.launch {
                     onAddEditDreamEvent(
-                        AddEditDreamEvent.ClickGenerateAIResponse(
+                        AddEditDreamEvent.ClickGenerateAIAdvice(
                             contentState,
                             activity,
                             true,
@@ -250,7 +258,7 @@ fun AIPage(
                 } else {
                     scope.launch {
                         onAddEditDreamEvent(
-                            AddEditDreamEvent.ClickGenerateAIResponse(
+                            AddEditDreamEvent.ClickGenerateAIAdvice(
                                 contentState,
                                 activity,
                                 false,
@@ -286,7 +294,7 @@ fun AIPage(
                 } else {
                     scope.launch {
                         onAddEditDreamEvent(
-                            AddEditDreamEvent.ClickGenerateAIResponse(
+                            AddEditDreamEvent.ClickGenerateFromQuestion(
                                 contentState,
                                 activity,
                                 false,
@@ -300,7 +308,7 @@ fun AIPage(
                 addEditDreamState.questionPopUpState.value = false
                 scope.launch {
                     onAddEditDreamEvent(
-                        AddEditDreamEvent.ClickGenerateAIResponse(
+                        AddEditDreamEvent.ClickGenerateFromQuestion(
                             contentState,
                             activity,
                             true,
@@ -316,10 +324,9 @@ fun AIPage(
     }
 
     if (addEditDreamState.storyPopupState.value) {
-        QuestionAIGenerationBottomSheet(
+        DreamInterpretationPopUp(
+            title = "Dream Story",
             mainScreenViewModelState = mainScreenViewModelState,
-            addEditDreamState = addEditDreamState,
-            onAddEditDreamEvent = onAddEditDreamEvent,
             onDreamTokenClick = { amount ->
                 addEditDreamState.storyPopupState.value = false
                 if (mainScreenViewModelState.dreamTokens.value <= 0) {
@@ -333,7 +340,7 @@ fun AIPage(
                 } else {
                     scope.launch {
                         onAddEditDreamEvent(
-                            AddEditDreamEvent.ClickGenerateAIResponse(
+                            AddEditDreamEvent.ClickGenerateStory(
                                 contentState,
                                 activity,
                                 false,
@@ -347,7 +354,7 @@ fun AIPage(
                 addEditDreamState.storyPopupState.value = false
                 scope.launch {
                     onAddEditDreamEvent(
-                        AddEditDreamEvent.ClickGenerateAIResponse(
+                        AddEditDreamEvent.ClickGenerateStory(
                             contentState,
                             activity,
                             true,
@@ -370,7 +377,7 @@ fun AIPage(
                 addEditDreamState.moodPopupState.value = false
                 scope.launch {
                     onAddEditDreamEvent(
-                        AddEditDreamEvent.ClickGenerateAIResponse(
+                        AddEditDreamEvent.ClickGenerateMood(
                             contentState,
                             activity,
                             true,
@@ -392,7 +399,7 @@ fun AIPage(
                 } else {
                     scope.launch {
                         onAddEditDreamEvent(
-                            AddEditDreamEvent.ClickGenerateAIResponse(
+                            AddEditDreamEvent.ClickGenerateMood(
                                 contentState,
                                 activity,
                                 false,

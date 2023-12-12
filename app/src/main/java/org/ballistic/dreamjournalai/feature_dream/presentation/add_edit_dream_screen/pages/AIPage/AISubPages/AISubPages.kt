@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages
+package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -7,16 +7,19 @@ import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,10 +27,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.ArcRotationAnimation
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.AskQuestionButton
@@ -49,18 +54,31 @@ fun AIInterpreterPage(
     val responseState = addEditDreamState.dreamAIExplanation
 
 
-    if (addEditDreamState.dreamAIExplanation.response != "") {
+    if (addEditDreamState.dreamAIExplanation.response != "" && !responseState.isLoading) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding()
                 .verticalScroll(rememberScrollState())
         ) {
+            Text(
+                text = "Dream Interpretation",
+                color = colorResource(id = R.color.white),
+                fontSize = 24.sp,
+                modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(color = colorResource(id = R.color.white))
+            )
             TypewriterText(
                 text = responseState.response.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
-                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+                color = colorResource(id = R.color.white),
             )
         }
     }
@@ -114,7 +132,7 @@ fun AIPainterPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .padding(16.dp, 16.dp, 16.dp, 16.dp)
+                .padding(8.dp, 8.dp, 8.dp, 8.dp)
                 .clip(RoundedCornerShape(10.dp)),
             contentScale = ContentScale.Crop
         )
@@ -153,18 +171,31 @@ fun AIDreamAdvicePage(
 ) {
     val adviceState = addEditDreamState.dreamAIAdvice
 
-    if (adviceState.advice != "") {
+    if (adviceState.advice != "" && !adviceState.isLoading) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding()
                 .verticalScroll(rememberScrollState())
         ) {
+            Text(
+                text = "Dream Advice",
+                color = colorResource(id = R.color.white),
+                fontSize = 24.sp,
+                modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(color = colorResource(id = R.color.white))
+            )
             TypewriterText(
                 text = adviceState.advice.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
-                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+                color = colorResource(id = R.color.white),
             )
         }
     }
@@ -208,18 +239,39 @@ fun AIQuestionPage(
 ) {
     val questionState = addEditDreamState.dreamQuestionAIAnswer
 
-    if (questionState.answer != "") {
+    if (questionState.answer != "" && !questionState.isLoading) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding()
                 .verticalScroll(rememberScrollState())
         ) {
+            Text(
+                text = "Dream Answer",
+                color = colorResource(id = R.color.white),
+                fontSize = 24.sp,
+                modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 8.dp)
+            )
+            //center question
+            Text(
+                text = questionState.question + if (questionState.question.endsWith("?")) "" else "?",
+                color = colorResource(id = R.color.white),
+                fontSize = 16.sp,
+                modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp),
+                textAlign = TextAlign.Center
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(color = colorResource(id = R.color.white))
+            )
             TypewriterText(
                 text = questionState.answer.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
-                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+                color = colorResource(id = R.color.white),
             )
         }
     }
@@ -263,18 +315,31 @@ fun AIStoryPage(
 ) {
     val storyState = addEditDreamState.dreamStoryGeneration
 
-    if (storyState.story != "") {
+    if (storyState.story != "" && !storyState.isLoading) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding()
                 .verticalScroll(rememberScrollState())
         ) {
+            Text(
+                text = "Dream Story",
+                color = colorResource(id = R.color.white),
+                fontSize = 24.sp,
+                modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(color = colorResource(id = R.color.white))
+            )
             TypewriterText(
                 text = storyState.story.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
-                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+                color = colorResource(id = R.color.white),
             )
         }
     }
@@ -318,18 +383,31 @@ fun AIMoodPage(
 ) {
     val moodState = addEditDreamState.dreamMoodAIAnalyser
 
-    if (moodState.mood != "") {
+    if (moodState.mood != "" && !moodState.isLoading) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding()
                 .verticalScroll(rememberScrollState())
         ) {
+            Text(
+                text = "Dream Mood",
+                color = colorResource(id = R.color.white),
+                fontSize = 24.sp,
+                modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(color = colorResource(id = R.color.white))
+            )
             TypewriterText(
                 text = moodState.mood.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
-                color = colorResource(id = org.ballistic.dreamjournalai.R.color.white),
+                color = colorResource(id = R.color.white),
             )
         }
     }
@@ -345,7 +423,7 @@ fun AIMoodPage(
             )
         }
     }
-    
+
     if (moodState.isLoading) {
         Box(
             modifier = Modifier

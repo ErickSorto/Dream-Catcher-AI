@@ -5,12 +5,11 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -21,7 +20,7 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AIPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.DescriptionPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.InfoPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
@@ -29,7 +28,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalPagerApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 @UiComposable
 fun TabLayout(
@@ -51,10 +50,9 @@ fun TabLayout(
         modifier = Modifier,
         selectedTabIndex = pagerState.currentPage,
         indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
-                // custom indicator
+            SecondaryIndicator(// custom indicator
                 Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                color = colorResource(id = R.color.white),
+                color = colorResource(id = R.color.white)
             )
         },
         contentColor = colorResource(id = R.color.white),

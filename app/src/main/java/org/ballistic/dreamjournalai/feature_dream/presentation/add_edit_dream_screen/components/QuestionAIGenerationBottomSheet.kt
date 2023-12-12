@@ -148,6 +148,7 @@ fun QuestionAIGenerationBottomSheet(
                     amount = amount
                 )
             }
-        }
+        },
+        containerColor = colorResource(id = R.color.dark_purple)
     )
 }

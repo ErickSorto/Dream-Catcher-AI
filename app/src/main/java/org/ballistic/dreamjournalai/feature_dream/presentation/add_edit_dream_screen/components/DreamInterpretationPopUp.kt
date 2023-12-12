@@ -49,7 +49,6 @@ fun DreamInterpretationPopUp(
             onClickOutside()
         },
         content = {
-
                 Column(
                     modifier = modifier
                         .fillMaxWidth()
@@ -115,7 +114,8 @@ fun DreamInterpretationPopUp(
                         amount = amount
                     )
                 }
-        }
+        },
+        containerColor = colorResource(id = R.color.dark_purple)
     )
 }
 

@@ -71,6 +71,7 @@ class DreamRepositoryImpl(
                                 dreamAIStory = data["dreamAIStory"] as String? ?: "",
                                 dreamAIAdvice = data["dreamAIAdvice"] as String? ?: "",
                                 dreamAIQuestionAnswer = data["dreamAIQuestionAnswer"] as String? ?: "",
+                                dreamAIMood = data["dreamAIMood"] as String? ?: "",
                                 id = document.id,
                                 uid = data["uid"] as String? ?: ""
                             )
@@ -116,6 +117,7 @@ class DreamRepositoryImpl(
                         dreamAIStory = data["dreamAIStory"] as String? ?: "",
                         dreamAIAdvice = data["dreamAIAdvice"] as String? ?: "",
                         dreamAIQuestionAnswer = data["dreamAIQuestionAnswer"] as String? ?: "",
+                        dreamAIMood = data["dreamAIMood"] as String? ?: "",
                         id = document.id,
                         uid = data["uid"] as String? ?: ""
                     )
@@ -184,6 +186,9 @@ class DreamRepositoryImpl(
                     generatedDetails = dream.generatedDetails,
                     dreamQuestion = dream.dreamQuestion,
                     dreamAIQuestionAnswer = dream.dreamAIQuestionAnswer,
+                    dreamAIStory = dream.dreamAIStory,
+                    dreamAIAdvice = dream.dreamAIAdvice,
+                    dreamAIMood = dream.dreamAIMood,
                 )
                 val updatedDreamWithImage = uploadImageIfNeeded(updatedDream, existingDream.data.generatedImage)
                 dreamsCollection?.document(updatedDreamWithImage.id ?: "")?.set(updatedDreamWithImage)?.await()

@@ -39,6 +39,7 @@ data class Dream @RequiresApi(Build.VERSION_CODES.O) constructor(
     val dreamQuestion: String,
     val dreamAIQuestionAnswer: String,
     val dreamAIStory: String,
+    val dreamAIMood: String,
     val id: String?,
     val uid: String?
 ) : Parcelable {
@@ -88,6 +89,7 @@ data class Dream @RequiresApi(Build.VERSION_CODES.O) constructor(
         "",
         0,
         null,
+        "",
         "",
         "",
         "",

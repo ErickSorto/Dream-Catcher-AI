@@ -19,8 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -173,7 +175,7 @@ fun InterpretCustomButton(
 fun GenerateStoryButton(
     addEditDreamState: AddEditDreamState,
     pagerState: PagerState,
-    subtitle: String = "Generate Story",
+    subtitle: String = "Dream Story",
     size: Dp = 40.dp,
     fontSize: TextUnit = 16.sp
 ) {
@@ -329,8 +331,6 @@ fun MoodAnalyzerButton(
         Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
-
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

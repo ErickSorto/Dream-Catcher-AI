@@ -17,8 +17,8 @@ android {
         applicationId "org.ballistic.dreamjournalai"
         minSdk 23
         targetSdk 34
-        versionCode 41
-        versionName "1.1.0"
+        versionCode 42
+        versionName "1.1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
@@ -93,6 +93,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    //noinspection GradleDependency
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
     testImplementation 'junit:junit:4.13.2'
 

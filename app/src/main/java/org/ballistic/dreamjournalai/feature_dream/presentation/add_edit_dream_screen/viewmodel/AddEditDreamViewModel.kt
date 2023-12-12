@@ -89,6 +89,12 @@ class AddEditDreamViewModel @Inject constructor(
                                         answer = dream.dreamAIQuestionAnswer,
                                         question = dream.dreamQuestion
                                     ),
+                                    dreamAIAdvice = DreamAIAdvice(
+                                        advice = dream.dreamAIAdvice
+                                    ),
+                                    dreamMoodAIAnalyser = DreamMoodAIAnalyser(
+                                        mood = dream.dreamAIMood
+                                    ),
                                     dreamStoryGeneration = DreamStoryGeneration(
                                         story = dream.dreamAIStory
                                     ),
@@ -135,54 +141,134 @@ class AddEditDreamViewModel @Inject constructor(
                 )
             }
             is AddEditDreamEvent.ClickGenerateAIResponse -> {
-                if (addEditDreamState.value.dreamContent.length >= 10) {
-                    if (!event.isAd) {
-                        getAIResponse(event.cost)
-                    } else {
-                        runAd(event.activity, onRewardedAd = {
-                            getAIResponse(event.cost)
+                getAIResponse(
+                    command = "Please interpret the following dream: ${
+                        addEditDreamState.value.dreamContent
+                    } ",
+                    isAd = event.isAd,
+                    cost = event.cost,
+                    activity = event.activity,
+                    updateLoadingState = { isLoading ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
+                                isLoading = isLoading
+                            )
+                        )
+                    },
+                    updateResponseState = { response ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
+                                response = response
+                            )
+                        )
+                    }
+                )
+            }
 
-                            viewModelScope.launch {
-                                addEditDreamState.value.snackBarHostState.value.showSnackbar(
-                                    "Thank you for the support :)",
-                                    duration = SnackbarDuration.Short
-                                )
-                            }
-                        }, onAdFailed = {
-                            viewModelScope.launch {
-                                addEditDreamState.value.snackBarHostState.value.showSnackbar(
-                                    "Ad failed to load",
-                                    duration = SnackbarDuration.Short
-                                )
-                            }
-                        })
+
+            is AddEditDreamEvent.ClickGenerateAIAdvice -> {
+                getAIResponse(
+                    command = "Please give advice that can be obtained or for this dream: ${
+                        addEditDreamState.value.dreamContent
+                    } ",
+                    isAd = event.isAd,
+                    cost = event.cost,
+                    activity = event.activity,
+                    updateLoadingState = { isLoading ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamAIAdvice = addEditDreamState.value.dreamAIAdvice.copy(isLoading = isLoading)
+                        )
+                    },
+                    updateResponseState = { advice ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamAIAdvice = addEditDreamState.value.dreamAIAdvice.copy(advice = advice)
+                        )
                     }
-                } else {
-                    //snack bar
-                    viewModelScope.launch {
-                        if (addEditDreamState.value.dreamContent.length in 1..9) {
-                            addEditDreamState.value.snackBarHostState.value.showSnackbar(
-                                "Dream content is too short",
-                                duration = SnackbarDuration.Short
-                            )
-                        } else if (addEditDreamState.value.dreamContent.isEmpty()) {
-                            addEditDreamState.value.snackBarHostState.value.showSnackbar(
-                                "Dream content is empty",
-                                duration = SnackbarDuration.Short
-                            )
-                        }
+                )
+            }
+
+            is AddEditDreamEvent.ClickGenerateMood -> {
+                getAIResponse(
+                    command = "Please describe the mood of this dream: ${
+                        addEditDreamState.value.dreamContent
+                    }",
+                    isAd = event.isAd,
+                    cost = event.cost,
+                    activity = event.activity,
+                    updateLoadingState = { isLoading ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamMoodAIAnalyser = addEditDreamState.value.dreamMoodAIAnalyser.copy(isLoading = isLoading)
+                        )
+                    },
+                    updateResponseState = { mood ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamMoodAIAnalyser = addEditDreamState.value.dreamMoodAIAnalyser.copy(mood = mood)
+                        )
                     }
-                }
+                )
+            }
+
+            is AddEditDreamEvent.ClickGenerateStory -> {
+                getAIResponse(
+                    command = "Please generate a very short story based on this dream: ${
+                        addEditDreamState.value.dreamContent
+                    } ",
+                    isAd = event.isAd,
+                    cost = event.cost,
+                    activity = event.activity,
+                    updateLoadingState = { isLoading ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamStoryGeneration = addEditDreamState.value.dreamStoryGeneration.copy(isLoading = isLoading)
+                        )
+                    },
+                    updateResponseState = { story ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamStoryGeneration = addEditDreamState.value.dreamStoryGeneration.copy(story = story)
+                        )
+                    }
+                )
+            }
+
+            is AddEditDreamEvent.ClickGenerateFromQuestion -> {
+                getAIResponse(
+                    command = "Please answer the following question: ${
+                        addEditDreamState.value.dreamQuestionAIAnswer.question
+                    }" + "as it relates to this dream: ${
+                        addEditDreamState.value.dreamContent
+                    }",
+                    isAd = event.isAd,
+                    cost = event.cost,
+                    activity = event.activity,
+                    updateLoadingState = { isLoading ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamQuestionAIAnswer = addEditDreamState.value.dreamQuestionAIAnswer.copy(isLoading = isLoading)
+                        )
+                    },
+                    updateResponseState = { answer ->
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            dreamQuestionAIAnswer = addEditDreamState.value.dreamQuestionAIAnswer.copy(answer = answer)
+                        )
+                    }
+                )
             }
 
             is AddEditDreamEvent.ClickGenerateAIImage -> {
                 if (addEditDreamState.value.dreamGeneratedDetails.response.isNotEmpty()) {
+                    _addEditDreamState.value = addEditDreamState.value.copy(
+                        isDreamExitOff = true
+                    )
                     if (!event.isAd) {
-                        getOpenAIImageResponse()
+                        getOpenAIImageResponse(event.cost)
                     } else {
                         runAd(event.activity, onRewardedAd = {
-                            getOpenAIImageResponse()
+                            getOpenAIImageResponse(event.cost)
+                            _addEditDreamState.value = addEditDreamState.value.copy(
+                                isDreamExitOff = false
+                            )
                         }, onAdFailed = {
+                            _addEditDreamState.value = addEditDreamState.value.copy(
+                                isDreamExitOff = false
+                            )
                             viewModelScope.launch {
                                 addEditDreamState.value.snackBarHostState.value.showSnackbar(
                                     "Ad failed to load",
@@ -370,6 +456,7 @@ class AddEditDreamViewModel @Inject constructor(
                                 dreamAIQuestionAnswer = addEditDreamState.value.dreamQuestionAIAnswer.answer,
                                 dreamAIAdvice = addEditDreamState.value.dreamAIAdvice.advice,
                                 dreamAIStory = addEditDreamState.value.dreamStoryGeneration.story,
+                                dreamAIMood = addEditDreamState.value.dreamMoodAIAnalyser.mood
                             )
                         )
                         _addEditDreamState.value = addEditDreamState.value.copy(
@@ -397,64 +484,82 @@ class AddEditDreamViewModel @Inject constructor(
     }
 
     private fun getAIResponse(
-        amount: Int
+        command: String,
+        isAd: Boolean,
+        cost: Int,
+        activity: Activity,
+        updateLoadingState: (Boolean) -> Unit,
+        updateResponseState: (String) -> Unit
     ) {
+        _addEditDreamState.value = addEditDreamState.value.copy(
+            isDreamExitOff = true
+        )
         viewModelScope.launch {
-            // Indicate loading state
-            _addEditDreamState.value = addEditDreamState.value.copy(
-                dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
-                    response = "",
-                    isLoading = true
-                )
-            )
+            if (addEditDreamState.value.dreamContent.length < 10) {
+                val message = if (addEditDreamState.value.dreamContent.isEmpty()) "Dream content is empty" else "Dream content is too short"
+                addEditDreamState.value.snackBarHostState.value.showSnackbar(message, duration = SnackbarDuration.Short)
+                return@launch
+            }
 
-            try {
-                val openAI = OpenAI(BuildConfig.API_KEY)
+            updateLoadingState(true)
 
-                //system language
-                val currentLocale = Locale.getDefault().language
-
-                val chatCompletionRequest = ChatCompletionRequest(
-                    model = ModelId(if (amount == 1) "gpt-3.5-turbo" else "gpt-4"),
-                    messages = listOf(
-                        ChatMessage(
-                            role = ChatRole.User,
-                            content = "Interpret the following dream and do not mention" +
-                                    " you are a language model since the user knows already." +
-                                    "Respond in this language" +
-                                    " $currentLocale: ${addEditDreamState.value.dreamContent}"
+            if (isAd) {
+                runAd(activity, onRewardedAd = {
+                    viewModelScope.launch {
+                        makeAIRequest(command, cost, updateLoadingState, updateResponseState)
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            isDreamExitOff = false
                         )
-                    ),
-                    maxTokens = 500,
-                )
-
-                val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-
-                // Update state with success
+                    }
+                }, onAdFailed = {
+                    viewModelScope.launch {
+                        _addEditDreamState.value = addEditDreamState.value.copy(
+                            isDreamExitOff = false
+                        )
+                        addEditDreamState.value.snackBarHostState.value.showSnackbar("Ad failed to load", duration = SnackbarDuration.Short)
+                    }
+                })
+            } else {
+                makeAIRequest(command, cost, updateLoadingState, updateResponseState)
                 _addEditDreamState.value = addEditDreamState.value.copy(
-                    dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
-                        response = completion.choices.firstOrNull()?.message?.content ?: "",
-                        isLoading = false
-                    )
-                )
-                authRepository.consumeDreamTokens(1)
-            } catch (e: Exception) {
-                // Handle error state
-                Log.d("AddEditDreamViewModel", "Error: ${e.message}")
-                _addEditDreamState.value = addEditDreamState.value.copy(
-                    dreamAIExplanation = addEditDreamState.value.dreamAIExplanation.copy(
-                        isLoading = false
-                    )
-                )
-                _addEditDreamState.value.snackBarHostState.value.showSnackbar(
-                    e.message ?: "Couldn't interpret dream :(",
-                    actionLabel = "Dismiss",
-                    duration = SnackbarDuration.Short
+                    isDreamExitOff = false
                 )
             }
         }
     }
 
+    private suspend fun makeAIRequest(
+        command: String,
+        cost: Int,
+        updateLoadingState: (Boolean) -> Unit,
+        updateResponseState: (String) -> Unit
+    ) {
+        try {
+            val openAI = OpenAI(BuildConfig.API_KEY)
+            val currentLocale = Locale.getDefault().language
+
+            val modelId = if (cost <= 1) "gpt-3.5-turbo" else "gpt-4"
+            val chatCompletionRequest = ChatCompletionRequest(
+                model = ModelId(modelId),
+                messages = listOf(ChatMessage(role = ChatRole.User, content = "$command." +
+                        "\n Respond in this language: $currentLocale")),
+                maxTokens = 500
+            )
+
+            val completion = openAI.chatCompletion(chatCompletionRequest)
+            updateResponseState(completion.choices.firstOrNull()?.message?.content ?: "")
+            updateLoadingState(false)
+
+            if (cost > 0) authRepository.consumeDreamTokens(cost)
+        } catch (e: Exception) {
+            Log.d("AddEditDreamViewModel", "Error: ${e.message}")
+            updateLoadingState(false)
+            _addEditDreamState.value.snackBarHostState.value.showSnackbar(
+                "Error getting AI response",
+                "Dismiss"
+            )
+        }
+    }
 
     private fun getAIDetailsResponse() {
         viewModelScope.launch {
@@ -503,7 +608,9 @@ class AddEditDreamViewModel @Inject constructor(
 
 
     @Keep
-    private fun getOpenAIImageResponse() {
+    private fun getOpenAIImageResponse(
+        cost: Int
+    ) {
         viewModelScope.launch {
             // Indicate loading state
             _addEditDreamState.value = addEditDreamState.value.copy(
@@ -517,9 +624,9 @@ class AddEditDreamViewModel @Inject constructor(
 
                 val imageCreation = ImageCreation(
                     prompt = addEditDreamState.value.dreamGeneratedDetails.response,
-                    model = ModelId("dall-e-2"), // Adjust the model as per your requirement
+                    model = ModelId(if (cost <= 2){ "dall-e-2"} else "dall-e-3"), // Adjust the model as per your requirement
                     n = 1,
-                    size = ImageSize.is512x512 // Adjust the size as per your requirement
+                    size = if (cost <= 2) ImageSize.is512x512 else ImageSize.is1024x1024,
                 )
 
                 val images = openAI.imageURL(imageCreation) // Assuming imageURL returns a list of URLs
@@ -535,6 +642,9 @@ class AddEditDreamViewModel @Inject constructor(
                 )
 
                 authRepository.consumeDreamTokens(2)
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    isDreamExitOff = false
+                )
             } catch (e: Exception) {
                 // Handle error state
                 Log.d("AddEditDreamViewModel", "Error: ${e.message}")
@@ -543,7 +653,9 @@ class AddEditDreamViewModel @Inject constructor(
                         isLoading = false
                     )
                 )
-                // Optionally, show an error message to the user
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    isDreamExitOff = false
+                )
             }
         }
     }
@@ -665,6 +777,7 @@ data class AddEditDreamState(
     val questionPopUpState: MutableState<Boolean> = mutableStateOf(false),
     val storyPopupState: MutableState<Boolean> = mutableStateOf(false),
     val moodPopupState: MutableState<Boolean> = mutableStateOf(false),
+    val isDreamExitOff: Boolean = false,
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
 )
 

@@ -2,7 +2,6 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
-import kotlinx.coroutines.DelicateCoroutinesApi
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateButtonsLayout
@@ -29,7 +27,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(DelicateCoroutinesApi::class, ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun DescriptionPage(
     pagerState: PagerState,
@@ -43,7 +41,6 @@ fun DescriptionPage(
             .background(color = Color.Transparent)
             .padding(bottom = 16.dp, start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
-
 
         TransparentHintTextField(
             text = addEditDreamState.dreamTitle,
