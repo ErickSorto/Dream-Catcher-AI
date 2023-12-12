@@ -1,6 +1,13 @@
-# Dream Journal AI <img src="https://cdn.midjourney.com/f6570e07-5f0f-470b-ab7a-271f899c5b74/0_0.png" alt="Dream Journal AI Logo" width="100" height="100" style="vertical-align: middle;">
-
-
+<table>
+  <tr>
+    <td align="center" style="border: none;">
+      <h2>Dream Journal AI</h2>
+    </td>
+    <td align="center" style="border: none;">
+      <img src="https://play-lh.googleusercontent.com/8cmc0G7jBSifYgmKfkkxEhe6qm2tVp_sy7uNwzjIWYAkKZb3fIHSTdZEgbfnlhOO76xN=w480-h960-rw" alt="Dream Journal AI Logo" width="100" height="100" style="border-radius: 50%;">
+    </td>
+  </tr>
+</table>
 
 
 <a href="https://ko-fi.com/ericksorto" target="_blank">
@@ -32,7 +39,7 @@
 
 | Platform          | Download                                                                                                                                                                       | Status          |
 |-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| Android           | [![Download Button](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.ericksorto.dreamjournalai) | 🧪 Alpha        |
+| Android           | [![Download Button](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=org.ballistic.dreamjournalai) | 🧪 Alpha        |
 
 > ℹ️ Some features may not work properly while user is offline.
 
