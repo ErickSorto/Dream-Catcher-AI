@@ -3,13 +3,6 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\app\src\main\assets\Dream Dictionary - Sheet1 (1).csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\app\src\main\assets\dream_dictionary.csv">
           <value>
             <Attribute>

@@ -1,6 +1,11 @@
 package org.ballistic.dreamjournalai.dream_dictionary.presentation
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,8 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +44,7 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordItem
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenState
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun DictionaryScreen(
     dictionaryScreenState: DictionaryScreenState,
@@ -46,6 +55,24 @@ fun DictionaryScreen(
     val listState = rememberLazyListState()
     var selectedHeader by remember { mutableStateOf('A') }
     val screenWidth = remember { mutableStateOf(0) } // to store screen width
+    val context = LocalContext.current
+    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+    // create vibrator effect with the constant EFFECT_CLICK
+    val vibrationEffect2 =
+        VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
+    val vibrationEffect1: VibrationEffect =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
+        } else {
+            Log.e("TAG", "Cannot vibrate device..")
+            TODO("VERSION.SDK_INT < O")
+        }
+
+    // it is safe to cancel other
+    // vibrations currently taking place
+    vibrator.cancel()
+    vibrator.vibrate(vibrationEffect2)
 
     LaunchedEffect(Unit) {
         Log.d("DictionaryScreen", "LaunchedEffect triggered")
@@ -76,6 +103,7 @@ fun DictionaryScreen(
                         if (selectedHeader != letter) {
                             selectedHeader = letter
                             onEvent(DictionaryEvent.FilterByLetter(letter))
+                            vibrator.vibrate(vibrationEffect2)
                         }
                     }
                 }
@@ -87,6 +115,7 @@ fun DictionaryScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
+                            vibrator.vibrate(vibrationEffect1)
                             selectedHeader = letter
                             onEvent(DictionaryEvent.FilterByLetter(letter))
                         }
