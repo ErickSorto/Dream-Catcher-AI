@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.ballistic.dreamjournalai.core.components.FeatureComingSoonScreen
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.DictionaryScreen
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.about_me_screen.AboutMeScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.AccountSettingsScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamScreen
@@ -24,7 +26,6 @@ import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.Stor
 import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreScreen
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -64,7 +65,6 @@ fun ScreenGraph(
                 }
             )
         }
-
 
         composable(
             route = Screens.AddEditDreamScreen.route +
@@ -162,12 +162,15 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Dictionary.route) {
-            FeatureComingSoonScreen(paddingValues = innerPadding,
-                onNavigateToAboutMeScreen = {
-                    navController.popBackStack()
-                    navController.navigate(Screens.AboutMe.route)
-                })
+            val dictionaryScreenViewModel: DictionaryScreenViewModel = hiltViewModel()
+            val dictionaryScreenState = dictionaryScreenViewModel.dictionaryScreenState
+                .collectAsStateWithLifecycle()
+            DictionaryScreen(
+                dictionaryScreenState = dictionaryScreenState.value,
+                paddingValues = innerPadding,
+            ) { dictionaryScreenViewModel.onEvent(it) }
         }
+
         composable(route = Screens.DreamSettings.route) {
             FeatureComingSoonScreen(paddingValues = innerPadding,
                 onNavigateToAboutMeScreen = {

@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -13,15 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import org.ballistic.dreamjournalai.R
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.time.format.FormatStyle
 import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
-import java.util.*
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -58,8 +58,10 @@ fun DateHeader(dateString: String) {
     Box(
         modifier = Modifier
             .padding(16.dp, 8.dp)
-            .background(Color.White.copy(alpha = 0.3f), shape = RoundedCornerShape(8.dp))
-
+            .background(
+                colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
+                shape = RoundedCornerShape(8.dp)
+            )
     ) {
         Text(
             text = displayString,
@@ -67,7 +69,7 @@ fun DateHeader(dateString: String) {
             modifier = Modifier
                 .padding(8.dp)
                 .padding(horizontal = 16.dp),
-            color = Color.Black.copy(alpha = 0.8f),
+            color = colorResource(id = R.color.white),
             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight
         )
     }

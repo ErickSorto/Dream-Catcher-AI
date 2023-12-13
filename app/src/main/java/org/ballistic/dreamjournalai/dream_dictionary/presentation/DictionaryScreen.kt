@@ -1,0 +1,118 @@
+package org.ballistic.dreamjournalai.dream_dictionary.presentation
+
+import android.util.Log
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordItem
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenState
+
+@Composable
+fun DictionaryScreen(
+    dictionaryScreenState: DictionaryScreenState,
+    paddingValues: PaddingValues,
+    onEvent: (DictionaryEvent) -> Unit = {},
+) {
+    val alphabet = remember { ('A'..'Z').toList() }
+    val listState = rememberLazyListState()
+    var selectedHeader by remember { mutableStateOf('A') }
+    val screenWidth = remember { mutableStateOf(0) } // to store screen width
+
+    LaunchedEffect(Unit) {
+        Log.d("DictionaryScreen", "LaunchedEffect triggered")
+        onEvent(DictionaryEvent.LoadWords)
+        onEvent(DictionaryEvent.FilterByLetter('A'))
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f))
+                .onGloballyPositioned { layoutCoordinates ->
+                    screenWidth.value = layoutCoordinates.size.width // Store the width
+                }
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures { change, _ ->
+                        val positionX = change.position.x
+                        val letterWidth = screenWidth.value / alphabet.size.toFloat()
+                        val index =
+                            (positionX / letterWidth).coerceIn(0f, (alphabet.size - 1).toFloat())
+                        val letter = alphabet[index.toInt()]
+                        if (selectedHeader != letter) {
+                            selectedHeader = letter
+                            onEvent(DictionaryEvent.FilterByLetter(letter))
+                        }
+                    }
+                }
+                .padding(horizontal = 2.dp)
+        ) {
+            alphabet.forEach { letter ->
+                Text(
+                    text = letter.toString(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            selectedHeader = letter
+                            onEvent(DictionaryEvent.FilterByLetter(letter))
+                        }
+                        .scale(if (letter == selectedHeader) 1.5f else 1f) // Slightly scale up the selected letter
+                        .align(Alignment.CenterVertically)
+                        .animateContentSize { initialValue, targetValue -> },
+                    textAlign = TextAlign.Center,
+                    fontSize = 10.sp,
+                    fontWeight = if (letter == selectedHeader) FontWeight.SemiBold else FontWeight.Normal,
+                    color = if (letter == selectedHeader) Color.White else Color.White.copy(alpha = 0.5f)
+                )
+            }
+        }
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(bottom = 32.dp)
+        ) {
+            items(dictionaryScreenState.filteredWords) { wordItem ->
+                Log.d("DictionaryScreen", "Displaying word: ${wordItem.word}")
+                DictionaryWordItem(
+                    word = wordItem.word,
+                    isUnlocked = wordItem.isUnlocked,
+                    cost = wordItem.cost
+                )
+            }
+        }
+    }
+}

@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,16 +66,12 @@ fun AIInterpreterPage(
         ) {
             Text(
                 text = "Dream Interpretation",
-                color = colorResource(id = R.color.white),
+                color = colorResource(id = R.color.brighter_white),
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color = colorResource(id = R.color.white))
-            )
+
             TypewriterText(
                 text = responseState.response.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
@@ -182,16 +179,12 @@ fun AIDreamAdvicePage(
         ) {
             Text(
                 text = "Dream Advice",
-                color = colorResource(id = R.color.white),
+                color = colorResource(id = R.color.brighter_white),
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color = colorResource(id = R.color.white))
-            )
+
             TypewriterText(
                 text = adviceState.advice.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
@@ -250,11 +243,12 @@ fun AIQuestionPage(
         ) {
             Text(
                 text = "Dream Answer",
-                color = colorResource(id = R.color.white),
+                color = colorResource(id = R.color.brighter_white),
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 8.dp)
             )
-            //center question
+
             Text(
                 text = questionState.question + if (questionState.question.endsWith("?")) "" else "?",
                 color = colorResource(id = R.color.white),
@@ -262,12 +256,7 @@ fun AIQuestionPage(
                 modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp),
                 textAlign = TextAlign.Center
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color = colorResource(id = R.color.white))
-            )
+
             TypewriterText(
                 text = questionState.answer.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
@@ -326,16 +315,12 @@ fun AIStoryPage(
         ) {
             Text(
                 text = "Dream Story",
-                color = colorResource(id = R.color.white),
+                color = colorResource(id = R.color.brighter_white),
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color = colorResource(id = R.color.white))
-            )
+
             TypewriterText(
                 text = storyState.story.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
@@ -394,16 +379,12 @@ fun AIMoodPage(
         ) {
             Text(
                 text = "Dream Mood",
-                color = colorResource(id = R.color.white),
+                color = colorResource(id = R.color.brighter_white),
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp)
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color = colorResource(id = R.color.white))
-            )
+
             TypewriterText(
                 text = moodState.mood.trim(),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),

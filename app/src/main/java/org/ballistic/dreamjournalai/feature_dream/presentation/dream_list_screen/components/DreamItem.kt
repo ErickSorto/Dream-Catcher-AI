@@ -17,7 +17,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -44,8 +46,7 @@ fun DreamItem(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(cornerRadius))
-            .background(Color.White.copy(alpha = 0.2f))
-
+            .background(colorResource(id = R.color.dark_blue).copy(alpha = 0.5f))
     ) {
         Row(
             modifier = Modifier
@@ -55,7 +56,7 @@ fun DreamItem(
         ) {
             Box(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(16.dp, 8.dp, 8.dp, 0.dp)
                     .size(60.dp)
                     .shadow(16.dp, CircleShape, true, Color.Black.copy(alpha = 0.8f))
                     .clip(CircleShape)
@@ -69,26 +70,28 @@ fun DreamItem(
                     modifier = Modifier.fillMaxSize()
                 )
             }
+            Spacer(modifier = Modifier.width(8.dp))
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(0.dp, 16.dp, 0.dp, 16.dp)
+                    .padding(0.dp, 8.dp, 0.dp, 8.dp)
 
             ) {
                 Text(
                     text = dream.title,
-                    style = typography.titleLarge,
-                    color = Color.Black,
+                    style = typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colorResource(id = R.color.brighter_white),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = dream.content,
-                    style = typography.bodyLarge,
-                    color = Color.Black,
+                    style = typography.bodyMedium,
+                    color = colorResource(id = R.color.white),
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -99,26 +102,26 @@ fun DreamItem(
                     .fillMaxHeight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                //isFavorite
+                if (dream.isFavorite) {
+                    Image(
+                        painter = painterResource(id = R.drawable.baseline_star_24),
+                        contentDescription = "Favorite",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(bottom = 4.dp),
+                        alignment = Alignment.Center
+                    )
+                }
 
                 if (dream.isLucid) {
                     Image(
                         painter = painterResource(id = R.drawable.lighthouse_vector),
                         contentDescription = "Lucid",
                         modifier = Modifier
-                            .size(24.dp),
+                            .size(24.dp)
+                            .padding(bottom = 4.dp),
                         alignment = Alignment.TopCenter
 
-                    )
-                }
-
-                if (dream.isFavorite) {
-                    Image(
-                        painter = painterResource(id = R.drawable.baseline_star_24),
-                        contentDescription = "Favorite",
-                        modifier = Modifier
-                            .size(24.dp),
-                        alignment = Alignment.Center
                     )
                 }
 
@@ -130,7 +133,7 @@ fun DreamItem(
                         .clickable {
                             onDeleteClick()
                         },
-                    alignment = Alignment.BottomCenter
+                    alignment = Alignment.BottomCenter,
                 )
             }
         }
