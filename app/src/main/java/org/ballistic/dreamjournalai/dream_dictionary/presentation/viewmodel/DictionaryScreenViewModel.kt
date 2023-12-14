@@ -56,7 +56,7 @@ class DictionaryScreenViewModel @Inject constructor(
             is DictionaryEvent.ClickBuyWord -> {
                 if (event.isAd) {
                     runAd(
-                        activity = application.applicationContext as Activity,
+                        activity = event.activity,
                         onRewardedAd = {
                             Log.d("DictionaryScreen", "Ad was rewarded")
                             _dictionaryScreenState.update { state ->
