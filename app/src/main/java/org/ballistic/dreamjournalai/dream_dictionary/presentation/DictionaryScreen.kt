@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_dictionary.presentation
 
+import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
@@ -25,29 +26,32 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordItem
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenState
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.DreamInterpretationPopUp
+import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun DictionaryScreen(
     dictionaryScreenState: DictionaryScreenState,
+    mainScreenViewModelState: MainScreenViewModelState,
     paddingValues: PaddingValues,
     onEvent: (DictionaryEvent) -> Unit = {},
 ) {
@@ -57,6 +61,7 @@ fun DictionaryScreen(
     val screenWidth = remember { mutableStateOf(0) } // to store screen width
     val context = LocalContext.current
     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    val scope = rememberCoroutineScope()
 
     // create vibrator effect with the constant EFFECT_CLICK
     val vibrationEffect2 =
@@ -78,6 +83,32 @@ fun DictionaryScreen(
         Log.d("DictionaryScreen", "LaunchedEffect triggered")
         onEvent(DictionaryEvent.LoadWords)
         onEvent(DictionaryEvent.FilterByLetter('A'))
+    }
+
+    if (dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
+        DreamInterpretationPopUp(
+            title = "Dream Interpreter",
+            onAdClick = { amount ->
+                dictionaryScreenState.bottomSheetState.value = false
+                scope.launch {
+                    onEvent(
+                        DictionaryEvent.ClickBuyWord(
+                            word = dictionaryScreenState.clickedWord,
+                            isAd = true,
+                            activity = context as Activity,
+                        )
+                    )
+                }
+            },
+            onDreamTokenClick = { amount ->
+
+
+            },
+            onClickOutside = {
+                dictionaryScreenState.bottomSheetState.value = false
+            },
+            mainScreenViewModelState = mainScreenViewModelState
+        )
     }
 
     Column(
@@ -113,6 +144,7 @@ fun DictionaryScreen(
                 Text(
                     text = letter.toString(),
                     modifier = Modifier
+                        .animateContentSize { _, _ -> }
                         .weight(1f)
                         .clickable {
                             vibrator.vibrate(vibrationEffect1)
@@ -120,8 +152,7 @@ fun DictionaryScreen(
                             onEvent(DictionaryEvent.FilterByLetter(letter))
                         }
                         .scale(if (letter == selectedHeader) 1.5f else 1f) // Slightly scale up the selected letter
-                        .align(Alignment.CenterVertically)
-                        .animateContentSize { initialValue, targetValue -> },
+                        .align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center,
                     fontSize = 10.sp,
                     fontWeight = if (letter == selectedHeader) FontWeight.SemiBold else FontWeight.Normal,
@@ -140,7 +171,9 @@ fun DictionaryScreen(
                     word = wordItem.word,
                     isUnlocked = wordItem.isUnlocked,
                     cost = wordItem.cost
-                )
+                ){isUnlocked ->
+                    onEvent(DictionaryEvent.ClickWord(wordItem.word, wordItem.cost, isUnlocked))
+                }
             }
         }
     }

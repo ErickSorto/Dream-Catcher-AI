@@ -1,12 +1,16 @@
 package org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.ads.rewarded.RewardItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,17 +18,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
+import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
+import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.DictionaryEvent
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
 import java.io.IOException
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class DictionaryScreenViewModel @Inject constructor(
-    private val application: Application
+    private val application: Application,
+    private val adManagerRepository: AdManagerRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _dictionaryScreenState = MutableStateFlow(DictionaryScreenState())
+    private val _dictionaryScreenState = MutableStateFlow(DictionaryScreenState(authRepository))
     val dictionaryScreenState: StateFlow<DictionaryScreenState> = _dictionaryScreenState.asStateFlow()
 
     fun onEvent(event: DictionaryEvent) = viewModelScope.launch{
@@ -34,7 +44,49 @@ class DictionaryScreenViewModel @Inject constructor(
                     loadWords()
             }
             is DictionaryEvent.ClickWord -> {
+                _dictionaryScreenState.update {state ->
+                    state.copy(
+                        bottomSheetState = mutableStateOf(true),
+                        isClickedWordUnlocked = event.isUnlocked,
+                        clickedWord = event.word
+                    )
+                }
+            }
 
+            is DictionaryEvent.ClickBuyWord -> {
+                if (event.isAd) {
+                    runAd(
+                        activity = application.applicationContext as Activity,
+                        onRewardedAd = {
+                            Log.d("DictionaryScreen", "Ad was rewarded")
+                            _dictionaryScreenState.update { state ->
+                                state.copy(
+                                    bottomSheetState = mutableStateOf(false),
+                                    isClickedWordUnlocked = true,
+                                    clickedWord = event.word
+                                )
+                            }
+                            viewModelScope.launch {
+                                val result = authRepository.unlockWord(event.word)
+                                if (result is Resource.Error) {
+
+                                }
+                            }
+                        },
+                        onAdFailed = {
+                            Log.d("DictionaryScreen", "Ad failed")
+                        }
+                    )
+                } else {
+                    Log.d("DictionaryScreen", "Buying word")
+                    _dictionaryScreenState.update { state ->
+                        state.copy(
+                            bottomSheetState = mutableStateOf(false),
+                            isClickedWordUnlocked = true,
+                            clickedWord = event.word
+                        )
+                    }
+                }
             }
 
             is DictionaryEvent.ClickUnlock -> {
@@ -102,13 +154,57 @@ class DictionaryScreenViewModel @Inject constructor(
         }
         return words
     }
+
+    private fun runAd(
+        activity: Activity,
+        onRewardedAd: () -> Unit,
+        onAdFailed: () -> Unit
+    ) {
+        activity.runOnUiThread {
+            adManagerRepository.loadRewardedAd(activity) {
+                //show ad
+                adManagerRepository.showRewardedAd(
+                    activity,
+                    object : AdCallback {
+                        override fun onAdClosed() {
+                            //to be added later
+                        }
+
+                        override fun onAdRewarded(reward: RewardItem) {
+                            onRewardedAd()
+                        }
+
+                        override fun onAdLeftApplication() {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun onAdLoaded() {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun onAdFailedToLoad(errorCode: Int) {
+                            onAdFailed()
+                        }
+
+                        override fun onAdOpened() {
+                            TODO("Not yet implemented")
+                        }
+                    })
+            }
+        }
+    }
 }
 
 
 data class DictionaryScreenState(
+    val authRepository: AuthRepository,
     val dictionaryWordMutableList: MutableList<DictionaryWord> = mutableListOf(),
     val filteredWords: MutableList<DictionaryWord> = mutableListOf(),
-    val selectedLetter: Char = 'A'
+    val selectedLetter: Char = 'A',
+    val bottomSheetState: MutableState<Boolean> = mutableStateOf(false),
+    val isClickedWordUnlocked: Boolean = false,
+    val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
+    val clickedWord: String = "",
 )
 data class DictionaryWord(
     val word: String,

@@ -54,5 +54,7 @@ interface AuthRepository {
 
     suspend fun consumeDreamTokens(tokensToConsume: Int): Resource<Boolean>
 
+    suspend fun unlockWord(word: String): Resource<Boolean>
+
     suspend fun recordUserInteraction()
 }

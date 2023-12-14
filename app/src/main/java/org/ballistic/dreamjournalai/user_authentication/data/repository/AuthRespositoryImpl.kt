@@ -87,6 +87,30 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+
+    override suspend fun unlockWord(word: String): Resource<Boolean> {
+        return withContext(Dispatchers.IO) {
+            val user = currentUser
+            run {
+                val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
+                val snapshot = userDocRef?.get()?.await()
+                val unlockedWords = snapshot?.get("unlockedWords") as? ArrayList<String>
+                if (unlockedWords != null) {
+                    if (unlockedWords.contains(word)) {
+                        Resource.Success(true)
+                    } else {
+                        unlockedWords.add(word)
+                        userDocRef.update("unlockedWords", unlockedWords).await()
+                        Resource.Success(true)
+                    }
+                } else {
+                    userDocRef?.update("unlockedWords", arrayListOf(word))?.await()
+                    Resource.Success(true)
+                }
+            }
+        }
+    }
+
     override suspend fun recordUserInteraction() {
         reloadFirebaseUser()
         val user = currentUser.value
