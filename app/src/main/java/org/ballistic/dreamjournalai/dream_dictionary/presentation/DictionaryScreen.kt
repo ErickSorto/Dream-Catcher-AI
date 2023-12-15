@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,7 +53,6 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 fun DictionaryScreen(
     dictionaryScreenState: DictionaryScreenState,
     mainScreenViewModelState: MainScreenViewModelState,
-    paddingValues: PaddingValues,
     onEvent: (DictionaryEvent) -> Unit = {},
 ) {
     val alphabet = remember { ('A'..'Z').toList() }
@@ -85,96 +85,104 @@ fun DictionaryScreen(
         onEvent(DictionaryEvent.FilterByLetter('A'))
     }
 
-    if (dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
-        DreamInterpretationPopUp(
-            title = "Dream Interpreter",
-            onAdClick = { amount ->
-                dictionaryScreenState.bottomSheetState.value = false
-                scope.launch {
-                    onEvent(
-                        DictionaryEvent.ClickBuyWord(
-                            word = dictionaryScreenState.clickedWord,
-                            isAd = true,
-                            activity = context as Activity,
+
+    Scaffold(
+        snackbarHost = {
+            dictionaryScreenState.snackBarHostState.value
+        },
+    ){
+        if (dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
+            DreamInterpretationPopUp(
+                title = "Dream Interpreter",
+                onAdClick = { amount ->
+                    dictionaryScreenState.bottomSheetState.value = false
+                    scope.launch {
+                        onEvent(
+                            DictionaryEvent.ClickBuyWord(
+                                word = dictionaryScreenState.clickedWord,
+                                isAd = true,
+                                activity = context as Activity,
+                            )
                         )
-                    )
-                }
-            },
-            onDreamTokenClick = { amount ->
+                    }
+                },
+                onDreamTokenClick = { amount ->
 
 
-            },
-            onClickOutside = {
-                dictionaryScreenState.bottomSheetState.value = false
-            },
-            mainScreenViewModelState = mainScreenViewModelState
-        )
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+                },
+                onClickOutside = {
+                    dictionaryScreenState.bottomSheetState.value = false
+                },
+                mainScreenViewModelState = mainScreenViewModelState
+            )
+        }
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f))
-                .onGloballyPositioned { layoutCoordinates ->
-                    screenWidth.value = layoutCoordinates.size.width // Store the width
-                }
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures { change, _ ->
-                        val positionX = change.position.x
-                        val letterWidth = screenWidth.value / alphabet.size.toFloat()
-                        val index =
-                            (positionX / letterWidth).coerceIn(0f, (alphabet.size - 1).toFloat())
-                        val letter = alphabet[index.toInt()]
-                        if (selectedHeader != letter) {
-                            selectedHeader = letter
-                            onEvent(DictionaryEvent.FilterByLetter(letter))
-                            vibrator.vibrate(vibrationEffect2)
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f))
+                    .onGloballyPositioned { layoutCoordinates ->
+                        screenWidth.value = layoutCoordinates.size.width // Store the width
+                    }
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures { change, _ ->
+                            val positionX = change.position.x
+                            val letterWidth = screenWidth.value / alphabet.size.toFloat()
+                            val index =
+                                (positionX / letterWidth).coerceIn(0f, (alphabet.size - 1).toFloat())
+                            val letter = alphabet[index.toInt()]
+                            if (selectedHeader != letter) {
+                                selectedHeader = letter
+                                onEvent(DictionaryEvent.FilterByLetter(letter))
+                                vibrator.vibrate(vibrationEffect2)
+                            }
                         }
                     }
+                    .padding(horizontal = 2.dp)
+            ) {
+                alphabet.forEach { letter ->
+                    Text(
+                        text = letter.toString(),
+                        modifier = Modifier
+                            .animateContentSize { _, _ -> }
+                            .weight(1f)
+                            .clickable {
+                                vibrator.vibrate(vibrationEffect1)
+                                selectedHeader = letter
+                                onEvent(DictionaryEvent.FilterByLetter(letter))
+                            }
+                            .scale(if (letter == selectedHeader) 1.5f else 1f) // Slightly scale up the selected letter
+                            .align(Alignment.CenterVertically),
+                        textAlign = TextAlign.Center,
+                        fontSize = 10.sp,
+                        fontWeight = if (letter == selectedHeader) FontWeight.SemiBold else FontWeight.Normal,
+                        color = if (letter == selectedHeader) Color.White else Color.White.copy(alpha = 0.5f)
+                    )
                 }
-                .padding(horizontal = 2.dp)
-        ) {
-            alphabet.forEach { letter ->
-                Text(
-                    text = letter.toString(),
-                    modifier = Modifier
-                        .animateContentSize { _, _ -> }
-                        .weight(1f)
-                        .clickable {
-                            vibrator.vibrate(vibrationEffect1)
-                            selectedHeader = letter
-                            onEvent(DictionaryEvent.FilterByLetter(letter))
-                        }
-                        .scale(if (letter == selectedHeader) 1.5f else 1f) // Slightly scale up the selected letter
-                        .align(Alignment.CenterVertically),
-                    textAlign = TextAlign.Center,
-                    fontSize = 10.sp,
-                    fontWeight = if (letter == selectedHeader) FontWeight.SemiBold else FontWeight.Normal,
-                    color = if (letter == selectedHeader) Color.White else Color.White.copy(alpha = 0.5f)
-                )
             }
-        }
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(bottom = 32.dp)
-        ) {
-            items(dictionaryScreenState.filteredWords) { wordItem ->
-                Log.d("DictionaryScreen", "Displaying word: ${wordItem.word}")
-                DictionaryWordItem(
-                    word = wordItem.word,
-                    isUnlocked = wordItem.isUnlocked,
-                    cost = wordItem.cost
-                ){isUnlocked ->
-                    onEvent(DictionaryEvent.ClickWord(wordItem.word, wordItem.cost, isUnlocked))
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(bottom = 32.dp)
+            ) {
+                items(dictionaryScreenState.filteredWords) { wordItem ->
+                    Log.d("DictionaryScreen", "Displaying word: ${wordItem.word}")
+                    DictionaryWordItem(
+                        word = wordItem.word,
+                        isUnlocked = wordItem.isUnlocked,
+                        cost = wordItem.cost
+                    ){isUnlocked ->
+                        onEvent(DictionaryEvent.ClickWord(wordItem.word, wordItem.cost, isUnlocked))
+                    }
                 }
             }
         }
     }
+
+
 }

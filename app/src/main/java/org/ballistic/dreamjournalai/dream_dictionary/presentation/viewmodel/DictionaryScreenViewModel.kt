@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -69,7 +70,10 @@ class DictionaryScreenViewModel @Inject constructor(
                             viewModelScope.launch {
                                 val result = authRepository.unlockWord(event.word)
                                 if (result is Resource.Error) {
-
+                                    _dictionaryScreenState.value.snackBarHostState.value.showSnackbar(
+                                        message = "Error unlocking word",
+                                        actionLabel = "Dismiss"
+                                    )
                                 }
                             }
                         },
@@ -205,6 +209,7 @@ data class DictionaryScreenState(
     val isClickedWordUnlocked: Boolean = false,
     val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
     val clickedWord: String = "",
+    val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
 )
 data class DictionaryWord(
     val word: String,
