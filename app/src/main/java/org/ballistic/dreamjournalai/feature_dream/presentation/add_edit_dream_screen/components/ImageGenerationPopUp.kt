@@ -77,7 +77,7 @@ fun ImageGenerationPopUp(
                         modifier = Modifier.padding(8.dp)
                     )
                     DreamTokenLayout(
-                        mainScreenViewModelState = mainScreenViewModelState,
+                        totalDreamTokens = mainScreenViewModelState.dreamTokens.value,
                     )
                 }
 

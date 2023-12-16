@@ -3,9 +3,22 @@ package org.ballistic.dreamjournalai.store_billing.presentation.store_screen.com
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,8 +72,15 @@ fun SubInfoMonthlyYearlyPrice(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Dream Token Benefits", fontSize = 20.sp, fontWeight = Bold, color = Color.White)
-            DreamTokenLayout(mainScreenViewModelState = mainScreenViewModelState)
+            Text(
+                text = "Dream Token Benefits",
+                fontSize = 20.sp,
+                fontWeight = Bold,
+                color = Color.White
+            )
+            DreamTokenLayout(
+                totalDreamTokens = mainScreenViewModelState.dreamTokens.value
+            )
         }
     }
 }

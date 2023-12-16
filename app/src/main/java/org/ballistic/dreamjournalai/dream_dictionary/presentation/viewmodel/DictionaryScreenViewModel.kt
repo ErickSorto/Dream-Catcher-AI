@@ -36,65 +36,60 @@ class DictionaryScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _dictionaryScreenState = MutableStateFlow(DictionaryScreenState(authRepository))
-    val dictionaryScreenState: StateFlow<DictionaryScreenState> = _dictionaryScreenState.asStateFlow()
+    val dictionaryScreenState: StateFlow<DictionaryScreenState> =
+        _dictionaryScreenState.asStateFlow()
 
-    fun onEvent(event: DictionaryEvent) = viewModelScope.launch{
+    fun onEvent(event: DictionaryEvent) = viewModelScope.launch {
         when (event) {
             is DictionaryEvent.LoadWords -> {
                 Log.d("DictionaryScreen", "Loading words")
-                    loadWords()
+                loadWords()
             }
+
             is DictionaryEvent.ClickWord -> {
-                _dictionaryScreenState.update {state ->
+                _dictionaryScreenState.update { state ->
                     state.copy(
                         bottomSheetState = mutableStateOf(true),
-                        isClickedWordUnlocked = event.isUnlocked,
-                        clickedWord = event.word
+                        isClickedWordUnlocked = event.dictionaryWord.cost == 0,
+                        clickedWord = event.dictionaryWord
                     )
                 }
             }
 
-            is DictionaryEvent.ClickBuyWord -> {
-                if (event.isAd) {
-                    runAd(
-                        activity = event.activity,
-                        onRewardedAd = {
-                            Log.d("DictionaryScreen", "Ad was rewarded")
-                            _dictionaryScreenState.update { state ->
-                                state.copy(
-                                    bottomSheetState = mutableStateOf(false),
-                                    isClickedWordUnlocked = true,
-                                    clickedWord = event.word
-                                )
-                            }
-                            viewModelScope.launch {
-                                val result = authRepository.unlockWord(event.word)
-                                if (result is Resource.Error) {
-                                    _dictionaryScreenState.value.snackBarHostState.value.showSnackbar(
-                                        message = "Error unlocking word",
-                                        actionLabel = "Dismiss"
-                                    )
-                                }
-                            }
-                        },
-                        onAdFailed = {
-                            Log.d("DictionaryScreen", "Ad failed")
-                        }
-                    )
-                } else {
-                    Log.d("DictionaryScreen", "Buying word")
-                    _dictionaryScreenState.update { state ->
-                        state.copy(
-                            bottomSheetState = mutableStateOf(false),
-                            isClickedWordUnlocked = true,
-                            clickedWord = event.word
-                        )
-                    }
-                }
-            }
+            is DictionaryEvent.ClickBuyWord -> handleUnlockWord(event)
+
 
             is DictionaryEvent.ClickUnlock -> {
 
+            }
+
+            is DictionaryEvent.GetUnlockedWords -> {
+                Log.d("DictionaryScreen", "Getting unlocked words")
+                viewModelScope.launch {
+                    authRepository.getUnlockedWords().collect { result ->
+                        when (result) {
+                            is Resource.Loading -> {
+                                // Handle loading state if needed
+                            }
+
+                            is Resource.Success -> {
+                                _dictionaryScreenState.update { state ->
+                                    state.copy(
+                                        unlockedWords = result.data?.toMutableList()
+                                            ?: mutableListOf()
+                                    )
+                                }
+                            }
+
+                            is Resource.Error -> {
+                                _dictionaryScreenState.value.snackBarHostState.value.showSnackbar(
+                                    message = "Error getting unlocked words: ${result.message}",
+                                    actionLabel = "Dismiss"
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             is DictionaryEvent.FilterByLetter -> {
@@ -106,9 +101,73 @@ class DictionaryScreenViewModel @Inject constructor(
         }
     }
 
+    private fun handleUnlockWord(event: DictionaryEvent.ClickBuyWord) {
+        if (event.isAd) {
+            runAd(
+                activity = event.activity,
+                onRewardedAd = { unlockWordWithAd(event.dictionaryWord) },
+                onAdFailed = { Log.d("DictionaryScreen", "Ad failed") }
+            )
+        } else {
+            unlockWordWithTokens(event.dictionaryWord)
+        }
+    }
+
+    private fun unlockWordWithAd(dictionaryWord: DictionaryWord) {
+        viewModelScope.launch {
+            Log.d("DictionaryScreen", "Unlocking word with ad")
+            processUnlockWordResult(
+                result = authRepository.unlockWord(dictionaryWord.word, 0),
+                dictionaryWord = dictionaryWord
+            )
+        }
+    }
+
+    private fun unlockWordWithTokens(dictionaryWord: DictionaryWord) {
+        Log.d("DictionaryScreen", "Unlocking word with dream tokens")
+        viewModelScope.launch {
+            processUnlockWordResult(
+                result = authRepository.unlockWord(dictionaryWord.word, dictionaryWord.cost),
+                dictionaryWord = dictionaryWord
+            )
+        }
+    }
+
+    private suspend fun processUnlockWordResult(result: Resource<Boolean>, dictionaryWord: DictionaryWord) {
+        when (result) {
+            is Resource.Error -> {
+                _dictionaryScreenState.value.snackBarHostState.value.showSnackbar(
+                    message = "Error unlocking word: ${result.message}",
+                    actionLabel = "Dismiss"
+                )
+            }
+            is Resource.Success -> {
+                updateScreenStateForUnlockedWord(dictionaryWord)
+                Log.d("DictionaryScreen", "Word unlocked successfully")
+            }
+            is Resource.Loading -> {
+                // Handle loading state if needed
+            }
+        }
+    }
+
+    private fun updateScreenStateForUnlockedWord(dictionaryWord: DictionaryWord) {
+        _dictionaryScreenState.update { state ->
+            state.copy(
+                isClickedWordUnlocked = true,
+                clickedWord = dictionaryWord,
+                unlockedWords = state.unlockedWords.apply {
+                    add(dictionaryWord.word)
+                }
+            )
+        }
+    }
     private fun filterWordsByLetter(letter: Char) {
         //dictionary size
-        Log.d("DictionaryScreen", "Dictionary size: ${_dictionaryScreenState.value.dictionaryWordMutableList.size}")
+        Log.d(
+            "DictionaryScreen",
+            "Dictionary size: ${_dictionaryScreenState.value.dictionaryWordMutableList.size}"
+        )
         val filtered = _dictionaryScreenState.value.dictionaryWordMutableList.filter {
             it.word.startsWith(letter, ignoreCase = true)
         }
@@ -128,7 +187,7 @@ class DictionaryScreenViewModel @Inject constructor(
                 state.copy(
                     dictionaryWordMutableList = words.toMutableList(),
                 )
-             }
+            }
             filterWordsByLetter('A')
         }
     }
@@ -141,11 +200,13 @@ class DictionaryScreenViewModel @Inject constructor(
                 lines.drop(1).forEach { line ->
                     val tokens = csvRegex.findAll(line).map { it.value.trim('"') }.toList()
                     if (tokens.size >= 3) {
-                        val cost = tokens.last().toIntOrNull() ?: 0 // Assuming cost is the last token
+                        val cost =
+                            tokens.last().toIntOrNull() ?: 0 // Assuming cost is the last token
                         words.add(
                             DictionaryWord(
                                 word = tokens.first(), // Assuming word is the first token
-                                definition = tokens.drop(1).dropLast(1).joinToString(","), // Joining all tokens that are part of the definition
+                                definition = tokens.drop(1).dropLast(1)
+                                    .joinToString(","), // Joining all tokens that are part of the definition
                                 isUnlocked = cost == 0, // If cost is 0, then the word is unlocked
                                 cost = cost
                             )
@@ -203,14 +264,16 @@ class DictionaryScreenViewModel @Inject constructor(
 data class DictionaryScreenState(
     val authRepository: AuthRepository,
     val dictionaryWordMutableList: MutableList<DictionaryWord> = mutableListOf(),
+    val unlockedWords: MutableList<String> = mutableListOf(),
     val filteredWords: MutableList<DictionaryWord> = mutableListOf(),
     val selectedLetter: Char = 'A',
     val bottomSheetState: MutableState<Boolean> = mutableStateOf(false),
     val isClickedWordUnlocked: Boolean = false,
     val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
-    val clickedWord: String = "",
+    val clickedWord: DictionaryWord = DictionaryWord("", "", false, 0),
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
 )
+
 data class DictionaryWord(
     val word: String,
     val definition: String,

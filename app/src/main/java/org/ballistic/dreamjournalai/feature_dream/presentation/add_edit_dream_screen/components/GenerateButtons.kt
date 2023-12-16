@@ -332,7 +332,6 @@ fun MoodAnalyzerButton(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AdTokenLayout(
     onAdClick: (amount: Int) -> Unit = {},
@@ -374,8 +373,8 @@ fun WatchAdButton(
             painter = rememberAsyncImagePainter(R.drawable.baseline_smart_display_24),
             contentDescription = "Watch Ad",
             modifier = Modifier
-                .padding(16.dp)
-                .size(40.dp),
+                .padding(8.dp)
+                .size(56.dp),
             tint = Color.Black
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -408,8 +407,8 @@ fun DreamTokenGenerateButton(
             painter = rememberAsyncImagePainter(R.drawable.dream_token),
             contentDescription = "DreamToken",
             modifier = Modifier
-                .padding(16.dp, 16.dp, 0.dp, 16.dp)
-                .size(40.dp)
+                .padding(8.dp)
+                .size(56.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(

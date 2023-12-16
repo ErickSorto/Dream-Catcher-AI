@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,16 +42,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.BuyDictionaryWordDrawer
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordDrawer
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordItem
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenState
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.DreamInterpretationPopUp
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun DictionaryScreen(
     dictionaryScreenState: DictionaryScreenState,
-    mainScreenViewModelState: MainScreenViewModelState,
+    paddingValues: PaddingValues,
     onEvent: (DictionaryEvent) -> Unit = {},
 ) {
     val alphabet = remember { ('A'..'Z').toList() }
@@ -64,8 +62,7 @@ fun DictionaryScreen(
     val scope = rememberCoroutineScope()
 
     // create vibrator effect with the constant EFFECT_CLICK
-    val vibrationEffect2 =
-        VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
+
     val vibrationEffect1: VibrationEffect =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
@@ -74,14 +71,10 @@ fun DictionaryScreen(
             TODO("VERSION.SDK_INT < O")
         }
 
-    // it is safe to cancel other
-    // vibrations currently taking place
-    vibrator.cancel()
-    vibrator.vibrate(vibrationEffect2)
-
     LaunchedEffect(Unit) {
         Log.d("DictionaryScreen", "LaunchedEffect triggered")
         onEvent(DictionaryEvent.LoadWords)
+        onEvent(DictionaryEvent.GetUnlockedWords)
         onEvent(DictionaryEvent.FilterByLetter('A'))
     }
 
@@ -90,36 +83,51 @@ fun DictionaryScreen(
         snackbarHost = {
             dictionaryScreenState.snackBarHostState.value
         },
-    ){
-        if (dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
-            DreamInterpretationPopUp(
-                title = "Dream Interpreter",
-                onAdClick = { amount ->
-                    dictionaryScreenState.bottomSheetState.value = false
+        containerColor = Color.Transparent
+    ) {
+        it
+        if (!dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
+            BuyDictionaryWordDrawer(
+                title = dictionaryScreenState.clickedWord.word,
+                onAdClick = {
                     scope.launch {
                         onEvent(
                             DictionaryEvent.ClickBuyWord(
-                                word = dictionaryScreenState.clickedWord,
+                                dictionaryWord = dictionaryScreenState.clickedWord,
                                 isAd = true,
                                 activity = context as Activity,
                             )
                         )
                     }
                 },
-                onDreamTokenClick = { amount ->
-
-
+                onDreamTokenClick = {
+                    onEvent(
+                        DictionaryEvent.ClickBuyWord(
+                            dictionaryWord = dictionaryScreenState.clickedWord,
+                            isAd = false,
+                            activity = context as Activity,
+                        )
+                    )
                 },
                 onClickOutside = {
                     dictionaryScreenState.bottomSheetState.value = false
                 },
-                mainScreenViewModelState = mainScreenViewModelState
+                dictionaryScreenState = dictionaryScreenState,
+                amount = dictionaryScreenState.clickedWord.cost
+            )
+        } else if (dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
+            DictionaryWordDrawer(
+                title = dictionaryScreenState.clickedWord.word,
+                definition = dictionaryScreenState.clickedWord.definition,
+                onClickOutside = {
+                    dictionaryScreenState.bottomSheetState.value = false
+                },
             )
         }
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(paddingValues)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -134,12 +142,16 @@ fun DictionaryScreen(
                             val positionX = change.position.x
                             val letterWidth = screenWidth.value / alphabet.size.toFloat()
                             val index =
-                                (positionX / letterWidth).coerceIn(0f, (alphabet.size - 1).toFloat())
+                                (positionX / letterWidth).coerceIn(
+                                    0f,
+                                    (alphabet.size - 1).toFloat()
+                                )
                             val letter = alphabet[index.toInt()]
                             if (selectedHeader != letter) {
                                 selectedHeader = letter
                                 onEvent(DictionaryEvent.FilterByLetter(letter))
-                                vibrator.vibrate(vibrationEffect2)
+                                vibrator.cancel()
+                                vibrator.vibrate(vibrationEffect1)
                             }
                         }
                     }
@@ -161,28 +173,32 @@ fun DictionaryScreen(
                         textAlign = TextAlign.Center,
                         fontSize = 10.sp,
                         fontWeight = if (letter == selectedHeader) FontWeight.SemiBold else FontWeight.Normal,
-                        color = if (letter == selectedHeader) Color.White else Color.White.copy(alpha = 0.5f)
+                        color = if (letter == selectedHeader) Color.White else Color.White.copy(
+                            alpha = 0.5f
+                        )
                     )
                 }
             }
+            val processedWords = dictionaryScreenState.filteredWords.map { wordItem ->
+                wordItem.copy(
+                    isUnlocked = wordItem.isUnlocked || dictionaryScreenState.unlockedWords.contains(wordItem.word),
+                    cost = if (dictionaryScreenState.unlockedWords.contains(wordItem.word)) 0 else wordItem.cost
+                )
+            }
+
             LazyColumn(
                 state = listState,
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(bottom = 32.dp)
             ) {
-                items(dictionaryScreenState.filteredWords) { wordItem ->
+                items(processedWords) { wordItem ->
                     Log.d("DictionaryScreen", "Displaying word: ${wordItem.word}")
                     DictionaryWordItem(
-                        word = wordItem.word,
-                        isUnlocked = wordItem.isUnlocked,
-                        cost = wordItem.cost
-                    ){isUnlocked ->
-                        onEvent(DictionaryEvent.ClickWord(wordItem.word, wordItem.cost, isUnlocked))
-                    }
+                        wordItem = wordItem,
+                        onWordClick = { onEvent(DictionaryEvent.ClickWord(wordItem)) }
+                    )
                 }
             }
         }
     }
-
-
 }

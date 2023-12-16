@@ -444,9 +444,9 @@ fun AIPage(
                 )
                 Text(
                     modifier = Modifier.padding(8.dp),
-                    text = "AI Results",
-                    style = typography.titleMedium.copy(color = colorResource(id = R.color.white)),
-                    fontWeight = FontWeight.Bold,
+                    text = "Results",
+                    style = typography.titleMedium.copy(color = colorResource(id = R.color.brighter_white)),
+                    fontWeight = FontWeight.SemiBold,
                 )
                 Spacer(
                     modifier = Modifier
@@ -454,7 +454,9 @@ fun AIPage(
                         .height(1.dp)
                         .background(color = colorResource(id = R.color.white))
                 )
-                DreamTokenLayout(mainScreenViewModelState = mainScreenViewModelState)
+                DreamTokenLayout(
+                    totalDreamTokens = mainScreenViewModelState.dreamTokens.value,
+                )
             }
 
             HorizontalPager(

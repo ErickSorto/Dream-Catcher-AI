@@ -62,11 +62,11 @@ fun DreamInterpretationPopUp(
                         Text(
                             text = title,
                             style = MaterialTheme.typography.headlineMedium,
-                            color = colorResource(id = R.color.white),
-                            modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 16.dp)
+                            color = colorResource(id = R.color.brighter_white),
+                            modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 8.dp)
                         )
                         DreamTokenLayout(
-                            mainScreenViewModelState = mainScreenViewModelState,
+                            totalDreamTokens = mainScreenViewModelState.dreamTokens.value,
                         )
                     }
 
