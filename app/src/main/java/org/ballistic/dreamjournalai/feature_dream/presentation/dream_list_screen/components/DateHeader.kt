@@ -57,9 +57,9 @@ fun DateHeader(dateString: String) {
 
     Box(
         modifier = Modifier
-            .padding(16.dp, 8.dp)
+            .padding(12.dp, 16.dp, 8.dp, 10.dp)
             .background(
-                colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
+                colorResource(id = R.color.dark_blue).copy(alpha = 0.6f),
                 shape = RoundedCornerShape(8.dp)
             )
     ) {

@@ -2,6 +2,9 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_scree
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,11 +14,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -35,8 +41,28 @@ fun DreamItem(
     dream: Dream,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 8.dp,
+    playAnimation: Boolean = true,
     onDeleteClick: () -> Unit
 ) {
+    val animatedProgress = remember { Animatable(initialValue = 0.8f) }
+    if (playAnimation) {
+        LaunchedEffect(key1 = dream) {
+            animatedProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(300, easing = FastOutSlowInEasing)
+            )
+        }
+    }
+
+    val animatedModifier = if (playAnimation) {
+        modifier
+            .graphicsLayer(
+                scaleX = animatedProgress.value,
+                scaleY = animatedProgress.value
+            )
+    } else {
+        modifier
+    }
     val imageResId = if (dream.backgroundImage in dreamBackgroundImages) {
         dream.backgroundImage
     } else {
@@ -44,9 +70,9 @@ fun DreamItem(
     }
 
     Box(
-        modifier = modifier
+        modifier = animatedModifier
             .clip(RoundedCornerShape(cornerRadius))
-            .background(colorResource(id = R.color.dark_blue).copy(alpha = 0.5f))
+            .background(colorResource(id = R.color.dark_blue).copy(alpha = 0.6f))
     ) {
         Row(
             modifier = Modifier
@@ -74,19 +100,19 @@ fun DreamItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(0.dp, 8.dp, 0.dp, 8.dp)
+                    .padding(0.dp, 12.dp, 0.dp, 12.dp)
 
             ) {
                 Text(
                     text = dream.title,
                     style = typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Light,
                     color = colorResource(id = R.color.brighter_white),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(3.dp))
 
                 Text(
                     text = dream.content,
@@ -98,7 +124,7 @@ fun DreamItem(
             }
             Column(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(0.dp, 8.dp, 8.dp, 8.dp)
                     .fillMaxHeight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {

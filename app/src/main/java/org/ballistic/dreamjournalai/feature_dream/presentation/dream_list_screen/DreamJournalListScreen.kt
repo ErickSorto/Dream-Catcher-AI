@@ -72,6 +72,7 @@ fun DreamJournalListScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding),
+        contentPadding = PaddingValues(bottom = 32.dp)
     ) {
 
         val dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
@@ -102,8 +103,8 @@ fun DreamJournalListScreen(
                         dream = dream,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 10.dp)
+                            .padding(horizontal = 12.dp)
                             .clickable {
                                 navController.navigate(
                                     Screens.AddEditDreamScreen.route +

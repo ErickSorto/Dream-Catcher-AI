@@ -31,7 +31,7 @@ fun DreamImageSelectionRow(
     AnimatedInfiniteLazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(vertical = 12.dp, horizontal = 8.dp),
         items = dreamBackgroundImages,
         initialFirstVisibleIndex = initialSelectedItem - 3,
         selectorIndex = initialSelectedItem - 1,
