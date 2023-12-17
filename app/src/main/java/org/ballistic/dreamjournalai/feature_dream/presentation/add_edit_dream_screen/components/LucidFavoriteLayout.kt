@@ -57,7 +57,7 @@ fun LucidCustomButton(
             )
 
         }
-        Text(text = "Lucid")
+        Text(text = "Lucid", color = colorResource(id = R.color.white))
     }
 }
 
@@ -80,6 +80,6 @@ fun FavoriteCustomButton(
                 tint = if (isFavorite) colorResource(R.color.Yellow) else colorResource(id = R.color.white).copy(alpha = 0.5f)
             )
         }
-        Text(text = "Favorite")
+        Text(text = "Favorite", color = colorResource(id = R.color.white))
     }
 }

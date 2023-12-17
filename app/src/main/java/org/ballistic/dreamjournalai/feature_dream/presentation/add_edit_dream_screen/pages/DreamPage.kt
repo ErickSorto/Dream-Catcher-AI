@@ -29,12 +29,11 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun DescriptionPage(
+fun DreamPage(
     pagerState: PagerState,
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},
 ) {
-
 
     Column(
         modifier = Modifier
@@ -48,9 +47,6 @@ fun DescriptionPage(
             onValueChange = {
                 onAddEditDreamEvent(AddEditDreamEvent.EnteredTitle(it))
             },
-            onFocusChange = {
-                onAddEditDreamEvent(AddEditDreamEvent.EnteredTitle(addEditDreamState.dreamTitle))
-            },
             isHintVisible = addEditDreamState.dreamTitle.isBlank(),
             singleLine = true,
             textStyle = MaterialTheme.typography.headlineLarge.copy(color = colorResource(id = R.color.white)),
@@ -59,8 +55,7 @@ fun DescriptionPage(
                 .background(
                     colorResource(id = R.color.dark_blue).copy(.7f))
                 .padding(16.dp)
-                .onFocusEvent {
-                }
+                .focusable()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -70,9 +65,6 @@ fun DescriptionPage(
             hint = LocalContext.current.getString(R.string.hint_description),
             onValueChange = {
                 onAddEditDreamEvent(AddEditDreamEvent.EnteredContent(it))
-            },
-            onFocusChange = {
-                onAddEditDreamEvent(AddEditDreamEvent.EnteredContent(addEditDreamState.dreamContent))
             },
             isHintVisible = addEditDreamState.dreamContent.isBlank(),
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = colorResource(id = R.color.white)),

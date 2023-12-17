@@ -56,7 +56,7 @@ fun DreamItem(
         ) {
             Box(
                 modifier = Modifier
-                    .padding(16.dp, 8.dp, 8.dp, 0.dp)
+                    .padding(16.dp, 16.dp, 8.dp, 16.dp)
                     .size(60.dp)
                     .shadow(16.dp, CircleShape, true, Color.Black.copy(alpha = 0.8f))
                     .clip(CircleShape)

@@ -1,6 +1,8 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel
 
 import android.app.Activity
+import android.app.Application
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.Keep
@@ -23,16 +25,23 @@ import com.aallam.openai.client.OpenAI
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.maxkeppeker.sheets.core.models.base.SheetState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.BuildConfig
 import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
 import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.feature_dream.domain.model.*
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryWord
+import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
+import org.ballistic.dreamjournalai.feature_dream.domain.model.InvalidDreamException
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
+import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -45,6 +54,7 @@ class AddEditDreamViewModel @Inject constructor(
     private val dreamUseCases: DreamUseCases,
     private val adManagerRepository: AdManagerRepository,
     private val authRepository: AuthRepository,
+    private val application: Application,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -105,9 +115,11 @@ class AddEditDreamViewModel @Inject constructor(
                                 )
                             }
                         }
+
                         is Resource.Error -> {
                             // handle error
                         }
+
                         is Resource.Loading -> {
                             // handle loading
                         }
@@ -129,7 +141,8 @@ class AddEditDreamViewModel @Inject constructor(
 
             is AddEditDreamEvent.EnteredContent -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
-                    dreamContent = event.value
+                    dreamContent = event.value,
+                    dreamContentChanged = true
                 )
             }
 
@@ -140,6 +153,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ClickGenerateAIResponse -> {
                 getAIResponse(
                     command = "Please interpret the following dream: ${
@@ -197,12 +211,16 @@ class AddEditDreamViewModel @Inject constructor(
                     activity = event.activity,
                     updateLoadingState = { isLoading ->
                         _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamMoodAIAnalyser = addEditDreamState.value.dreamMoodAIAnalyser.copy(isLoading = isLoading)
+                            dreamMoodAIAnalyser = addEditDreamState.value.dreamMoodAIAnalyser.copy(
+                                isLoading = isLoading
+                            )
                         )
                     },
                     updateResponseState = { mood ->
                         _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamMoodAIAnalyser = addEditDreamState.value.dreamMoodAIAnalyser.copy(mood = mood)
+                            dreamMoodAIAnalyser = addEditDreamState.value.dreamMoodAIAnalyser.copy(
+                                mood = mood
+                            )
                         )
                     }
                 )
@@ -218,12 +236,16 @@ class AddEditDreamViewModel @Inject constructor(
                     activity = event.activity,
                     updateLoadingState = { isLoading ->
                         _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamStoryGeneration = addEditDreamState.value.dreamStoryGeneration.copy(isLoading = isLoading)
+                            dreamStoryGeneration = addEditDreamState.value.dreamStoryGeneration.copy(
+                                isLoading = isLoading
+                            )
                         )
                     },
                     updateResponseState = { story ->
                         _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamStoryGeneration = addEditDreamState.value.dreamStoryGeneration.copy(story = story)
+                            dreamStoryGeneration = addEditDreamState.value.dreamStoryGeneration.copy(
+                                story = story
+                            )
                         )
                     }
                 )
@@ -241,12 +263,16 @@ class AddEditDreamViewModel @Inject constructor(
                     activity = event.activity,
                     updateLoadingState = { isLoading ->
                         _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamQuestionAIAnswer = addEditDreamState.value.dreamQuestionAIAnswer.copy(isLoading = isLoading)
+                            dreamQuestionAIAnswer = addEditDreamState.value.dreamQuestionAIAnswer.copy(
+                                isLoading = isLoading
+                            )
                         )
                     },
                     updateResponseState = { answer ->
                         _addEditDreamState.value = addEditDreamState.value.copy(
-                            dreamQuestionAIAnswer = addEditDreamState.value.dreamQuestionAIAnswer.copy(answer = answer)
+                            dreamQuestionAIAnswer = addEditDreamState.value.dreamQuestionAIAnswer.copy(
+                                answer = answer
+                            )
                         )
                     }
                 )
@@ -286,6 +312,7 @@ class AddEditDreamViewModel @Inject constructor(
                     }
                 }
             }
+
             is AddEditDreamEvent.ClickGenerateDetails -> {
                 if (addEditDreamState.value.dreamContent.length >= 1000) {
                     getAIDetailsResponse()
@@ -305,6 +332,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeVividness -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
@@ -312,6 +340,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeMood -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
@@ -319,6 +348,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeNightmare -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
@@ -326,6 +356,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeRecurrence -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
@@ -333,6 +364,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeIsLucid -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
@@ -340,6 +372,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeFavorite -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
@@ -347,6 +380,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeFalseAwakening -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
@@ -354,6 +388,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeTimeOfDay -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
@@ -361,6 +396,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ClickGenerateFromDescription -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamAIImage = DreamAIImage(
@@ -387,6 +423,7 @@ class AddEditDreamViewModel @Inject constructor(
                     dreamUseCases.deleteDream(SavedStateHandle()["dreamId"]!!)
                 }
             }
+
             is AddEditDreamEvent.ChangeDreamDate -> {
                 val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
                 val formattedDate = event.value.format(formatter)
@@ -396,6 +433,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeDreamWakeTime -> {
                 val formatter = DateTimeFormatter.ofPattern(
                     if (event.value.hour < 10) "h:mm a" else "hh:mm a"
@@ -407,6 +445,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeDreamSleepTime -> {
                 val formatter = DateTimeFormatter.ofPattern(
                     if (event.value.hour < 10) "h:mm a" else "hh:mm a"
@@ -418,6 +457,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
+
             is AddEditDreamEvent.ChangeQuestionOfDream -> {
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamQuestionAIAnswer = DreamQuestionAIAnswer(
@@ -425,7 +465,71 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
             }
-            is AddEditDreamEvent.SaveDream-> {
+
+            is AddEditDreamEvent.ClickWord -> {
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    bottomSheetState = mutableStateOf(true),
+                    isClickedWordUnlocked = event.word.cost == 0,
+                    clickedWord = event.word
+                )
+            }
+
+            is AddEditDreamEvent.FilterDreamWordInDictionary -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    _addEditDreamState.value = addEditDreamState.value.copy(
+                        dreamFilteredDictionaryWords = dictionaryWordsInDreamFilterList(),
+                        dreamContentChanged = false
+                    )
+                }
+            }
+
+            is AddEditDreamEvent.LoadWords -> {
+                viewModelScope.launch {
+                    loadWords()
+                }
+            }
+
+            is AddEditDreamEvent.GetUnlockedWords -> {
+                viewModelScope.launch {
+                    authRepository.getUnlockedWords().collect { result ->
+                        when (result) {
+                            is Resource.Loading -> {
+                                // Handle loading state if needed
+                            }
+
+                            is Resource.Success -> {
+                                Log.d("AddEditDreamViewModel", "Unlocked words: ${result.data}")
+                                _addEditDreamState.update { state ->
+                                    state.copy(
+                                        unlockedWords = result.data?.toMutableList()
+                                            ?: mutableListOf()
+                                    )
+                                }
+                            }
+
+                            is Resource.Error -> {
+                                _addEditDreamState.value.snackBarHostState.value.showSnackbar(
+                                    message = "Error getting unlocked words: ${result.message}",
+                                    actionLabel = "Dismiss"
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            is AddEditDreamEvent.ClickBuyWord -> {
+                viewModelScope.launch {
+                    _addEditDreamState.value = addEditDreamState.value.copy(
+                        isDreamExitOff = true
+                    )
+                    handleUnlockWord(event)
+                    _addEditDreamState.value = addEditDreamState.value.copy(
+                        isDreamExitOff = false
+                    )
+                }
+            }
+
+            is AddEditDreamEvent.SaveDream -> {
                 Log.d("AddEditDreamViewModel", "Dream saved successfully")
                 _addEditDreamState.value.dreamIsSavingLoading.value = true
                 viewModelScope.launch {
@@ -483,6 +587,69 @@ class AddEditDreamViewModel @Inject constructor(
         }
     }
 
+    private fun handleUnlockWord(event: AddEditDreamEvent.ClickBuyWord) {
+        Log.d("DictionaryScreen", "${_addEditDreamState.value.isDreamExitOff}")
+        if (event.isAd) {
+            runAd(
+                activity = event.activity,
+                onRewardedAd = { unlockWordWithAd(event.dictionaryWord) },
+                onAdFailed = { Log.d("DictionaryScreen", "Ad failed") }
+            )
+        } else {
+            unlockWordWithTokens(event.dictionaryWord)
+        }
+    }
+
+    private fun unlockWordWithAd(dictionaryWord: DictionaryWord) {
+        viewModelScope.launch {
+            Log.d("DictionaryScreen", "Unlocking word with ad")
+            processUnlockWordResult(
+                result = authRepository.unlockWord(dictionaryWord.word, 0),
+                dictionaryWord = dictionaryWord
+            )
+        }
+    }
+
+    private fun unlockWordWithTokens(dictionaryWord: DictionaryWord) {
+        Log.d("DictionaryScreen", "Unlocking word with dream tokens")
+        viewModelScope.launch {
+            processUnlockWordResult(
+                result = authRepository.unlockWord(dictionaryWord.word, dictionaryWord.cost),
+                dictionaryWord = dictionaryWord
+            )
+        }
+    }
+
+    private suspend fun processUnlockWordResult(result: Resource<Boolean>, dictionaryWord: DictionaryWord) {
+        when (result) {
+            is Resource.Error -> {
+                _addEditDreamState.value.snackBarHostState.value.showSnackbar(
+                    message = "Error unlocking word: ${result.message}",
+                    actionLabel = "Dismiss"
+                )
+            }
+            is Resource.Success -> {
+                updateScreenStateForUnlockedWord(dictionaryWord)
+                Log.d("DictionaryScreen", "Word unlocked successfully")
+            }
+            is Resource.Loading -> {
+                // Handle loading state if needed
+            }
+        }
+    }
+
+    private fun updateScreenStateForUnlockedWord(dictionaryWord: DictionaryWord) {
+        _addEditDreamState.update { state ->
+            state.copy(
+                isClickedWordUnlocked = true,
+                clickedWord = dictionaryWord,
+                unlockedWords = state.unlockedWords.apply {
+                    add(dictionaryWord.word)
+                }
+            )
+        }
+    }
+
     private fun getAIResponse(
         command: String,
         isAd: Boolean,
@@ -496,8 +663,12 @@ class AddEditDreamViewModel @Inject constructor(
         )
         viewModelScope.launch {
             if (addEditDreamState.value.dreamContent.length < 10) {
-                val message = if (addEditDreamState.value.dreamContent.isEmpty()) "Dream content is empty" else "Dream content is too short"
-                addEditDreamState.value.snackBarHostState.value.showSnackbar(message, duration = SnackbarDuration.Short)
+                val message =
+                    if (addEditDreamState.value.dreamContent.isEmpty()) "Dream content is empty" else "Dream content is too short"
+                addEditDreamState.value.snackBarHostState.value.showSnackbar(
+                    message,
+                    duration = SnackbarDuration.Short
+                )
                 return@launch
             }
 
@@ -516,7 +687,10 @@ class AddEditDreamViewModel @Inject constructor(
                         _addEditDreamState.value = addEditDreamState.value.copy(
                             isDreamExitOff = false
                         )
-                        addEditDreamState.value.snackBarHostState.value.showSnackbar("Ad failed to load", duration = SnackbarDuration.Short)
+                        addEditDreamState.value.snackBarHostState.value.showSnackbar(
+                            "Ad failed to load",
+                            duration = SnackbarDuration.Short
+                        )
                     }
                 })
             } else {
@@ -541,8 +715,12 @@ class AddEditDreamViewModel @Inject constructor(
             val modelId = if (cost <= 1) "gpt-3.5-turbo" else "gpt-4"
             val chatCompletionRequest = ChatCompletionRequest(
                 model = ModelId(modelId),
-                messages = listOf(ChatMessage(role = ChatRole.User, content = "$command." +
-                        "\n Respond in this language: $currentLocale")),
+                messages = listOf(
+                    ChatMessage(
+                        role = ChatRole.User, content = "$command." +
+                                "\n Respond in this language: $currentLocale"
+                    )
+                ),
                 maxTokens = 500
             )
 
@@ -624,12 +802,17 @@ class AddEditDreamViewModel @Inject constructor(
 
                 val imageCreation = ImageCreation(
                     prompt = addEditDreamState.value.dreamGeneratedDetails.response,
-                    model = ModelId(if (cost <= 2){ "dall-e-2"} else "dall-e-3"), // Adjust the model as per your requirement
+                    model = ModelId(
+                        if (cost <= 2) {
+                            "dall-e-2"
+                        } else "dall-e-3"
+                    ), // Adjust the model as per your requirement
                     n = 1,
                     size = if (cost <= 2) ImageSize.is512x512 else ImageSize.is1024x1024,
                 )
 
-                val images = openAI.imageURL(imageCreation) // Assuming imageURL returns a list of URLs
+                val images =
+                    openAI.imageURL(imageCreation) // Assuming imageURL returns a list of URLs
 
                 // Assuming the first image's URL is what you need
                 val imageUrl = images.firstOrNull()?.url ?: ""
@@ -661,6 +844,116 @@ class AddEditDreamViewModel @Inject constructor(
     }
 
 
+    private fun loadWords() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val words = readDictionaryWordsFromCsv(application.applicationContext)
+
+            Log.d("DictionaryScreen", "Loaded words: ${words.size}")
+
+            _addEditDreamState.update { state ->
+                state.copy(
+                    dictionaryWordMutableList = words.toMutableList()
+                )
+            }
+        }
+    }
+
+    private fun dictionaryWordsInDreamFilterList(): List<DictionaryWord> {
+        _addEditDreamState.value = addEditDreamState.value.copy(
+            isDreamFilterLoading = true
+        )
+        val words = mutableListOf<DictionaryWord>()
+        val dreamWords = addEditDreamState.value.dreamContent.lowercase(Locale.ROOT)
+            .split("\\s+".toRegex()) // Split on any whitespace
+            .map { it.trim('.', '?', '\"', '\'') } // Remove punctuation at the start/end of each word
+
+        val suffixes = listOf("ing", "ed", "er", "est", "s", "y")
+
+        for (dreamWord in dreamWords) {
+            if (dreamWord.isNotEmpty() && dreamWord.length > 2) {
+                for (dictionary in addEditDreamState.value.dictionaryWordMutableList) {
+                    val dictionaryWordLower = dictionary.word.lowercase(Locale.getDefault())
+                    val possibleMatches = generatePossibleMatches(dreamWord, suffixes)
+
+                    if (possibleMatches.contains(dictionaryWordLower) && !words.contains(dictionary)) {
+                        words.add(dictionary)
+                    } else {
+                        // Try removing suffixes from the dream word to see if it matches the dictionary word
+                        val baseForm = removeSuffixes(dreamWord, suffixes)
+                        if (baseForm == dictionaryWordLower && !words.contains(dictionary)) {
+                            words.add(dictionary)
+                        }
+                    }
+                }
+            }
+        }
+        _addEditDreamState.value = addEditDreamState.value.copy(
+            isDreamFilterLoading = false
+        )
+        return words.sortedBy { it.word }
+    }
+
+    private fun generatePossibleMatches(baseWord: String, suffixes: List<String>): Set<String> {
+        val matches = mutableSetOf<String>()
+        if (baseWord.isNotEmpty()) {
+            matches.add(baseWord) // Add the base word itself
+
+            if (baseWord.length <= 3) {
+                suffixes.forEach { suffix ->
+                    matches.add(baseWord + baseWord.last() + suffix)
+                }
+            } else {
+                suffixes.forEach { suffix ->
+                    matches.add(baseWord + suffix)
+                    matches.add(baseWord + baseWord.last() + suffix)
+                    if (baseWord.last() != suffix.first()) {
+                        matches.add(baseWord.dropLast(1) + suffix)
+                    }
+                }
+            }
+        }
+        return matches
+    }
+
+    private fun removeSuffixes(word: String, suffixes: List<String>): String {
+        var baseForm = word
+        suffixes.forEach { suffix ->
+            if (word.endsWith(suffix)) {
+                baseForm = word.removeSuffix(suffix)
+                return@forEach
+            }
+        }
+        return baseForm
+    }
+
+
+    private fun readDictionaryWordsFromCsv(context: Context): List<DictionaryWord> {
+        val words = mutableListOf<DictionaryWord>()
+        val csvRegex = """"(.*?)"|([^,]+)""".toRegex() // Matches quoted strings or unquoted tokens
+        try {
+            context.assets.open("dream_dictionary.csv").bufferedReader().useLines { lines ->
+                lines.drop(1).forEach { line ->
+                    val tokens = csvRegex.findAll(line).map { it.value.trim('"') }.toList()
+                    if (tokens.size >= 3) {
+                        val cost =
+                            tokens.last().toIntOrNull() ?: 0 // Assuming cost is the last token
+                        words.add(
+                            DictionaryWord(
+                                word = tokens.first(), // Assuming word is the first token
+                                definition = tokens.drop(1).dropLast(1)
+                                    .joinToString(","), // Joining all tokens that are part of the definition
+                                isUnlocked = cost == 0, // If cost is 0, then the word is unlocked
+                                cost = cost
+                            )
+                        )
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return words
+    }
 
 
     private fun runAd(
@@ -728,6 +1021,7 @@ data class AddEditDreamState(
         dreamVividness = 0,
         dreamEmotion = 0
     ),
+    val dreamContentChanged: Boolean = true,
     val dreamAIExplanation: DreamAIExplanation = DreamAIExplanation(
         response = "",
         isLoading = false,
@@ -779,6 +1073,13 @@ data class AddEditDreamState(
     val moodPopupState: MutableState<Boolean> = mutableStateOf(false),
     val isDreamExitOff: Boolean = false,
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
+    val dictionaryWordMutableList: MutableList<DictionaryWord> = mutableListOf(),
+    val dreamFilteredDictionaryWords: List<DictionaryWord> = mutableListOf(),
+    val unlockedWords: MutableList<String> = mutableListOf(),
+    val bottomSheetState: MutableState<Boolean> = mutableStateOf(false),
+    val clickedWord: DictionaryWord = DictionaryWord("", "", false, 0),
+    val isClickedWordUnlocked: Boolean = false,
+    val isDreamFilterLoading: Boolean = false,
 )
 
 data class DreamAIExplanation(

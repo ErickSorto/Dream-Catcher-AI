@@ -13,6 +13,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -254,7 +255,6 @@ fun MainScreenView(
                                         ),
                                         modifier = Modifier
                                             .align(Alignment.Center)
-                                            .padding(start = 16.dp, end = 16.dp)
 
                                     ) {
                                         TransparentHintTextField(
@@ -262,8 +262,6 @@ fun MainScreenView(
                                             hint = "Search dream...",
                                             onValueChange = {
                                                 onMainEvent(MainScreenEvent.SearchDreams(it))
-                                            },
-                                            onFocusChange = {
                                             },
                                             isHintVisible = searchedText.value.isBlank(),
                                             singleLine = true,
@@ -275,9 +273,10 @@ fun MainScreenView(
                                                         alpha = 0.2f
                                                     )
                                                 )
-                                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                                .padding(4.dp, 2.dp, 0.dp, 2.dp)
                                                 .fillMaxWidth()
                                                 .padding(4.dp)
+                                                .focusable()
                                         )
                                     }
                                 }
@@ -288,7 +287,7 @@ fun MainScreenView(
                                 }
                             },
                             actions = {
-                                if (!mainScreenViewModelState.scaffoldState.isUserSearching){
+                                if (!mainScreenViewModelState.scaffoldState.isUserSearching) {
                                     IconButton(
                                         onClick = {
                                             onMainEvent(MainScreenEvent.SetSearchingState(!mainScreenViewModelState.scaffoldState.isUserSearching))

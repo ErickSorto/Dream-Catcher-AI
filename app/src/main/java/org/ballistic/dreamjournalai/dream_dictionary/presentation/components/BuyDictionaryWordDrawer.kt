@@ -17,14 +17,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
-import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenState
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.AdTokenLayout
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuyDictionaryWordDrawer(
-    dictionaryScreenState: DictionaryScreenState,
     title: String,
+    token: Int,
     onAdClick: () -> Unit,
     onDreamTokenClick: () -> Unit,
     onClickOutside: () -> Unit,
@@ -53,7 +52,7 @@ fun BuyDictionaryWordDrawer(
                         modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 16.dp)
                     )
                     DreamTokenLayout(
-                        totalDreamTokens = dictionaryScreenState.dreamTokens.value,
+                        totalDreamTokens = token,
                     )
                 }
                 AdTokenLayout(

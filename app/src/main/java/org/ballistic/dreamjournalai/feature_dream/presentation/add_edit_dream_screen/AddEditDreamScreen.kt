@@ -62,6 +62,11 @@ fun AddEditDreamScreen(
         MainScreenEvent.SetDrawerState(false)
     ).forEach(onMainEvent)
 
+    listOf(
+        AddEditDreamEvent.GetUnlockedWords,
+        AddEditDreamEvent.LoadWords
+    ).forEach(onAddEditDreamEvent)
+
     BackHandler(enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading.value) {
         addEditDreamState.dialogState.value = true
     }

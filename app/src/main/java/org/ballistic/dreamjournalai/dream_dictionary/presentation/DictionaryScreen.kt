@@ -46,12 +46,14 @@ import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.Buy
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordDrawer
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordItem
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenState
+import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 
 @Composable
 fun DictionaryScreen(
     dictionaryScreenState: DictionaryScreenState,
     paddingValues: PaddingValues,
     onEvent: (DictionaryEvent) -> Unit = {},
+    onMainEvent: (MainScreenEvent) -> Unit = {},
 ) {
     val alphabet = remember { ('A'..'Z').toList() }
     val listState = rememberLazyListState()
@@ -76,6 +78,7 @@ fun DictionaryScreen(
         onEvent(DictionaryEvent.LoadWords)
         onEvent(DictionaryEvent.GetUnlockedWords)
         onEvent(DictionaryEvent.FilterByLetter('A'))
+        onMainEvent(MainScreenEvent.SetSearchingState(false))
     }
 
 
@@ -112,7 +115,7 @@ fun DictionaryScreen(
                 onClickOutside = {
                     dictionaryScreenState.bottomSheetState.value = false
                 },
-                dictionaryScreenState = dictionaryScreenState,
+                token = dictionaryScreenState.dreamTokens.value,
                 amount = dictionaryScreenState.clickedWord.cost
             )
         } else if (dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {

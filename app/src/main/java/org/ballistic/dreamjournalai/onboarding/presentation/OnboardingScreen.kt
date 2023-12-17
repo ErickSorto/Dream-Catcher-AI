@@ -57,7 +57,6 @@ fun OnboardingScreen(
     onSignupEvent: (SignupEvent) -> Unit,
     onDataLoaded: () -> Unit,
 ) {
-    var onDataLoadedBoolean = remember { mutableStateOf(false) }
     val showLoginLayout = remember { mutableStateOf(false) }
     val titleText = remember { mutableStateOf("Welcome Dreamer!") }
     val visible = remember { mutableStateOf(true) }
@@ -83,7 +82,7 @@ fun OnboardingScreen(
 
     Box {
         Image(
-            painter = painterResource(org.ballistic.dreamjournalai.R.drawable.blue_lighthouse),
+            painter = painterResource(R.drawable.blue_lighthouse),
             contentDescription = "background",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -97,6 +96,7 @@ fun OnboardingScreen(
         },
         containerColor = Color.Transparent
     ) {
+        it
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally

@@ -21,8 +21,9 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AIPage
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.DescriptionPage
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.DreamPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.InfoPage
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.dictionary_page.WordPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
@@ -37,7 +38,7 @@ fun TabLayout(
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
 ) {
-    val pages = listOf("Description", "AI", "Info")
+    val pages = listOf("Dream", "AI","Words", "Info")
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
 
@@ -77,7 +78,7 @@ fun TabLayout(
     ) { page ->
         when (page) {
             0 -> {
-                DescriptionPage(
+                DreamPage(
                     pagerState,
                     addEditDreamState = addEditDreamState,
                     onAddEditDreamEvent = onAddEditDreamEvent
@@ -92,6 +93,13 @@ fun TabLayout(
                 )
             }
             2 -> {
+                WordPage(
+                    addEditDreamState = addEditDreamState,
+                    onAddEditDreamEvent = onAddEditDreamEvent,
+                    mainScreenViewModelState = mainScreenViewModelState
+                )
+            }
+            3 -> {
                 InfoPage(
                     dreamBackgroundImage,
                     addEditDreamState = addEditDreamState,

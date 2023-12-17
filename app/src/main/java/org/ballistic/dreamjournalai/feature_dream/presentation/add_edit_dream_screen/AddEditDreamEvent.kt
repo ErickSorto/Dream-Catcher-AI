@@ -1,6 +1,8 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen
 
 import android.app.Activity
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.DictionaryEvent
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryWord
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -38,4 +40,14 @@ sealed class AddEditDreamEvent {
     data class ChangeQuestionOfDream(val value: String) : AddEditDreamEvent()
     data class SaveDream(val onSaveSuccess : () -> Unit) : AddEditDreamEvent()
     data object DeleteDream : AddEditDreamEvent()
+
+    data class ClickWord(val word: DictionaryWord) : AddEditDreamEvent()
+
+    data object GetUnlockedWords : AddEditDreamEvent()
+
+    data object LoadWords : AddEditDreamEvent()
+
+    data object FilterDreamWordInDictionary : AddEditDreamEvent()
+
+    data class ClickBuyWord(val dictionaryWord: DictionaryWord, val isAd: Boolean, val activity: Activity) : AddEditDreamEvent()
 }

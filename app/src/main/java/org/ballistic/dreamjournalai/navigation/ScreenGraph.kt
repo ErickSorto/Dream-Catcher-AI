@@ -168,7 +168,9 @@ fun ScreenGraph(
             DictionaryScreen(
                 dictionaryScreenState = dictionaryScreenState.value,
                 paddingValues = innerPadding,
-            ) { dictionaryScreenViewModel.onEvent(it) }
+                onMainEvent = { onMainEvent(it) },
+                onEvent = { dictionaryScreenViewModel.onEvent(it) },
+            )
         }
 
         composable(route = Screens.DreamSettings.route) {

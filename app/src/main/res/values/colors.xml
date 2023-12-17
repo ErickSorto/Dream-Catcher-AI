@@ -9,8 +9,8 @@
     <color name="lighter_yellow">#FFDFB2</color>
     <color name="black">#000000</color>
     <color name="light_black">#1A1A1A</color>
-    <color name="white">#F0EAD6</color>
+    <color name="white">#EFEEE9</color>
     <color name="brighter_white">#FFFFFF</color>
     <color name="dark_blue">#22252A</color>
-    <color name="dark_purple">#534C73</color>
+    <color name="dark_purple">#4A4261</color>
 </resources>

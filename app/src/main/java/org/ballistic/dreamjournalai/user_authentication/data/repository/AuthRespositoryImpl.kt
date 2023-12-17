@@ -116,12 +116,14 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun getUnlockedWords(): Flow<Resource<List<String>>> {
         return flow {
+            Log.d("UnlockWords", "getUnlockedWords")
             emit(Resource.Loading())
             val user = currentUser
             run {
                 val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
                 val snapshot = userDocRef?.get()?.await()
                 val unlockedWords = snapshot?.get("unlockedWords") as? ArrayList<String>
+                Log.d("UnlockWords", "unlockedWords: $unlockedWords")
                 if (unlockedWords != null) {
                     emit(Resource.Success(unlockedWords))
                 } else {

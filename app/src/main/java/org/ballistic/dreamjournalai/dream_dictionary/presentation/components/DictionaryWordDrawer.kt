@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.dream_dictionary.presentation.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,7 +23,6 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DictionaryWordDrawer(
     title: String,
