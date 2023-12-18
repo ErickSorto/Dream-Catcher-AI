@@ -41,8 +41,8 @@ fun DreamImageSelectionRow(
         showPartialItem = true,
         activeColor = Color.Cyan,
         inactiveColor = Color.Gray,
-        itemContent = { animationProgress, index, image, width ->
-            val scale = animationProgress.scale
+        itemContent = { animationProgress, _, image, width ->
+            animationProgress.scale
 
            //  selectedItem = animationProgress.itemIndex
            // dreamBackgroundImage.value = selectedItem

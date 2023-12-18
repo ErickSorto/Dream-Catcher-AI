@@ -517,15 +517,13 @@ class AddEditDreamViewModel @Inject constructor(
                     }
                 }
             }
+
             is AddEditDreamEvent.ClickBuyWord -> {
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    isDreamExitOff = true
+                )
                 viewModelScope.launch {
-                    _addEditDreamState.value = addEditDreamState.value.copy(
-                        isDreamExitOff = true
-                    )
                     handleUnlockWord(event)
-                    _addEditDreamState.value = addEditDreamState.value.copy(
-                        isDreamExitOff = false
-                    )
                 }
             }
 
@@ -588,15 +586,27 @@ class AddEditDreamViewModel @Inject constructor(
     }
 
     private fun handleUnlockWord(event: AddEditDreamEvent.ClickBuyWord) {
-        Log.d("DictionaryScreen", "${_addEditDreamState.value.isDreamExitOff}")
         if (event.isAd) {
             runAd(
                 activity = event.activity,
-                onRewardedAd = { unlockWordWithAd(event.dictionaryWord) },
-                onAdFailed = { Log.d("DictionaryScreen", "Ad failed") }
+                onRewardedAd = {
+                    unlockWordWithAd(event.dictionaryWord)
+                    _addEditDreamState.value = addEditDreamState.value.copy(
+                        isDreamExitOff = false
+                    )
+                },
+                onAdFailed = {
+                    Log.d("DictionaryScreen", "Ad failed")
+                    _addEditDreamState.value = addEditDreamState.value.copy(
+                        isDreamExitOff = false
+                    )
+                }
             )
         } else {
             unlockWordWithTokens(event.dictionaryWord)
+            _addEditDreamState.value = addEditDreamState.value.copy(
+                isDreamExitOff = false
+            )
         }
     }
 
@@ -620,7 +630,10 @@ class AddEditDreamViewModel @Inject constructor(
         }
     }
 
-    private suspend fun processUnlockWordResult(result: Resource<Boolean>, dictionaryWord: DictionaryWord) {
+    private suspend fun processUnlockWordResult(
+        result: Resource<Boolean>,
+        dictionaryWord: DictionaryWord
+    ) {
         when (result) {
             is Resource.Error -> {
                 _addEditDreamState.value.snackBarHostState.value.showSnackbar(
@@ -628,10 +641,12 @@ class AddEditDreamViewModel @Inject constructor(
                     actionLabel = "Dismiss"
                 )
             }
+
             is Resource.Success -> {
                 updateScreenStateForUnlockedWord(dictionaryWord)
                 Log.d("DictionaryScreen", "Word unlocked successfully")
             }
+
             is Resource.Loading -> {
                 // Handle loading state if needed
             }
@@ -865,7 +880,14 @@ class AddEditDreamViewModel @Inject constructor(
         val words = mutableListOf<DictionaryWord>()
         val dreamWords = addEditDreamState.value.dreamContent.lowercase(Locale.ROOT)
             .split("\\s+".toRegex()) // Split on any whitespace
-            .map { it.trim('.', '?', '\"', '\'') } // Remove punctuation at the start/end of each word
+            .map {
+                it.trim(
+                    '.',
+                    '?',
+                    '\"',
+                    '\''
+                )
+            } // Remove punctuation at the start/end of each word
 
         val suffixes = listOf("ing", "ed", "er", "est", "s", "y")
 

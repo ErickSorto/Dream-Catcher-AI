@@ -17,8 +17,8 @@ android {
         applicationId "org.ballistic.dreamjournalai"
         minSdk 23
         targetSdk 34
-        versionCode 42
-        versionName "1.1.1"
+        versionCode 43
+        versionName "1.1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
@@ -69,10 +69,10 @@ android {
 
 dependencies {
     // AndroidX dependencies
-    implementation 'androidx.activity:activity-compose:1.8.1'
+    implementation 'androidx.activity:activity-compose:1.8.2'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.compose.material3:material3:1.2.0-alpha12'
-    implementation "androidx.compose.material3:material3-window-size-class:1.2.0-alpha12"
+    implementation 'androidx.compose.material3:material3:1.2.0-beta01'
+    implementation "androidx.compose.material3:material3-window-size-class:1.2.0-beta01"
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
@@ -85,7 +85,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
     implementation "androidx.compose.material:material-icons-extended"
-    implementation "androidx.navigation:navigation-compose:2.7.5"
+    implementation "androidx.navigation:navigation-compose:2.7.6"
     implementation "androidx.room:room-ktx:2.6.1"
 
     // Testing and Debugging

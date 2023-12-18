@@ -62,6 +62,11 @@ class DreamJournalListViewModel @Inject constructor(
             is DreamListEvent.SearchDreams -> {
                 _dreamJournalListState.value.searchedText.value = event.searchQuery
             }
+            is DreamListEvent.SetSearchingState -> {
+                _dreamJournalListState.value = _dreamJournalListState.value.copy(
+                    isSearching = event.state
+                )
+            }
         }
     }
 

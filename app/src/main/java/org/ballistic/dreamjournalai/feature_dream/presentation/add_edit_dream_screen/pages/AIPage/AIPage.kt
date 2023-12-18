@@ -446,7 +446,7 @@ fun AIPage(
                     modifier = Modifier.padding(8.dp),
                     text = "Results",
                     style = typography.titleMedium.copy(color = colorResource(id = R.color.brighter_white)),
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Light,
                 )
                 Spacer(
                     modifier = Modifier

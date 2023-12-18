@@ -48,7 +48,6 @@ fun ScreenGraph(
                 navController = navController,
                 mainScreenViewModelState = mainScreenViewModelState,
                 dreamJournalListState = dreamJournalListViewModel.dreamJournalListState.collectAsStateWithLifecycle().value,
-                innerPadding = innerPadding,
                 onMainEvent = { onMainEvent(it) },
                 onDreamListEvent = { dreamJournalListViewModel.onEvent(it) },
             )

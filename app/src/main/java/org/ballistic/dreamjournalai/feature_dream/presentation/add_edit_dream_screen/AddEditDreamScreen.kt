@@ -57,7 +57,6 @@ fun AddEditDreamScreen(
     listOf(
         MainScreenEvent.SetBottomBarState(false),
         MainScreenEvent.SetFloatingActionButtonState(false),
-        MainScreenEvent.SetTopBarState(false),
         MainScreenEvent.SetSearchingState(false),
         MainScreenEvent.SetDrawerState(false)
     ).forEach(onMainEvent)

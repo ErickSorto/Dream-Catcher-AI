@@ -2,6 +2,8 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.view
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
@@ -107,6 +109,15 @@ class MainScreenViewModel @Inject constructor(
                     )
                 }
             }
+            is MainScreenEvent.ToggleDrawerState -> {
+                viewModelScope.launch {
+                    if(event.drawerValue == DrawerValue.Closed) {
+                        _mainScreenViewModelState.value.drawerMain.close()
+                    } else {
+                        _mainScreenViewModelState.value.drawerMain.open()
+                    }
+                }
+            }
             is MainScreenEvent.UserInteracted -> {
                 repo.recordUserInteraction()
             }
@@ -121,6 +132,7 @@ class MainScreenViewModel @Inject constructor(
 data class MainScreenViewModelState(
     val scaffoldState: ScaffoldState = ScaffoldState(),
     val isDrawerEnabled : Boolean = true,
+    val drawerMain: DrawerState = DrawerState(DrawerValue.Closed),
     val authRepo: AuthRepository,
     val searchedText: MutableStateFlow<String> = MutableStateFlow(""),
     val dreamTokens: StateFlow<Int> = authRepo.dreamTokens,
