@@ -32,7 +32,6 @@ class DreamJournalListViewModel @Inject constructor(
         getDreams(OrderType.Date)
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: DreamListEvent) {
         when (event) {

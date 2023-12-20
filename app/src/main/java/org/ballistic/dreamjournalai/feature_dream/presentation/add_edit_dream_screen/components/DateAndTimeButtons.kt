@@ -3,10 +3,16 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,8 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateAndTimeButtonsLayout(
@@ -25,7 +32,6 @@ fun DateAndTimeButtonsLayout(
 ) {
     Row(
         modifier = Modifier
-            .padding(0.dp, 8.dp, 0.dp, 8.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(Color.White.copy(alpha = 0.3f)),
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -65,29 +71,26 @@ fun DateButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    Button(
-        onClick = onClick,
+    Column(
         modifier = modifier
-            .padding(0.dp, 4.dp, 0.dp, 4.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color.Transparent),
-        colors = buttonColors(
-            containerColor = Color.Transparent,
-        )
+            .background(Color.Transparent)
+            .clickable {
+                onClick()
+            },
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier.background(Color.Transparent),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Date", fontSize = 12.sp, color = colorResource(id = R.color.white))
-            Text(
-                text = addEditDreamState.dreamInfo.dreamDate,
-                fontSize = 10.sp,
-                color = colorResource(id = R.color.white),
-                modifier = Modifier.padding(vertical = 1.dp)
-            )
-        }
-
+        Text(
+            text = "Date",
+            style = typography.labelMedium,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        Text(
+            text = addEditDreamState.dreamInfo.dreamDate,
+            fontSize = 10.sp,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
     }
 }
 
@@ -98,28 +101,26 @@ fun SleepTimeButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .padding(0.dp, 4.dp, 0.dp, 4.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.Transparent),
-        colors = buttonColors(
-            containerColor = Color.Transparent,
-        )
-    ) {
-        Column(
-            modifier = Modifier.background(Color.Transparent),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
 
-            Text(text = "Sleep Time", fontSize = 12.sp, color = colorResource(id =  R.color.white))
-            Text(
-                text = addEditDreamState.dreamInfo.dreamSleepTime,
-                fontSize = 10.sp,
-                color = colorResource(id =  R.color.white)
-            )
-        }
+    Column(
+        modifier = modifier
+            .background(Color.Transparent)
+            .clickable { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(
+            text = "Sleep Time",
+            style = typography.labelSmall,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        Text(
+            text = addEditDreamState.dreamInfo.dreamSleepTime,
+            fontSize = 10.sp,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
     }
 }
 
@@ -130,27 +131,25 @@ fun WakeTimeButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    Button(
-        onClick = onClick,
+    Column(
         modifier = modifier
-            .padding(0.dp, 4.dp, 0.dp, 4.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.Transparent),
-        colors = buttonColors(
-            containerColor = Color.Transparent,
-        )
+            .background(Color.Transparent)
+            .clickable {
+                onClick()
+            },
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Column(
-            modifier = Modifier.background(Color.Transparent),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Wake Time", fontSize = 12.sp, color = colorResource(id =  R.color.white))
-            Text(
-                text = addEditDreamState.dreamInfo.dreamWakeTime,
-                fontSize = 10.sp,
-                color = colorResource(id =  R.color.white)
-            )
-        }
+        Text(
+            text = "Wake Time",
+            style = typography.labelSmall,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        Text(
+            text = addEditDreamState.dreamInfo.dreamWakeTime,
+            fontSize = 10.sp,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
     }
 }

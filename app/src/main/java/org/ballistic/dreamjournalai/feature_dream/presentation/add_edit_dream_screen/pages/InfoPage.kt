@@ -2,10 +2,25 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Mood
@@ -49,12 +64,16 @@ fun InfoPage(
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
 ) {
-    CalendarDialog(state = addEditDreamState.calendarState, config = CalendarConfig(
-        monthSelection = true,
-        yearSelection = true,
-    ), selection = CalendarSelection.Date { date ->
-        onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamDate(date))
-    },)
+    CalendarDialog(
+        state = addEditDreamState.calendarState,
+        config = CalendarConfig(
+            monthSelection = true,
+            yearSelection = true,
+        ),
+        selection = CalendarSelection.Date { date ->
+            onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamDate(date))
+        },
+    )
     ClockDialog(state = addEditDreamState.sleepTimePickerState,
         config = ClockConfig(
             //default time 12:00am
@@ -98,9 +117,11 @@ fun InfoPage(
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp, 16.dp, 16.dp, 0.dp), //bold
-                    style = typography.titleMedium.copy(color = colorResource(id = R.color.white)),
+                    style = typography.titleMedium.copy(color = colorResource(id = R.color.white))
+                        .copy(
+                            fontWeight = FontWeight.Normal
+                        ),
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
                 )
 
                 DreamImageSelectionRow(

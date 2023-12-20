@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,11 +49,12 @@ fun DreamPage(
             },
             isHintVisible = addEditDreamState.dreamTitle.isBlank(),
             singleLine = true,
-            textStyle = MaterialTheme.typography.headlineLarge.copy(color = colorResource(id = R.color.white)),
+            textStyle = typography.headlineMedium.copy(color = colorResource(id = R.color.white)),
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .background(
-                    colorResource(id = R.color.dark_blue).copy(.7f))
+                    colorResource(id = R.color.dark_blue).copy(.7f)
+                )
                 .padding(16.dp)
                 .focusable()
         )
@@ -67,12 +68,15 @@ fun DreamPage(
                 onAddEditDreamEvent(AddEditDreamEvent.EnteredContent(it))
             },
             isHintVisible = addEditDreamState.dreamContent.isBlank(),
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = colorResource(id = R.color.white)),
+            textStyle = typography.bodyLarge.copy(
+                color = colorResource(id = R.color.white)
+            ),
             modifier = Modifier
                 .weight(1f)
                 .clip(RoundedCornerShape(8.dp))
                 .background(
-                    colorResource(id = R.color.dark_blue).copy(.7f))
+                    colorResource(id = R.color.dark_blue).copy(.7f)
+                )
                 .padding(8.dp)
                 .onFocusEvent {
                 }

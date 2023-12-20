@@ -32,7 +32,6 @@ import org.ballistic.dreamjournalai.core.components.TypewriterText
 
 @Composable
 fun AboutMeScreen(
-    paddingValues: PaddingValues
 ) {
     val animationDuration = 5000
     val showButton = remember { mutableStateOf(false) }
@@ -43,7 +42,7 @@ fun AboutMeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues),
+            .padding(),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

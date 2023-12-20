@@ -12,8 +12,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -38,9 +40,11 @@ fun TabLayout(
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
 ) {
-    val pages = listOf("Dream", "AI","Words", "Info")
+    val pages = listOf("Dream", "AI", "Words", "Info")
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+
 
     //keyboard control
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -61,10 +65,16 @@ fun TabLayout(
     ) {
         pages.forEachIndexed { index, page ->
             Tab(
-                text = { Text(page, style = typography.titleSmall) },
+                text = {
+                    Text(
+                        text = page,
+                        style = typography.labelLarge
+                    )
+                },
                 selected = pagerState.currentPage == index,
                 onClick = {
                     keyboardController?.hide()
+                    focusManager.clearFocus()
                     scope.launch { pagerState.animateScrollToPage(index) }
                 }
             )
@@ -84,6 +94,7 @@ fun TabLayout(
                     onAddEditDreamEvent = onAddEditDreamEvent
                 )
             }
+
             1 -> {
                 AIPage(
                     pagerState,
@@ -92,6 +103,7 @@ fun TabLayout(
                     mainScreenViewModelState = mainScreenViewModelState
                 )
             }
+
             2 -> {
                 WordPage(
                     addEditDreamState = addEditDreamState,
@@ -99,6 +111,7 @@ fun TabLayout(
                     mainScreenViewModelState = mainScreenViewModelState
                 )
             }
+
             3 -> {
                 InfoPage(
                     dreamBackgroundImage,

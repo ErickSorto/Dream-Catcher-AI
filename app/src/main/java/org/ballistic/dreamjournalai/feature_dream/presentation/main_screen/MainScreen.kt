@@ -12,10 +12,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -185,7 +181,7 @@ fun MainScreenView(
                     }
                     Text(
                         text = "Version: 1.1.2",
-                        color = if(isSystemInDarkTheme()) Color.White else Color.Black,
+                        color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)
                             .align(Alignment.CenterHorizontally),
@@ -196,13 +192,6 @@ fun MainScreenView(
         },
         content = {
             Scaffold(
-                modifier = if (!mainScreenViewModelState.scaffoldState.bottomBarState) {
-                    Modifier
-                        .padding(bottom = 0.dp)
-                } else {
-                    Modifier
-                        .navigationBarsPadding()
-                },
                 snackbarHost = {
                     SnackbarHost(mainScreenViewModelState.scaffoldState.snackBarHostState.value)
                 },
@@ -213,9 +202,10 @@ fun MainScreenView(
                         exit = slideOutVertically(targetOffsetY = { it })
                     )
                     {
-                        BottomNavigation(navController = navController)
+                        BottomNavigation(navController = navController, modifier = Modifier.navigationBarsPadding())
                         Box(
                             modifier = Modifier
+                                .navigationBarsPadding()
                                 .offset(y = 4.dp)
                                 .fillMaxWidth()
                         ) {
@@ -239,22 +229,12 @@ fun MainScreenView(
                 containerColor = Color.Transparent,
 
                 ) { innerPadding ->
-                val layoutDirection = LocalLayoutDirection.current
-
-                val newPadding = remember(innerPadding) {
-                    PaddingValues(
-                        top = innerPadding.calculateTopPadding(),
-                        bottom = 56.dp, // Set the bottom padding to 96.dp
-                        start = innerPadding.calculateStartPadding(layoutDirection),
-                        end = innerPadding.calculateEndPadding(layoutDirection)
-                    )
-                }
+                innerPadding
 
                 AnimatedVisibility(visible = true, enter = fadeIn(), exit = fadeOut()) {
                     ScreenGraph(
                         navController = navController,
                         mainScreenViewModelState = mainScreenViewModelState,
-                        innerPadding = newPadding,
                         onMainEvent = { onMainEvent(it) },
                         onStoreEvent = { onStoreEvent(it) },
                     ) { onNavigateToOnboardingScreen() }

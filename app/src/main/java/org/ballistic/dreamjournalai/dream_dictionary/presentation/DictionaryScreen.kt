@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -43,15 +45,17 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.BuyDictionaryWordDrawer
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryScreenTopBar
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordDrawer
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.DictionaryWordItem
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
+import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 @Composable
 fun DictionaryScreen(
     dictionaryScreenState: DictionaryScreenState,
-    paddingValues: PaddingValues,
+    mainScreenViewModelState: MainScreenViewModelState,
     onEvent: (DictionaryEvent) -> Unit = {},
     onMainEvent: (MainScreenEvent) -> Unit = {},
 ) {
@@ -86,9 +90,13 @@ fun DictionaryScreen(
         snackbarHost = {
             dictionaryScreenState.snackBarHostState.value
         },
+        topBar = {
+            DictionaryScreenTopBar(
+                mainScreenViewModelState = mainScreenViewModelState,
+            )
+        },
         containerColor = Color.Transparent
     ) {
-        it
         if (!dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
             BuyDictionaryWordDrawer(
                 title = dictionaryScreenState.clickedWord.word,
@@ -129,8 +137,9 @@ fun DictionaryScreen(
         }
         Column(
             modifier = Modifier
+                .padding(it)
+                .navigationBarsPadding()
                 .fillMaxSize()
-                .padding(paddingValues)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

@@ -44,7 +44,7 @@ fun StoreScreen(
         }
     } else {
         onMainEvent(MainScreenEvent.SetTopBarState(false))
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().navigationBarsPadding()) {
             Column(
                 modifier = Modifier
                     .align(alignment = Alignment.BottomCenter)

@@ -32,7 +32,6 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 fun ScreenGraph(
     navController: NavHostController,
     mainScreenViewModelState: MainScreenViewModelState,
-    innerPadding: PaddingValues,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onStoreEvent: (StoreEvent) -> Unit = {},
     onNavigateToOnboardingScreen: () -> Unit = {},
@@ -100,7 +99,7 @@ fun ScreenGraph(
         }
         // Add your new screens here
         composable(route = Screens.Favorites.route) {
-            FeatureComingSoonScreen(paddingValues = innerPadding,
+            FeatureComingSoonScreen(
                 onNavigateToAboutMeScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.AboutMe.route)
@@ -114,7 +113,6 @@ fun ScreenGraph(
             AccountSettingsScreen(
                 loginViewModel.state.collectAsStateWithLifecycle().value,
                 signupViewModel.state.collectAsStateWithLifecycle().value,
-                paddingValues = innerPadding,
                 navigateToOnboardingScreen = onNavigateToOnboardingScreen,
                 onLoginEvent = { loginViewModel.onEvent(it) },
                 onSignupEvent = { signupViewModel.onEvent(it) },
@@ -126,11 +124,11 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.AboutMe.route) {
-            AboutMeScreen(paddingValues = innerPadding)
+            AboutMeScreen()
         }
 
         composable(route = Screens.Tools.route) {
-            FeatureComingSoonScreen(paddingValues = innerPadding,
+            FeatureComingSoonScreen(
                 onNavigateToAboutMeScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.AboutMe.route)
@@ -138,7 +136,7 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Statistics.route) {
-            FeatureComingSoonScreen(paddingValues = innerPadding,
+            FeatureComingSoonScreen(
                 onNavigateToAboutMeScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.AboutMe.route)
@@ -146,14 +144,14 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.NotificationSettings.route) {
-            FeatureComingSoonScreen(paddingValues = innerPadding,
+            FeatureComingSoonScreen(
                 onNavigateToAboutMeScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.AboutMe.route)
                 })
         }
         composable(route = Screens.Nightmares.route) {
-            FeatureComingSoonScreen(paddingValues = innerPadding,
+            FeatureComingSoonScreen(
                 onNavigateToAboutMeScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.AboutMe.route)
@@ -166,14 +164,14 @@ fun ScreenGraph(
                 .collectAsStateWithLifecycle()
             DictionaryScreen(
                 dictionaryScreenState = dictionaryScreenState.value,
-                paddingValues = innerPadding,
+                mainScreenViewModelState = mainScreenViewModelState,
                 onMainEvent = { onMainEvent(it) },
                 onEvent = { dictionaryScreenViewModel.onEvent(it) },
             )
         }
 
         composable(route = Screens.DreamSettings.route) {
-            FeatureComingSoonScreen(paddingValues = innerPadding,
+            FeatureComingSoonScreen(
                 onNavigateToAboutMeScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.AboutMe.route)

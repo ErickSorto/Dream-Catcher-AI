@@ -52,15 +52,14 @@ fun DreamListScreenTopBar(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 8.dp),
             ) {
                 if (!dreamJournalListState.isSearching) {
                     Text(
                         text = "Dream Journal AI",
-                        color = Color.Black,
+                        color = colorResource(id = R.color.white),
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .padding(start = 16.dp)
                     )
                 }
 
@@ -87,7 +86,7 @@ fun DreamListScreenTopBar(
                         },
                         isHintVisible = searchedText.value.isBlank(),
                         singleLine = true,
-                        textStyle = MaterialTheme.typography.headlineSmall,
+                        textStyle = MaterialTheme.typography.headlineSmall.copy(colorResource(id = R.color.white)),
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
                             .background(
@@ -98,7 +97,7 @@ fun DreamListScreenTopBar(
                             .padding(4.dp, 2.dp, 0.dp, 2.dp)
                             .fillMaxWidth()
                             .padding(4.dp)
-                            .focusable()
+                            .focusable(),
                     )
                 }
             }
@@ -109,7 +108,7 @@ fun DreamListScreenTopBar(
                     mainScreenViewModelState.drawerMain.open()
                 }
             }) {
-                Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = Color.Black)
+                Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = colorResource(id = R.color.white))
             }
         },
         actions = {
@@ -122,7 +121,7 @@ fun DreamListScreenTopBar(
                     Icon(
                         Icons.Filled.Search,
                         contentDescription = "Search",
-                        tint = Color.Black
+                        tint = colorResource(id = R.color.white)
                     )
                 }
             } else {
@@ -135,14 +134,13 @@ fun DreamListScreenTopBar(
                     Icon(
                         Icons.Filled.Close,
                         contentDescription = "Close",
-                        tint = Color.Black
+                        tint = colorResource(id = R.color.white)
                     )
                 }
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            //animate content color
-            containerColor = colorResource(id = R.color.white).copy(alpha = 0.4f),
+            containerColor = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
             navigationIconContentColor = Color.Black,
             titleContentColor = Color.Black,
             actionIconContentColor = Color.Black

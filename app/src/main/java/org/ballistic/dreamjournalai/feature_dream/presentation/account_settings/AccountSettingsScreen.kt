@@ -40,7 +40,6 @@ fun AccountSettingsScreen(
     signupViewModelState: SignupViewModelState,
     onLoginEvent: (LoginEvent) -> Unit = {},
     onSignupEvent: (SignupEvent) -> Unit = {},
-    paddingValues: PaddingValues,
     navigateToOnboardingScreen: () -> Unit = {},
     navigateToDreamJournalScreen: () -> Unit = {}
 ) {
@@ -56,8 +55,9 @@ fun AccountSettingsScreen(
             SnackbarHost(hostState = loginViewModelState.snackBarHostState.value)
         },
         containerColor = Color.Transparent,
-        modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+        modifier = Modifier.padding()
     ) {
+        it
         if (loginViewModelState.isEmailVerified &&
             loginViewModelState.isLoggedIn &&
             !loginViewModelState.isUserAnonymous
@@ -82,7 +82,7 @@ fun AccountSettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(paddingValues = paddingValues)
+                    .padding()
                     .fillMaxSize()
                     .padding(),
             ) {

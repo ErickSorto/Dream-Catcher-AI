@@ -23,7 +23,6 @@ import org.ballistic.dreamjournalai.R
 
 @Composable
 fun FeatureComingSoonScreen(
-    paddingValues: PaddingValues,
     onNavigateToAboutMeScreen: () -> Unit
 ) {
     val animationDuration = 5000
@@ -32,8 +31,8 @@ fun FeatureComingSoonScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
-            .padding(16.dp),
+            .padding(16.dp)
+            .navigationBarsPadding(),
         contentAlignment = Alignment.Center
     ) {
         Box(
