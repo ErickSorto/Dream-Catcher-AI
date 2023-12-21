@@ -56,12 +56,25 @@ class DictionaryScreenViewModel @Inject constructor(
                 }
             }
 
-            is DictionaryEvent.ClickBuyWord -> handleUnlockWord(event)
-
-
-            is DictionaryEvent.ClickUnlock -> {
-
+            is DictionaryEvent.ChangeSearchedQuery -> {
+                _dictionaryScreenState.update { state ->
+                    state.copy(
+                        searchedText = MutableStateFlow(event.query)
+                    )
+                }
+                filterBySearchedWord()
             }
+
+            is DictionaryEvent.SetSearchingState -> {
+                _dictionaryScreenState.update { state ->
+                    filterBySearchedWord()
+                    state.copy(
+                        isSearching = event.state
+                    )
+                }
+            }
+
+            is DictionaryEvent.ClickBuyWord -> handleUnlockWord(event)
 
             is DictionaryEvent.GetUnlockedWords -> {
                 Log.d("DictionaryScreen", "Getting unlocked words")
@@ -133,7 +146,10 @@ class DictionaryScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun processUnlockWordResult(result: Resource<Boolean>, dictionaryWord: DictionaryWord) {
+    private suspend fun processUnlockWordResult(
+        result: Resource<Boolean>,
+        dictionaryWord: DictionaryWord
+    ) {
         when (result) {
             is Resource.Error -> {
                 _dictionaryScreenState.value.snackBarHostState.value.showSnackbar(
@@ -141,10 +157,12 @@ class DictionaryScreenViewModel @Inject constructor(
                     actionLabel = "Dismiss"
                 )
             }
+
             is Resource.Success -> {
                 updateScreenStateForUnlockedWord(dictionaryWord)
                 Log.d("DictionaryScreen", "Word unlocked successfully")
             }
+
             is Resource.Loading -> {
                 // Handle loading state if needed
             }
@@ -153,26 +171,28 @@ class DictionaryScreenViewModel @Inject constructor(
 
     private fun updateScreenStateForUnlockedWord(dictionaryWord: DictionaryWord) {
         _dictionaryScreenState.update { state ->
+            val newList = state.unlockedWords.toMutableList().apply {
+                add(dictionaryWord.word)
+            }
             state.copy(
                 isClickedWordUnlocked = true,
                 clickedWord = dictionaryWord,
-                unlockedWords = state.unlockedWords.apply {
-                    add(dictionaryWord.word)
-                }
+                unlockedWords = newList
             )
         }
     }
+
     private fun filterWordsByLetter(letter: Char) {
         //dictionary size
         Log.d(
             "DictionaryScreen",
-            "Dictionary size: ${_dictionaryScreenState.value.dictionaryWordMutableList.size}"
+            "Dictionary size: ${_dictionaryScreenState.value.dictionaryWordList.size}"
         )
-        val filtered = _dictionaryScreenState.value.dictionaryWordMutableList.filter {
+        val filtered = _dictionaryScreenState.value.dictionaryWordList.filter {
             it.word.startsWith(letter, ignoreCase = true)
         }
         _dictionaryScreenState.value = _dictionaryScreenState.value.copy(
-            filteredWords = filtered.toMutableList(),
+            filteredWordsByLetter = filtered.toMutableList(),
             selectedLetter = letter
         )
         Log.d("DictionaryScreen", "Filtered words: ${filtered.size}")
@@ -185,7 +205,7 @@ class DictionaryScreenViewModel @Inject constructor(
 
             _dictionaryScreenState.update { state ->
                 state.copy(
-                    dictionaryWordMutableList = words.toMutableList(),
+                    dictionaryWordList = words.toMutableList(),
                 )
             }
             filterWordsByLetter('A')
@@ -218,6 +238,23 @@ class DictionaryScreenViewModel @Inject constructor(
             e.printStackTrace()
         }
         return words
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun filterBySearchedWord() {
+        viewModelScope.launch {
+            _dictionaryScreenState.update { state ->
+                val searchText = state.searchedText.value
+                val filtered = if (searchText.isBlank()) {
+                    state.dictionaryWordList
+                } else {
+                    state.dictionaryWordList.filter {
+                        it.doesMatchSearchQuery(searchText)
+                    }
+                }
+                state.copy(filteredSearchedWords = filtered)
+            }
+        }
     }
 
     private fun runAd(
@@ -263,15 +300,18 @@ class DictionaryScreenViewModel @Inject constructor(
 
 data class DictionaryScreenState(
     val authRepository: AuthRepository,
-    val dictionaryWordMutableList: MutableList<DictionaryWord> = mutableListOf(),
-    val unlockedWords: MutableList<String> = mutableListOf(),
-    val filteredWords: MutableList<DictionaryWord> = mutableListOf(),
+    val dictionaryWordList: List<DictionaryWord> = emptyList(),
+    val unlockedWords: List<String> = emptyList(),
+    val filteredWordsByLetter: List<DictionaryWord> = emptyList(),
+    val filteredSearchedWords: List<DictionaryWord> = emptyList(),
     val selectedLetter: Char = 'A',
     val bottomSheetState: MutableState<Boolean> = mutableStateOf(false),
     val isClickedWordUnlocked: Boolean = false,
     val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
     val clickedWord: DictionaryWord = DictionaryWord("", "", false, 0),
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
+    val isSearching: Boolean = false,
+    val searchedText: MutableStateFlow<String> = MutableStateFlow(""),
 )
 
 data class DictionaryWord(
@@ -279,4 +319,8 @@ data class DictionaryWord(
     val definition: String,
     val isUnlocked: Boolean,
     val cost: Int
-)
+) {
+    fun doesMatchSearchQuery(searchQuery: String): Boolean {
+        return word.contains(searchQuery, ignoreCase = true)
+    }
+}

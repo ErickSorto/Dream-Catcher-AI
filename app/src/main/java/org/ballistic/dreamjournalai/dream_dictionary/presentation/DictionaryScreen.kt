@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -60,7 +59,6 @@ fun DictionaryScreen(
     onMainEvent: (MainScreenEvent) -> Unit = {},
 ) {
     val alphabet = remember { ('A'..'Z').toList() }
-    val listState = rememberLazyListState()
     var selectedHeader by remember { mutableStateOf('A') }
     val screenWidth = remember { mutableStateOf(0) } // to store screen width
     val context = LocalContext.current
@@ -93,6 +91,8 @@ fun DictionaryScreen(
         topBar = {
             DictionaryScreenTopBar(
                 mainScreenViewModelState = mainScreenViewModelState,
+                dictionaryScreenState = dictionaryScreenState,
+                onDictionaryEvent = onEvent
             )
         },
         containerColor = Color.Transparent
@@ -141,74 +141,87 @@ fun DictionaryScreen(
                 .navigationBarsPadding()
                 .fillMaxSize()
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f))
-                    .onGloballyPositioned { layoutCoordinates ->
-                        screenWidth.value = layoutCoordinates.size.width // Store the width
-                    }
-                    .pointerInput(Unit) {
-                        detectHorizontalDragGestures { change, _ ->
-                            val positionX = change.position.x
-                            val letterWidth = screenWidth.value / alphabet.size.toFloat()
-                            val index =
-                                (positionX / letterWidth).coerceIn(
-                                    0f,
-                                    (alphabet.size - 1).toFloat()
-                                )
-                            val letter = alphabet[index.toInt()]
-                            if (selectedHeader != letter) {
-                                selectedHeader = letter
-                                onEvent(DictionaryEvent.FilterByLetter(letter))
-                                vibrator.cancel()
-                                vibrator.vibrate(vibrationEffect1)
-                            }
-                        }
-                    }
-                    .padding(horizontal = 2.dp)
-            ) {
-                alphabet.forEach { letter ->
-                    Text(
-                        text = letter.toString(),
-                        modifier = Modifier
-                            .animateContentSize { _, _ -> }
-                            .weight(1f)
-                            .clickable {
-                                vibrator.vibrate(vibrationEffect1)
-                                selectedHeader = letter
-                                onEvent(DictionaryEvent.FilterByLetter(letter))
-                            }
-                            .scale(if (letter == selectedHeader) 1.5f else 1f) // Slightly scale up the selected letter
-                            .align(Alignment.CenterVertically),
-                        textAlign = TextAlign.Center,
-                        fontSize = 10.sp,
-                        fontWeight = if (letter == selectedHeader) FontWeight.SemiBold else FontWeight.Normal,
-                        color = if (letter == selectedHeader) Color.White else Color.White.copy(
-                            alpha = 0.5f
-                        )
-                    )
-                }
-            }
-            val processedWords = dictionaryScreenState.filteredWords.map { wordItem ->
+            val processedWords = dictionaryScreenState.filteredWordsByLetter.map { wordItem ->
                 wordItem.copy(
-                    isUnlocked = wordItem.isUnlocked || dictionaryScreenState.unlockedWords.contains(wordItem.word),
+                    isUnlocked = wordItem.isUnlocked || dictionaryScreenState.unlockedWords.contains(
+                        wordItem.word
+                    ),
                     cost = if (dictionaryScreenState.unlockedWords.contains(wordItem.word)) 0 else wordItem.cost
                 )
             }
-
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(bottom = 32.dp)
-            ) {
-                items(processedWords) { wordItem ->
-                    Log.d("DictionaryScreen", "Displaying word: ${wordItem.word}")
-                    DictionaryWordItem(
-                        wordItem = wordItem,
-                        onWordClick = { onEvent(DictionaryEvent.ClickWord(wordItem)) }
-                    )
+            if (dictionaryScreenState.isSearching) {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(bottom = 32.dp)
+                ) {
+                    items(dictionaryScreenState.filteredSearchedWords) { wordItem ->
+                        DictionaryWordItem(
+                            wordItem = wordItem,
+                            onWordClick = { onEvent(DictionaryEvent.ClickWord(wordItem)) }
+                        )
+                    }
+                }
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f))
+                        .onGloballyPositioned { layoutCoordinates ->
+                            screenWidth.value = layoutCoordinates.size.width // Store the width
+                        }
+                        .pointerInput(Unit) {
+                            detectHorizontalDragGestures { change, _ ->
+                                val positionX = change.position.x
+                                val letterWidth = screenWidth.value / alphabet.size.toFloat()
+                                val index =
+                                    (positionX / letterWidth).coerceIn(
+                                        0f,
+                                        (alphabet.size - 1).toFloat()
+                                    )
+                                val letter = alphabet[index.toInt()]
+                                if (selectedHeader != letter) {
+                                    selectedHeader = letter
+                                    onEvent(DictionaryEvent.FilterByLetter(letter))
+                                    vibrator.cancel()
+                                    vibrator.vibrate(vibrationEffect1)
+                                }
+                            }
+                        }
+                        .padding(horizontal = 2.dp)
+                ) {
+                    alphabet.forEach { letter ->
+                        Text(
+                            text = letter.toString(),
+                            modifier = Modifier
+                                .animateContentSize { _, _ -> }
+                                .weight(1f)
+                                .clickable {
+                                    vibrator.vibrate(vibrationEffect1)
+                                    selectedHeader = letter
+                                    onEvent(DictionaryEvent.FilterByLetter(letter))
+                                }
+                                .scale(if (letter == selectedHeader) 1.5f else 1f) // Slightly scale up the selected letter
+                                .align(Alignment.CenterVertically),
+                            textAlign = TextAlign.Center,
+                            fontSize = 10.sp,
+                            fontWeight = if (letter == selectedHeader) FontWeight.SemiBold else FontWeight.Normal,
+                            color = if (letter == selectedHeader) Color.White else Color.White.copy(
+                                alpha = 0.5f
+                            )
+                        )
+                    }
+                }
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(bottom = 32.dp)
+                ) {
+                    items(processedWords) { wordItem ->
+                        DictionaryWordItem(
+                            wordItem = wordItem,
+                            onWordClick = { onEvent(DictionaryEvent.ClickWord(wordItem)) }
+                        )
+                    }
                 }
             }
         }

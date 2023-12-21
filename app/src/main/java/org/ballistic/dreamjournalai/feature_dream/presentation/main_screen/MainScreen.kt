@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -168,6 +169,9 @@ fun MainScreenView(
                                     }
                                     selectedItem.value = item
                                     navController.navigate(item.route) {
+                                        if (item.route == Screens.DreamJournalScreen.route) {
+                                            navController.popBackStack()
+                                        }
                                         popUpTo(navController.graph.startDestinationId) {
                                             saveState = true
                                         }
@@ -180,7 +184,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.1.2",
+                        text = "Version: 1.1.3",
                         color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)
@@ -202,7 +206,10 @@ fun MainScreenView(
                         exit = slideOutVertically(targetOffsetY = { it })
                     )
                     {
-                        BottomNavigation(navController = navController, modifier = Modifier.navigationBarsPadding())
+                        BottomNavigation(
+                            navController = navController,
+                            modifier = Modifier.navigationBarsPadding()
+                        )
                         Box(
                             modifier = Modifier
                                 .navigationBarsPadding()
@@ -229,7 +236,14 @@ fun MainScreenView(
                 containerColor = Color.Transparent,
 
                 ) { innerPadding ->
-                innerPadding
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .background(
+                            Color.Transparent
+                        )
+                ) {}
+
 
                 AnimatedVisibility(visible = true, enter = fadeIn(), exit = fadeOut()) {
                     ScreenGraph(

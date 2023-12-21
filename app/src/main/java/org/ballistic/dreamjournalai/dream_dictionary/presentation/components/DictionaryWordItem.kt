@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,8 +82,11 @@ fun DictionaryWordItem(
         ) {
             Text(
                 text = wordItem.word,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
+                style = if (wordItem.word.length > 20) {
+                    MaterialTheme.typography.titleSmall
+                } else {
+                    MaterialTheme.typography.titleMedium
+                },
                 color = if (wordItem.isUnlocked) colorResource(id = R.color.brighter_white) else colorResource(
                     id = R.color.brighter_white
                 ).copy(alpha = 0.7f),

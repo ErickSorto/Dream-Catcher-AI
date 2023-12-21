@@ -39,17 +39,22 @@ fun BuyDictionaryWordDrawer(
                 modifier = modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp, 8.dp, 16.dp, 16.dp),
+                    .padding(8.dp, 8.dp, 8.dp, 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ){
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = if (title.length > 20) {
+                            MaterialTheme.typography.titleMedium
+                        } else {
+                            MaterialTheme.typography.headlineSmall
+                        },
                         color = colorResource(id = R.color.white),
-                        modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 16.dp)
+                        modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 8.dp)
                     )
                     DreamTokenLayout(
                         totalDreamTokens = token,

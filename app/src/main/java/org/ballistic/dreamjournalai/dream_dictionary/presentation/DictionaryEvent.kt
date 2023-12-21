@@ -10,9 +10,6 @@ sealed class DictionaryEvent {
         val dictionaryWord: DictionaryWord
     ) : DictionaryEvent()
 
-
-    data class ClickUnlock(val word: String, val cost: Int) : DictionaryEvent()
-
     data object GetUnlockedWords : DictionaryEvent()
     data class FilterByLetter(val letter: Char) : DictionaryEvent()
 
@@ -21,6 +18,10 @@ sealed class DictionaryEvent {
         val isAd: Boolean,
         val activity: Activity
     ) : DictionaryEvent()
+
+    data class ChangeSearchedQuery(val query: String) : DictionaryEvent()
+
+    data class SetSearchingState(val state: Boolean) : DictionaryEvent()
 
 }
 

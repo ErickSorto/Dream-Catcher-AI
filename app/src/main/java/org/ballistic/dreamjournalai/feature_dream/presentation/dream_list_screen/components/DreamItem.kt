@@ -106,7 +106,6 @@ fun DreamItem(
                 Text(
                     text = dream.title,
                     style = typography.titleSmall,
-                    fontWeight = FontWeight.Light,
                     color = colorResource(id = R.color.brighter_white),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
