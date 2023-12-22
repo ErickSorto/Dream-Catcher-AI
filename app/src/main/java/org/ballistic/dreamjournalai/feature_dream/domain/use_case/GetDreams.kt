@@ -6,7 +6,7 @@ import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.repository.DreamRepository
 import org.ballistic.dreamjournalai.feature_dream.domain.util.OrderType
 
-class GetDreams (
+class GetDreams(
     private val repository: DreamRepository
 ) {
 
@@ -18,9 +18,11 @@ class GetDreams (
                 is OrderType.Ascending -> {
                     dreams.sortedBy { dream -> dream.timestamp }
                 }
+
                 is OrderType.Descending -> {
                     dreams.sortedByDescending { dream -> dream.timestamp }
                 }
+
                 is OrderType.Date -> {
                     dreams.sortedByDescending { dream -> dream.date }
                 }

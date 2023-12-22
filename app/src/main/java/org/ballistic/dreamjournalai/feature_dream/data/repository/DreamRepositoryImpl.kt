@@ -35,7 +35,6 @@ class DreamRepositoryImpl(
         return FirebaseAuth.getInstance().currentUser?.uid
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun getDreams(): Flow<List<Dream>> {
         return callbackFlow {
             val registration = dreamsCollection?.addSnapshotListener { querySnapshot, exception ->
@@ -86,7 +85,6 @@ class DreamRepositoryImpl(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getDream(id: String): Resource<Dream> {
         return try {
             val document = getCollectionReferenceForDreams()?.document(id)?.get()?.await()
@@ -133,7 +131,6 @@ class DreamRepositoryImpl(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun insertDream(dream: Dream): Resource<Unit> {
         return try {
             val existingDream = getDream(dream.id ?: "")
@@ -204,7 +201,6 @@ class DreamRepositoryImpl(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun deleteDream(id: String): Resource<Unit> {
         return try {
             val dream = getDream(id)

@@ -15,7 +15,6 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen
 import javax.inject.Inject
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class DreamJournalListViewModel @Inject constructor(
     private val dreamUseCases: DreamUseCases
@@ -32,7 +31,6 @@ class DreamJournalListViewModel @Inject constructor(
         getDreams(OrderType.Date)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: DreamListEvent) {
         when (event) {
             is DreamListEvent.DeleteDream -> {
@@ -70,7 +68,6 @@ class DreamJournalListViewModel @Inject constructor(
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun getDreams(orderType: OrderType) {
         getDreamJob?.cancel()
         getDreamJob = dreamUseCases.getDreams(orderType)

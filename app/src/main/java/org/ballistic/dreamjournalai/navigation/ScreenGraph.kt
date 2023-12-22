@@ -2,7 +2,6 @@ package org.ballistic.dreamjournalai.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -14,6 +13,8 @@ import androidx.navigation.navArgument
 import org.ballistic.dreamjournalai.core.components.FeatureComingSoonScreen
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.DictionaryScreen
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenViewModel
+import org.ballistic.dreamjournalai.dream_statistics.presentation.DreamStatisticScreen
+import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.about_me_screen.AboutMeScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.AccountSettingsScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamScreen
@@ -136,11 +137,16 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Statistics.route) {
-            FeatureComingSoonScreen(
-                onNavigateToAboutMeScreen = {
-                    navController.popBackStack()
-                    navController.navigate(Screens.AboutMe.route)
-                })
+            val dreamStatisticScreenViewModel: DreamStatisticScreenViewModel = hiltViewModel()
+            val dreamStatisticScreenState = dreamStatisticScreenViewModel.dreamStatisticScreen
+                .collectAsStateWithLifecycle()
+
+            DreamStatisticScreen(
+                dreamStatisticScreenState = dreamStatisticScreenState.value,
+                onEvent = {
+                    dreamStatisticScreenViewModel.onEvent(it)
+                }
+            )
         }
 
         composable(route = Screens.NotificationSettings.route) {
