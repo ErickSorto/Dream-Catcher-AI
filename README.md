@@ -25,11 +25,11 @@
 <div style="overflow-x: auto;">
   <table>
     <tr>
-      <td><img src="https://i.imgur.com/f5iVufE.png" alt="Screenshot 1" style="max-width: 100%; height: auto;"></td>
-      <td><img src="https://i.imgur.com/wmbqxUH.png" alt="Screenshot 2" style="max-width: 100%; height: auto;"></td>
-      <td><img src="https://i.imgur.com/Wm5q8vl.png" alt="Screenshot 3" style="max-width: 100%; height: auto;"></td>
-      <td><img src="https://i.imgur.com/x6r114B.png" alt="Screenshot 4" style="max-width: 100%; height: auto;"></td>
-      <td><img src="https://i.imgur.com/fv6v3m9.png" alt="Screenshot 5" style="max-width: 100%; height: auto;"></td>
+      <td><img src="https://i.imgur.com/tUKWQzg.png" alt="Screenshot 1" style="max-width: 100%; height: auto;"></td>
+      <td><img src="https://i.imgur.com/E8CmHbS.png" alt="Screenshot 2" style="max-width: 100%; height: auto;"></td>
+      <td><img src="https://i.imgur.com/3aGmOQ8.png" alt="Screenshot 3" style="max-width: 100%; height: auto;"></td>
+      <td><img src="https://i.imgur.com/LnM92bt.png" alt="Screenshot 4" style="max-width: 100%; height: auto;"></td>
+      <td><img src="https://i.imgur.com/JsSse5N.png" alt="Screenshot 5" style="max-width: 100%; height: auto;"></td>
     </tr>
   </table>
 </div>
