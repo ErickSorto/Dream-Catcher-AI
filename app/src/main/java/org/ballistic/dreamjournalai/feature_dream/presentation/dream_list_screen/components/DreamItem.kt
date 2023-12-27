@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -44,7 +42,6 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream.Companion.dreamBackgroundImages
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DreamItem(
     dream: Dream,

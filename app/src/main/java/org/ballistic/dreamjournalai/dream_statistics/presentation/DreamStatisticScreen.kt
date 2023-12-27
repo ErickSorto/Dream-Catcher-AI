@@ -37,14 +37,19 @@ fun DreamStatisticScreen(
         )
     )
 
-    Chart(
-        chart = columnChart(),
-        chartModelProducer = chartEntryModelProducer,
-        startAxis = rememberStartAxis(),
-        bottomAxis = rememberBottomAxis(),
-        modifier = Modifier.padding(16.dp),
-        isZoomEnabled = false,
-    )
+    if (dreamStatisticScreenState.dreams.isEmpty()) {
+        return
+    } else {
+        Chart(
+            chart = columnChart(),
+            chartModelProducer = chartEntryModelProducer,
+            startAxis = rememberStartAxis(),
+            bottomAxis = rememberBottomAxis(),
+            modifier = Modifier.padding(16.dp),
+            isZoomEnabled = false,
+        )
+    }
+
 
 
 }

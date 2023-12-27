@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.feature_dream.data.repository
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,7 +16,7 @@ import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.repository.DreamRepository
 import java.net.URL
 import java.net.URLDecoder
-import java.util.*
+import java.util.UUID
 import javax.inject.Singleton
 
 @Singleton

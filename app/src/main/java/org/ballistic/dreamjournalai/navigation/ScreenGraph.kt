@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.navigation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,7 +26,6 @@ import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.Stor
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScreenGraph(
     navController: NavHostController,
@@ -181,7 +178,8 @@ fun ScreenGraph(
                 onNavigateToAboutMeScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.AboutMe.route)
-                })
+                }
+            )
         }
     }
 }
