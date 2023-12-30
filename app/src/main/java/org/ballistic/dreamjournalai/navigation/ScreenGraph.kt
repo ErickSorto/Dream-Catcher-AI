@@ -140,6 +140,7 @@ fun ScreenGraph(
 
             DreamStatisticScreen(
                 dreamStatisticScreenState = dreamStatisticScreenState.value,
+                mainScreenViewModelState = mainScreenViewModelState,
                 onEvent = {
                     dreamStatisticScreenViewModel.onEvent(it)
                 }
