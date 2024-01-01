@@ -240,7 +240,6 @@ class DictionaryScreenViewModel @Inject constructor(
         return words
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun filterBySearchedWord() {
         viewModelScope.launch {
             _dictionaryScreenState.update { state ->

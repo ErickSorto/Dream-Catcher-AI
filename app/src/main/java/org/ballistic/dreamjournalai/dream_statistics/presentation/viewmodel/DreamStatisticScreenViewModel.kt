@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,10 +12,13 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryWord
 import org.ballistic.dreamjournalai.dream_statistics.StatisticEvent
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
 import org.ballistic.dreamjournalai.feature_dream.domain.util.OrderType
+import java.io.IOException
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -88,10 +92,112 @@ class DreamStatisticScreenViewModel @Inject constructor(
         Log.d("getDreams", "LoadStatistics event triggered")
     }
 
+    private fun readDictionaryWordsFromCsv(context: Context): List<DictionaryWord> {
+        val words = mutableListOf<DictionaryWord>()
+        val csvRegex = """"(.*?)"|([^,]+)""".toRegex() // Matches quoted strings or unquoted tokens
+        try {
+            context.assets.open("dream_dictionary.csv").bufferedReader().useLines { lines ->
+                lines.drop(1).forEach { line ->
+                    val tokens = csvRegex.findAll(line).map { it.value.trim('"') }.toList()
+                    if (tokens.size >= 3) {
+                        val cost =
+                            tokens.last().toIntOrNull() ?: 0 // Assuming cost is the last token
+                        words.add(
+                            DictionaryWord(
+                                word = tokens.first(), // Assuming word is the first token
+                                definition = tokens.drop(1).dropLast(1)
+                                    .joinToString(","), // Joining all tokens that are part of the definition
+                                isUnlocked = cost == 0, // If cost is 0, then the word is unlocked
+                                cost = cost
+                            )
+                        )
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return words
+    }
+
+    private fun dictionaryWordsInDreamFilterList(): List<DictionaryWord> {
+        _dreamStatisticScreen.value = dreamStatisticScreen.value.copy(
+            isDreamWordFilterLoading = true
+        )
+        val wordCounts = mutableMapOf<DictionaryWord, Int>()
+        val dictionaryWords = dreamStatisticScreen.value.dictionaryWordMutableList
+        val suffixes = listOf("ing", "ed", "er", "est", "s", "y")
+
+        for (dream in dreamStatisticScreen.value.dreams) {
+            val dreamContent = dream.content.lowercase(Locale.ROOT)
+            val dreamWords = dreamContent.split("\\s+".toRegex()).map { it.trim('.', '?', '\"', '\'') }
+
+            for (dreamWord in dreamWords) {
+                if (dreamWord.isNotEmpty() && dreamWord.length > 2) {
+                    for (dictionary in dictionaryWords) {
+                        val dictionaryWordLower = dictionary.word.lowercase(Locale.getDefault())
+                        val possibleMatches = generatePossibleMatches(dreamWord, suffixes)
+
+                        if (possibleMatches.contains(dictionaryWordLower)) {
+                            wordCounts[dictionary] = wordCounts.getOrDefault(dictionary, 0) + 1
+                        } else {
+                            val baseForm = removeSuffixes(dreamWord, suffixes)
+                            if (baseForm == dictionaryWordLower) {
+                                wordCounts[dictionary] = wordCounts.getOrDefault(dictionary, 0) + 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        _dreamStatisticScreen.value = dreamStatisticScreen.value.copy(
+            isDreamWordFilterLoading = false
+        )
+
+        // Sorting and getting the top five words
+        return wordCounts.entries.sortedByDescending { it.value }.map { it.key }.distinct().take(5)
+    }
+
+    private fun generatePossibleMatches(baseWord: String, suffixes: List<String>): Set<String> {
+        val matches = mutableSetOf<String>()
+        if (baseWord.isNotEmpty()) {
+            matches.add(baseWord) // Add the base word itself
+
+            if (baseWord.length <= 3) {
+                suffixes.forEach { suffix ->
+                    matches.add(baseWord + baseWord.last() + suffix)
+                }
+            } else {
+                suffixes.forEach { suffix ->
+                    matches.add(baseWord + suffix)
+                    matches.add(baseWord + baseWord.last() + suffix)
+                    if (baseWord.last() != suffix.first()) {
+                        matches.add(baseWord.dropLast(1) + suffix)
+                    }
+                }
+            }
+        }
+        return matches
+    }
+
+    private fun removeSuffixes(word: String, suffixes: List<String>): String {
+        var baseForm = word
+        suffixes.forEach { suffix ->
+            if (word.endsWith(suffix)) {
+                baseForm = word.removeSuffix(suffix)
+                return@forEach
+            }
+        }
+        return baseForm
+    }
+
 }
 
 data class DreamStatisticScreenState(
     val dreams: List<Dream> = emptyList(),
+    val topFiveWordsInDreams: List<DictionaryWord> = emptyList(),
+    val dictionaryWordMutableList: List<DictionaryWord> = emptyList(),
     val totalLucidDreams: Int = 0,
     val totalNormalDreams: Int = 0,
     val totalNightmares: Int = 0,
@@ -99,4 +205,5 @@ data class DreamStatisticScreenState(
     val totalFavoriteDreams: Int = 0,
     val totalRecurringDreams: Int = 0,
     val totalFalseAwakenings: Int = 0,
+    val isDreamWordFilterLoading: Boolean = false,
 )
