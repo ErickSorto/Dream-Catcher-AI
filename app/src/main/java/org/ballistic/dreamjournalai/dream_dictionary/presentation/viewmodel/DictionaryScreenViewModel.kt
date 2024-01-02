@@ -27,7 +27,6 @@ import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRe
 import java.io.IOException
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class DictionaryScreenViewModel @Inject constructor(
     private val application: Application,
@@ -42,7 +41,6 @@ class DictionaryScreenViewModel @Inject constructor(
     fun onEvent(event: DictionaryEvent) = viewModelScope.launch {
         when (event) {
             is DictionaryEvent.LoadWords -> {
-                Log.d("DictionaryScreen", "Loading words")
                 loadWords()
             }
 

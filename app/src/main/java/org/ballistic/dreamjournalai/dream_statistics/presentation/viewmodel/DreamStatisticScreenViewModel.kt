@@ -1,16 +1,19 @@
 package org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryWord
 import org.ballistic.dreamjournalai.dream_statistics.StatisticEvent
@@ -23,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DreamStatisticScreenViewModel @Inject constructor(
-    private val dreamUseCases: DreamUseCases
+    private val dreamUseCases: DreamUseCases,
+    private val application: Application,
 ) : ViewModel() {
 
     private val _dreamStatisticScreen = MutableStateFlow(DreamStatisticScreenState())
@@ -36,6 +40,13 @@ class DreamStatisticScreenViewModel @Inject constructor(
             is StatisticEvent.LoadDreams -> {
                 viewModelScope.launch {
                     getDreams()
+                    onEvent(StatisticEvent.LoadDictionary)
+                }
+            }
+
+            is StatisticEvent.LoadDictionary -> {
+                viewModelScope.launch {
+                    loadWords()
                 }
             }
 
@@ -53,13 +64,25 @@ class DreamStatisticScreenViewModel @Inject constructor(
                         totalFalseAwakenings = _dreamStatisticScreen.value.dreams.count { it.falseAwakening }
                     )
                 }
-                Log.d("DreamStatisticScreenViewModel", "onEvent: ${_dreamStatisticScreen.value}")
-                Log.d("DreamStatisticScreenViewModel", "onEvent: ${_dreamStatisticScreen.value.dreams}")
-                Log.d("DreamStatisticScreenViewModel", "onEvent: ${_dreamStatisticScreen.value.totalLucidDreams}")
-                Log.d("DreamStatisticScreenViewModel", "onEvent: ${_dreamStatisticScreen.value.totalNormalDreams}")
-                Log.d("DreamStatisticScreenViewModel", "onEvent: ${_dreamStatisticScreen.value.totalNightmares}")
-                Log.d("DreamStatisticScreenViewModel", "onEvent: ${_dreamStatisticScreen.value.totalDreams}")
             }
+        }
+    }
+
+    private fun loadWords() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val dictionaryWordList = readDictionaryWordsFromCsv(application.applicationContext)
+
+            _dreamStatisticScreen.update {
+                it.copy(
+                    dictionaryWordMutableList = dictionaryWordList,
+                )
+            }
+            _dreamStatisticScreen.update {
+                it.copy(
+                    topFiveWordsInDreams = dictionaryWordsInDreamFilterList()
+                )
+            }
+            Log.d("topFiveWordsInDreams", "topFiveWordsInDreams: ${_dreamStatisticScreen.value.topFiveWordsInDreams}")
         }
     }
 
@@ -120,7 +143,7 @@ class DreamStatisticScreenViewModel @Inject constructor(
         return words
     }
 
-    private fun dictionaryWordsInDreamFilterList(): List<DictionaryWord> {
+    private fun dictionaryWordsInDreamFilterList(): Map<DictionaryWord, Int> {
         _dreamStatisticScreen.value = dreamStatisticScreen.value.copy(
             isDreamWordFilterLoading = true
         )
@@ -130,7 +153,8 @@ class DreamStatisticScreenViewModel @Inject constructor(
 
         for (dream in dreamStatisticScreen.value.dreams) {
             val dreamContent = dream.content.lowercase(Locale.ROOT)
-            val dreamWords = dreamContent.split("\\s+".toRegex()).map { it.trim('.', '?', '\"', '\'') }
+            val dreamWords =
+                dreamContent.split("\\s+".toRegex()).map { it.trim('.', '?', '\"', '\'') }
 
             for (dreamWord in dreamWords) {
                 if (dreamWord.isNotEmpty() && dreamWord.length > 2) {
@@ -155,8 +179,8 @@ class DreamStatisticScreenViewModel @Inject constructor(
             isDreamWordFilterLoading = false
         )
 
-        // Sorting and getting the top five words
-        return wordCounts.entries.sortedByDescending { it.value }.map { it.key }.distinct().take(5)
+        // Sorting and getting the top five words as map word count already map
+        return wordCounts.entries.sortedByDescending { it.value }.take(6).associate { it.toPair() }
     }
 
     private fun generatePossibleMatches(baseWord: String, suffixes: List<String>): Set<String> {
@@ -196,7 +220,7 @@ class DreamStatisticScreenViewModel @Inject constructor(
 
 data class DreamStatisticScreenState(
     val dreams: List<Dream> = emptyList(),
-    val topFiveWordsInDreams: List<DictionaryWord> = emptyList(),
+    val topFiveWordsInDreams: Map<DictionaryWord, Int> = mapOf(),
     val dictionaryWordMutableList: List<DictionaryWord> = emptyList(),
     val totalLucidDreams: Int = 0,
     val totalNormalDreams: Int = 0,
