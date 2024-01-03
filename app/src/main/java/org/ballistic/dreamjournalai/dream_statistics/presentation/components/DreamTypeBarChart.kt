@@ -97,7 +97,7 @@ fun DreamChartBarChart(
 
         Box(
             modifier = Modifier
-                .padding(12.dp, 32.dp, 12.dp, 4.dp)
+                .padding(start = 12.dp, end = 12.dp, top = 16.dp)
                 .imePadding()
                 .clip(RoundedCornerShape(8.dp))
                 .background(

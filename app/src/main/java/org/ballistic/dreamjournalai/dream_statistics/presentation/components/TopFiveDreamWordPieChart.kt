@@ -1,28 +1,28 @@
 package org.ballistic.dreamjournalai.dream_statistics.presentation.components
 
+import android.graphics.Typeface
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.yml.charts.common.model.PlotType
@@ -64,29 +64,40 @@ fun TopFiveDreamWordPieChart(
         )
 
         val donutChartConfig = PieChartConfig(
-            backgroundColor = colorResource(id = R.color.white).copy(alpha = 0.8f),
+            backgroundColor = Color.Transparent,
             strokeWidth = 120f,
             activeSliceAlpha = .9f,
             isAnimationEnable = true,
             labelVisible = true,
-            labelColor = Color.Black,
+            labelColor = colorResource(id = R.color.white),
+            labelTypeface = Typeface.DEFAULT_BOLD,
             isEllipsizeEnabled = true,
-            labelFontSize = 16.sp, // Increased font size for better visibility
-            chartPadding = 16
+            labelFontSize = 24.sp, // Increased font size for better visibility
         )
 
         Column(
             modifier = Modifier
-                .fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(12.dp, 8.dp, 12.dp, 32.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f)),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            DonutPieChart(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Transparent),
-                donutChartData,
-                donutChartConfig
-            )
+            Box(modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .aspectRatio(1f)
+                .background(Color.Transparent)
+            ) {
+                DonutPieChart(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .background(Color.Transparent),
+                    donutChartData,
+                    donutChartConfig
+                )
+            }
+
             Legend(donutChartData.slices, listOfColor)
         }
     }
@@ -94,23 +105,33 @@ fun TopFiveDreamWordPieChart(
 
 @Composable
 fun Legend(slices: List<PieChartData.Slice>, colors: List<Color>) {
-        Grid(
-            columns = 2,
-            columnSpacing = 8.dp,
-            rowSpacing = 8.dp,
-            items = slices,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-        ){
-            LegendItem(it, colors[slices.indexOf(it)])
+    val slicePairs = slices.windowed(size = 2, step = 2, partialWindows = true)
+
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        slicePairs.forEach { pair ->
+            Row(modifier = Modifier.fillMaxWidth()) {
+                pair.forEach { slice ->
+                    LegendItem(slice, colors[slices.indexOf(slice)], Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(8.dp)) // Space between items
+                }
+                if (pair.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f)) // Fill space if only one item in row
+                }
+            }
         }
+    }
 }
 
 @Composable
-fun LegendItem(slice: PieChartData.Slice, color: Color) {
+fun LegendItem(slice: PieChartData.Slice, color: Color, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier
@@ -120,7 +141,8 @@ fun LegendItem(slice: PieChartData.Slice, color: Color) {
         Spacer(Modifier.width(8.dp)) // Space between color box and text
         Text(
             text = slice.label,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelLarge,
         )
     }
 }
+

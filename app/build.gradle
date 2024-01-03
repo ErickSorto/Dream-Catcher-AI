@@ -160,5 +160,6 @@ dependencies {
     implementation("com.patrykandpatrick.vico:compose:1.13.1")
     implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
     implementation("com.patrykandpatrick.vico:core:1.13.1")
-    implementation 'co.yml:ycharts:2.1.0'
+    implementation 'co.yml:ycharts-dreamjournalai:2.1.0'
+    //implementation 'co.yml:ycharts:2.1.0'
 }

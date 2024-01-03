@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.dream_statistics.StatisticEvent
 import org.ballistic.dreamjournalai.dream_statistics.presentation.components.DreamChartBarChart
 import org.ballistic.dreamjournalai.dream_statistics.presentation.components.DreamStatisticScreenTopBar
@@ -43,7 +44,7 @@ fun DreamStatisticScreen(
                 .fillMaxSize()
                 .padding(it)
                 .navigationBarsPadding()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
         ) {
             DreamChartBarChart(dreamStatisticScreenState = dreamStatisticScreenState)
             TopFiveDreamWordPieChart(dreamStatisticScreenState = dreamStatisticScreenState)
