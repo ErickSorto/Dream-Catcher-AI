@@ -3,8 +3,10 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_scree
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +44,7 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream.Companion.dreamBackgroundImages
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DreamItem(
     dream: Dream,
@@ -114,7 +117,8 @@ fun DreamItem(
                     style = typography.titleSmall,
                     color = colorResource(id = R.color.brighter_white),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.basicMarquee()
                 )
 
                 Spacer(modifier = Modifier.height(3.dp))
