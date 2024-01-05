@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,13 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.yml.charts.common.model.PlotType
 import co.yml.charts.ui.piechart.charts.DonutPieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
-import com.maxkeppeker.sheets.core.views.Grid
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenState
 
@@ -54,7 +53,7 @@ fun TopFiveDreamWordPieChart(
                 .distinctBy { it.key } // Ensure unique entries based on the key
                 .mapIndexed { index, entry ->
                     PieChartData.Slice(
-                        label = "${entry.key.word} (Total: ${entry.value})",
+                        label = "${entry.key.word}: ${entry.value}",
                         value = entry.value.toFloat(),
                         color = listOfColor[index % listOfColor.size],
                         sliceDescription = { "Word: ${entry.key.word}, Total: ${entry.value}" }
@@ -83,6 +82,13 @@ fun TopFiveDreamWordPieChart(
                 .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f)),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Text(
+                text = "Top 6 Words in Dreams",
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = colorResource(id = R.color.white)
+                ).copy(fontWeight = FontWeight.Normal),
+            )
             Box(modifier = Modifier
                 .padding(horizontal = 32.dp)
                 .aspectRatio(1f)
