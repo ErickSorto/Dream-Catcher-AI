@@ -111,6 +111,7 @@ fun ScreenGraph(
             AccountSettingsScreen(
                 loginViewModel.state.collectAsStateWithLifecycle().value,
                 signupViewModel.state.collectAsStateWithLifecycle().value,
+                mainScreenViewModelState = mainScreenViewModelState,
                 navigateToOnboardingScreen = onNavigateToOnboardingScreen,
                 onLoginEvent = { loginViewModel.onEvent(it) },
                 onSignupEvent = { signupViewModel.onEvent(it) },
@@ -122,7 +123,9 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.AboutMe.route) {
-            AboutMeScreen()
+            AboutMeScreen(
+                mainScreenViewModelState = mainScreenViewModelState,
+            )
         }
 
         composable(route = Screens.Tools.route) {

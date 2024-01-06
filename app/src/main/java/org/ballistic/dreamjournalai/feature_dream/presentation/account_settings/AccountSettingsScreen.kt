@@ -3,8 +3,8 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.account_settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,7 +24,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
+import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.components.DreamAccountSettingsScreenTopBar
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.components.LogoutDeleteLayout
+import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.GoogleSignInHandler
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserveLoginState
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserverLogoutDeleteState
@@ -38,6 +40,7 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 fun AccountSettingsScreen(
     loginViewModelState: LoginViewModelState,
     signupViewModelState: SignupViewModelState,
+    mainScreenViewModelState: MainScreenViewModelState,
     onLoginEvent: (LoginEvent) -> Unit = {},
     onSignupEvent: (SignupEvent) -> Unit = {},
     navigateToOnboardingScreen: () -> Unit = {},
@@ -50,6 +53,9 @@ fun AccountSettingsScreen(
     }
 
     Scaffold(
+        topBar = {
+            DreamAccountSettingsScreenTopBar(mainScreenViewModelState = mainScreenViewModelState)
+        },
         snackbarHost = {
             SnackbarHost(hostState = signupViewModelState.snackBarHostState.value)
             SnackbarHost(hostState = loginViewModelState.snackBarHostState.value)
@@ -57,7 +63,6 @@ fun AccountSettingsScreen(
         containerColor = Color.Transparent,
         modifier = Modifier.padding()
     ) {
-        it
         if (loginViewModelState.isEmailVerified &&
             loginViewModelState.isLoggedIn &&
             !loginViewModelState.isUserAnonymous
@@ -82,7 +87,8 @@ fun AccountSettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding()
+                    .padding(it)
+                    .navigationBarsPadding()
                     .fillMaxSize()
                     .padding(),
             ) {

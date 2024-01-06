@@ -1,8 +1,6 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -183,7 +181,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.1.3",
+                        text = "Version: 1.1.4",
                         color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)

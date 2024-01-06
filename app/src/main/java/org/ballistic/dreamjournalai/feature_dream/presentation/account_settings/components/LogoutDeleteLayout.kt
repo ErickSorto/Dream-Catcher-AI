@@ -3,9 +3,9 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.account_settings
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +28,6 @@ fun LogoutDeleteLayout(
 ) {
 // Add a mutable state for user password input and a flag for Google account users
     val userPassword = remember { mutableStateOf("") }
-    val isGoogleAccount = remember { mutableStateOf(false) }
 
     // Check the user's provider ID to determine if they are using a Google account
     fun checkIfGoogleAccount(): Boolean {
@@ -60,7 +59,7 @@ fun LogoutDeleteLayout(
                 },
                 modifier = Modifier.fillMaxWidth(.5f),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(id = R.color.sky_blue)
+                    containerColor = colorResource(id = R.color.sky_blue)
                 )
             ) {
                 Text(
@@ -85,7 +84,7 @@ fun LogoutDeleteLayout(
                 },
                 modifier = Modifier.fillMaxWidth(.5f),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(id = R.color.RedOrange)
+                    containerColor = colorResource(id = R.color.RedOrange)
                 )
             ) {
                 Text(
