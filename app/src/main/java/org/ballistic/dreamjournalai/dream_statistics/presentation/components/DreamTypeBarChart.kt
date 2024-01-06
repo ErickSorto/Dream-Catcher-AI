@@ -44,6 +44,9 @@ import kotlin.math.ceil
 fun DreamChartBarChart(
     dreamStatisticScreenState: DreamStatisticScreenState,
 ) {
+    if (dreamStatisticScreenState.dreams.isEmpty()) {
+        return
+    }
     val dreamTypeLabels =
         listOf("Lucid", "Normal", "Nightmare", "Favorite", "Recurring", "False Awakening")
     val barColors =

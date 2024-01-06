@@ -3,6 +3,7 @@ package org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -79,10 +80,10 @@ class DreamStatisticScreenViewModel @Inject constructor(
             }
             _dreamStatisticScreen.update {
                 it.copy(
-                    topFiveWordsInDreams = dictionaryWordsInDreamFilterList()
+                    topSixWordsInDreams = dictionaryWordsInDreamFilterList()
                 )
             }
-            Log.d("topFiveWordsInDreams", "topFiveWordsInDreams: ${_dreamStatisticScreen.value.topFiveWordsInDreams}")
+            Log.d("topFiveWordsInDreams", "topFiveWordsInDreams: ${_dreamStatisticScreen.value.topSixWordsInDreams}")
         }
     }
 
@@ -218,9 +219,10 @@ class DreamStatisticScreenViewModel @Inject constructor(
 
 }
 
+@Stable
 data class DreamStatisticScreenState(
     val dreams: List<Dream> = emptyList(),
-    val topFiveWordsInDreams: Map<DictionaryWord, Int> = mapOf(),
+    val topSixWordsInDreams: Map<DictionaryWord, Int> = mapOf(),
     val dictionaryWordMutableList: List<DictionaryWord> = emptyList(),
     val totalLucidDreams: Int = 0,
     val totalNormalDreams: Int = 0,

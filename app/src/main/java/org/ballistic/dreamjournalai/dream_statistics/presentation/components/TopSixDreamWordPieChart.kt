@@ -2,7 +2,6 @@ package org.ballistic.dreamjournalai.dream_statistics.presentation.components
 
 import android.graphics.Typeface
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,13 +35,15 @@ import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.Drea
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun TopFiveDreamWordPieChart(
+fun TopSixDreamWordPieChart(
     dreamStatisticScreenState: DreamStatisticScreenState
 ) {
-
+    if (dreamStatisticScreenState.topSixWordsInDreams.isEmpty()) {
+        return
+    }
     Column(
         modifier = Modifier
-            .padding(12.dp, 16.dp, 12.dp, 8.dp)
+            .padding(12.dp, 0.dp, 12.dp, 0.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f))
@@ -68,7 +69,7 @@ fun TopFiveDreamWordPieChart(
 
 
         val donutChartData = PieChartData(
-            slices = dreamStatisticScreenState.topFiveWordsInDreams.entries
+            slices = dreamStatisticScreenState.topSixWordsInDreams.entries
                 .distinctBy { it.key } // Ensure unique entries based on the key
                 .mapIndexed { index, entry ->
                     PieChartData.Slice(
