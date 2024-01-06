@@ -1,6 +1,8 @@
 package org.ballistic.dreamjournalai.dream_statistics.presentation.components
 
 import android.graphics.Typeface
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,7 +39,24 @@ import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.Drea
 fun TopFiveDreamWordPieChart(
     dreamStatisticScreenState: DreamStatisticScreenState
 ) {
-    if (dreamStatisticScreenState.topFiveWordsInDreams.isNotEmpty()) {
+
+    Column(
+        modifier = Modifier
+            .padding(12.dp, 16.dp, 12.dp, 8.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f))
+            .animateContentSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "Top 6 Words in Dreams",
+            modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 0.dp),
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = colorResource(id = R.color.white)
+            ).copy(fontWeight = FontWeight.Normal),
+        )
+
         val listOfColor = listOf(
             Color(0xFFEF5350), // Red
             Color(0xFFAB47BC), // Purple
@@ -64,7 +83,7 @@ fun TopFiveDreamWordPieChart(
 
         val donutChartConfig = PieChartConfig(
             backgroundColor = Color.Transparent,
-            strokeWidth = 120f,
+            strokeWidth = 100f,
             activeSliceAlpha = .9f,
             isAnimationEnable = true,
             labelVisible = true,
@@ -73,49 +92,33 @@ fun TopFiveDreamWordPieChart(
             isEllipsizeEnabled = true,
             labelFontSize = 24.sp, // Increased font size for better visibility
         )
-
-        Column(
+        Box(
             modifier = Modifier
-                .padding(12.dp, 8.dp, 12.dp, 32.dp)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
-                .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = "Top 6 Words in Dreams",
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = colorResource(id = R.color.white)
-                ).copy(fontWeight = FontWeight.Normal),
-            )
-            Box(modifier = Modifier
                 .padding(horizontal = 32.dp)
                 .aspectRatio(1f)
                 .background(Color.Transparent)
-            ) {
-                DonutPieChart(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                        .background(Color.Transparent),
-                    donutChartData,
-                    donutChartConfig
-                )
-            }
-
-            Legend(donutChartData.slices, listOfColor)
+        ) {
+            DonutPieChart(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .background(Color.Transparent),
+                donutChartData,
+                donutChartConfig
+            )
         }
+        Legend(donutChartData.slices, listOfColor)
     }
 }
+
 
 @Composable
 fun Legend(slices: List<PieChartData.Slice>, colors: List<Color>) {
     val slicePairs = slices.windowed(size = 2, step = 2, partialWindows = true)
-
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 16.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp, 0.dp, 16.dp, 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

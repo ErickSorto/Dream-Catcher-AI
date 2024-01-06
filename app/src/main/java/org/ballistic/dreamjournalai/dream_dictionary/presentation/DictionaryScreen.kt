@@ -10,17 +10,20 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,14 +69,8 @@ fun DictionaryScreen(
     val scope = rememberCoroutineScope()
 
     // create vibrator effect with the constant EFFECT_CLICK
-
     val vibrationEffect1: VibrationEffect =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
-        } else {
-            Log.e("TAG", "Cannot vibrate device..")
-            TODO("VERSION.SDK_INT < O")
-        }
+        VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
 
     LaunchedEffect(Unit) {
         Log.d("DictionaryScreen", "LaunchedEffect triggered")
@@ -86,7 +83,7 @@ fun DictionaryScreen(
 
     Scaffold(
         snackbarHost = {
-            dictionaryScreenState.snackBarHostState.value
+            SnackbarHost(dictionaryScreenState.snackBarHostState.value)
         },
         topBar = {
             DictionaryScreenTopBar(
@@ -95,7 +92,10 @@ fun DictionaryScreen(
                 onDictionaryEvent = onEvent
             )
         },
-        containerColor = Color.Transparent
+        bottomBar = {
+            Box(modifier = Modifier.height(116.dp)) // Bottom bar height
+        },
+        containerColor = Color.Transparent,
     ) {
         if (!dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
             BuyDictionaryWordDrawer(
@@ -137,8 +137,7 @@ fun DictionaryScreen(
         }
         Column(
             modifier = Modifier
-                .padding(it)
-                .navigationBarsPadding()
+                .padding(top = it.calculateTopPadding(), bottom = 96.dp)
                 .fillMaxSize()
         ) {
             val processedWords = dictionaryScreenState.filteredWordsByLetter.map { wordItem ->

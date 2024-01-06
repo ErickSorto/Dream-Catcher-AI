@@ -3,9 +3,7 @@ package org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -91,12 +89,14 @@ class DictionaryScreenViewModel @Inject constructor(
                                     )
                                 }
                             }
-
                             is Resource.Error -> {
-                                _dictionaryScreenState.value.snackBarHostState.value.showSnackbar(
-                                    message = "Error getting unlocked words: ${result.message}",
-                                    actionLabel = "Dismiss"
-                                )
+                                Log.d("DictionaryScreen", "Error getting unlocked words")
+                                viewModelScope.launch {
+                                    _dictionaryScreenState.value.snackBarHostState.value.showSnackbar(
+                                        message = "${result.message}",
+                                        actionLabel = "Dismiss"
+                                    )
+                                }
                             }
                         }
                     }
@@ -150,8 +150,9 @@ class DictionaryScreenViewModel @Inject constructor(
     ) {
         when (result) {
             is Resource.Error -> {
+                _dictionaryScreenState.value.bottomSheetState.value = false
                 _dictionaryScreenState.value.snackBarHostState.value.showSnackbar(
-                    message = "Error unlocking word: ${result.message}",
+                    message = "${result.message}",
                     actionLabel = "Dismiss"
                 )
             }

@@ -63,7 +63,6 @@ import org.ballistic.dreamjournalai.navigation.ScreenGraph
 import org.ballistic.dreamjournalai.navigation.Screens
 import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreEvent
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreenView(
     mainScreenViewModelState: MainScreenViewModelState,

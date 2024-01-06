@@ -91,26 +91,26 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun unlockWord(word: String, tokenCost: Int): Resource<Boolean> {
         return withContext(Dispatchers.IO) {
             val user = currentUser
-            run {
-                val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
-                val snapshot = userDocRef?.get()?.await()
-                val unlockedWords = snapshot?.get("unlockedWords") as? ArrayList<String>
-                if (unlockedWords != null) {
-                    if (unlockedWords.contains(word)) {
-                        Resource.Success(true)
-                    } else {
-                        unlockedWords.add(word)
-                        userDocRef.update("unlockedWords", unlockedWords).await()
-                        if (tokenCost > 0){
-                            consumeDreamTokens(tokenCost)
-                        }
-                        Resource.Success(true)
-                    }
-                } else {
-                    userDocRef?.update("unlockedWords", arrayListOf(word))?.await()
-                    Resource.Success(true)
-                }
+            val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
+            val snapshot = userDocRef?.get()?.await()
+            val unlockedWords = snapshot?.get("unlockedWords") as? ArrayList<String> ?: arrayListOf()
+            val userTokens = snapshot?.get("tokens") as? Int ?: 0
+
+            if (unlockedWords.contains(word)) {
+                return@withContext Resource.Success(true)
             }
+
+            if (tokenCost > 0 && userTokens < tokenCost) {
+                return@withContext Resource.Error("Not enough dream tokens")
+            }
+
+            if (tokenCost > 0) {
+                consumeDreamTokens(tokenCost)
+            }
+
+            unlockedWords.add(word)
+            userDocRef?.update("unlockedWords", unlockedWords)?.await()
+            Resource.Success(true)
         }
     }
 
@@ -203,7 +203,6 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun firebaseSignInWithGoogle(
         googleCredential: AuthCredential
     ): Flow<Resource<Pair<AuthResult, String?>>> {
@@ -314,7 +313,6 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun firebaseSignInWithEmailAndPassword(
         email: String,
         password: String,

@@ -81,7 +81,7 @@ fun DreamItem(
     Box(
         modifier = animatedModifier
             .clip(RoundedCornerShape(cornerRadius))
-            .background(colorResource(id = R.color.dark_blue).copy(alpha = 0.6f))
+            .background(colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
     ) {
         Row(
             modifier = Modifier

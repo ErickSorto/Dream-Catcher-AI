@@ -229,5 +229,5 @@ data class DreamStatisticScreenState(
     val totalFavoriteDreams: Int = 0,
     val totalRecurringDreams: Int = 0,
     val totalFalseAwakenings: Int = 0,
-    val isDreamWordFilterLoading: Boolean = false,
+    val isDreamWordFilterLoading: Boolean = true,
 )

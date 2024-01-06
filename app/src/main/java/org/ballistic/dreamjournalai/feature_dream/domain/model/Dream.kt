@@ -12,9 +12,8 @@ import java.time.LocalDate
 import java.util.*
 
 @Keep
-@RequiresApi(Build.VERSION_CODES.O)
 @Parcelize
-data class Dream @RequiresApi(Build.VERSION_CODES.O) constructor(
+data class Dream (
     val title: String,
     val content: String,
     val timestamp: Long = System.currentTimeMillis(),

@@ -19,7 +19,6 @@ import com.smarttoolfactory.animatedlist.AnimatedInfiniteLazyRow
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream.Companion.dreamBackgroundImages
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DreamImageSelectionRow(
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},

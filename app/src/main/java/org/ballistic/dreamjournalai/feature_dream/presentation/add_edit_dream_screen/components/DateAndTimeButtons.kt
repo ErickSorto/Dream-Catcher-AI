@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateAndTimeButtonsLayout(
     addEditDreamState: AddEditDreamState,
@@ -64,7 +63,6 @@ fun DateAndTimeButtonsLayout(
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateButton(
     addEditDreamState: AddEditDreamState,
@@ -94,7 +92,6 @@ fun DateButton(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SleepTimeButton(
     addEditDreamState: AddEditDreamState,
@@ -124,7 +121,6 @@ fun SleepTimeButton(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WakeTimeButton(
     addEditDreamState: AddEditDreamState,

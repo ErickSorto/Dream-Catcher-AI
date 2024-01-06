@@ -14,7 +14,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ArcRotationAnimation(infiniteTransition: InfiniteTransition) {
+fun ArcRotationAnimation(
+    infiniteTransition: InfiniteTransition
+) {
     val circleColor = Color(0xFF008080)
     circleColor.copy(alpha = 0.2f)
     val arcAngle1 by infiniteTransition.animateFloat(

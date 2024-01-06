@@ -23,7 +23,6 @@ import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateHeader(dateString: String) {
     val displayString = remember(dateString) {
@@ -59,7 +58,7 @@ fun DateHeader(dateString: String) {
         modifier = Modifier
             .padding(12.dp, 16.dp, 8.dp, 10.dp)
             .background(
-                colorResource(id = R.color.dark_blue).copy(alpha = 0.6f),
+                colorResource(id = R.color.dark_blue).copy(alpha = 0.7f),
                 shape = RoundedCornerShape(8.dp)
             )
     ) {

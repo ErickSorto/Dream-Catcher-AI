@@ -3,10 +3,8 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import androidx.annotation.Keep
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
@@ -48,7 +46,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class AddEditDreamViewModel @Inject constructor(
     private val dreamUseCases: DreamUseCases,
@@ -130,7 +127,6 @@ class AddEditDreamViewModel @Inject constructor(
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: AddEditDreamEvent) {
         when (event) {
             is AddEditDreamEvent.EnteredTitle -> {
@@ -496,7 +492,7 @@ class AddEditDreamViewModel @Inject constructor(
 
                             is Resource.Error -> {
                                 _addEditDreamState.value.snackBarHostState.value.showSnackbar(
-                                    message = "Error getting unlocked words: ${result.message}",
+                                    message = "Couldn't get unlocked words :(",
                                     actionLabel = "Dismiss"
                                 )
                             }
@@ -617,8 +613,9 @@ class AddEditDreamViewModel @Inject constructor(
     ) {
         when (result) {
             is Resource.Error -> {
+                _addEditDreamState.value.bottomSheetState.value = false
                 _addEditDreamState.value.snackBarHostState.value.showSnackbar(
-                    message = "Error unlocking word: ${result.message}", actionLabel = "Dismiss"
+                    message = "${result.message}", actionLabel = "Dismiss"
                 )
             }
 
@@ -716,7 +713,7 @@ class AddEditDreamViewModel @Inject constructor(
                 model = ModelId(modelId), messages = listOf(
                     ChatMessage(
                         role = ChatRole.User,
-                        content = "$command." + "\n Respond in this language: $currentLocale"
+                        content = "$command.\n Respond in this language: $currentLocale"
                     )
                 ), maxTokens = 500
             )
@@ -997,7 +994,6 @@ class AddEditDreamViewModel @Inject constructor(
 }
 
 @Keep
-@RequiresApi(Build.VERSION_CODES.O)
 data class AddEditDreamState(
     val dreamTitle: String = "",
     val dreamContent: String = "",

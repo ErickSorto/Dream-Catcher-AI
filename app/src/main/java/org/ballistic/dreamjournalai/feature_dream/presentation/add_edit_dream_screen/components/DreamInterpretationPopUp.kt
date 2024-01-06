@@ -32,7 +32,6 @@ import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DreamInterpretationPopUp(
     mainScreenViewModelState: MainScreenViewModelState,

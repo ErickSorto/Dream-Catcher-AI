@@ -23,7 +23,6 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     private val repo: AuthRepository
@@ -31,7 +30,6 @@ class MainScreenViewModel @Inject constructor(
     private val _mainScreenViewModelState = MutableStateFlow(MainScreenViewModelState(authRepo = repo))
     val mainScreenViewModelState: StateFlow<MainScreenViewModelState> = _mainScreenViewModelState.asStateFlow()
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun getBackgroundResource(): Int {
         val currentTime = LocalDateTime.now()
         val currentHour = currentTime.hour

@@ -36,7 +36,6 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun GenerateButtonsLayout(
@@ -88,7 +87,6 @@ fun GenerateButtonsLayout(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PaintCustomButton(
@@ -129,7 +127,6 @@ fun PaintCustomButton(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun InterpretCustomButton(
@@ -169,7 +166,6 @@ fun InterpretCustomButton(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun GenerateStoryButton(
@@ -209,7 +205,6 @@ fun GenerateStoryButton(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun GenerateAdviceButton(
@@ -253,7 +248,6 @@ fun GenerateAdviceButton(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun AskQuestionButton(
@@ -293,7 +287,6 @@ fun AskQuestionButton(
         Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MoodAnalyzerButton(
@@ -354,7 +347,6 @@ fun AdTokenLayout(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WatchAdButton(
     onClick: () -> Unit = {}

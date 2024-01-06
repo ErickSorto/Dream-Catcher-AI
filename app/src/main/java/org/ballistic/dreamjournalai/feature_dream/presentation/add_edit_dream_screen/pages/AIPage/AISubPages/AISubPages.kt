@@ -45,7 +45,6 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 @OptIn(ExperimentalPagerApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AIInterpreterPage(
     addEditDreamState: AddEditDreamState,
@@ -108,7 +107,6 @@ fun AIInterpreterPage(
 }
 
 @OptIn(ExperimentalPagerApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AIPainterPage(
     addEditDreamState: AddEditDreamState,
@@ -159,7 +157,6 @@ fun AIPainterPage(
 }
 
 @OptIn(ExperimentalPagerApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AIDreamAdvicePage(
     addEditDreamState: AddEditDreamState,
@@ -223,7 +220,6 @@ fun AIDreamAdvicePage(
 }
 
 @OptIn(ExperimentalPagerApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AIQuestionPage(
     addEditDreamState: AddEditDreamState,
@@ -295,7 +291,6 @@ fun AIQuestionPage(
 }
 
 @OptIn(ExperimentalPagerApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AIStoryPage(
     addEditDreamState: AddEditDreamState,
@@ -359,7 +354,6 @@ fun AIStoryPage(
 }
 
 @OptIn(ExperimentalPagerApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AIMoodPage(
     addEditDreamState: AddEditDreamState,

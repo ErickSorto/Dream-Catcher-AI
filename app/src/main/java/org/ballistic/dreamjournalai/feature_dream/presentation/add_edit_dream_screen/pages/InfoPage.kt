@@ -56,7 +56,6 @@ import java.time.Clock
 import java.time.LocalTime
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoPage(
