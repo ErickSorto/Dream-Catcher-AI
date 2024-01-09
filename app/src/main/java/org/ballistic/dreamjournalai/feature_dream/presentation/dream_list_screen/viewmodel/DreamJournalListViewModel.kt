@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.viewmodel
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -91,6 +92,7 @@ class DreamJournalListViewModel @Inject constructor(
     }
 }
 
+@Stable
 data class DreamJournalListState(
     val dreams: List<Dream> = emptyList(),
     val orderType: OrderType = OrderType.Date,

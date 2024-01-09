@@ -11,6 +11,10 @@ import androidx.navigation.navArgument
 import org.ballistic.dreamjournalai.core.components.FeatureComingSoonScreen
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.DictionaryScreen
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryScreenViewModel
+import org.ballistic.dreamjournalai.dream_favorites.DreamFavoriteScreenViewModel
+import org.ballistic.dreamjournalai.dream_favorites.presentation.DreamFavoriteScreen
+import org.ballistic.dreamjournalai.dream_nightmares.presentation.DreamNightmareScreen
+import org.ballistic.dreamjournalai.dream_nightmares.presentation.DreamNightmareScreenViewModel
 import org.ballistic.dreamjournalai.dream_statistics.presentation.DreamStatisticScreen
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.about_me_screen.AboutMeScreen
@@ -95,13 +99,17 @@ fun ScreenGraph(
                 },
             )
         }
-        // Add your new screens here
+
         composable(route = Screens.Favorites.route) {
-            FeatureComingSoonScreen(
-                onNavigateToAboutMeScreen = {
-                    navController.popBackStack()
-                    navController.navigate(Screens.AboutMe.route)
-                })
+            val dreamFavoriteScreenViewModel: DreamFavoriteScreenViewModel = hiltViewModel()
+            val dreamFavoriteScreenState = dreamFavoriteScreenViewModel.dreamFavoriteScreenState
+                .collectAsStateWithLifecycle()
+            DreamFavoriteScreen(
+                dreamFavoriteScreenState = dreamFavoriteScreenState.value,
+                mainScreenViewModelState = mainScreenViewModelState,
+                navController = navController,
+                onEvent = { dreamFavoriteScreenViewModel.onEvent(it) },
+            )
         }
 
         composable(route = Screens.AccountSettings.route) {
@@ -158,11 +166,15 @@ fun ScreenGraph(
                 })
         }
         composable(route = Screens.Nightmares.route) {
-            FeatureComingSoonScreen(
-                onNavigateToAboutMeScreen = {
-                    navController.popBackStack()
-                    navController.navigate(Screens.AboutMe.route)
-                })
+            val dreamNightmareScreenViewModel: DreamNightmareScreenViewModel = hiltViewModel()
+            val dreamNightmareScreenState = dreamNightmareScreenViewModel.dreamNightmareScreenState
+                .collectAsStateWithLifecycle()
+            DreamNightmareScreen(
+                dreamNightmareScreenState = dreamNightmareScreenState.value,
+                mainScreenViewModelState = mainScreenViewModelState,
+                navController = navController,
+                onEvent = { dreamNightmareScreenViewModel.onEvent(it) },
+            )
         }
 
         composable(route = Screens.Dictionary.route) {

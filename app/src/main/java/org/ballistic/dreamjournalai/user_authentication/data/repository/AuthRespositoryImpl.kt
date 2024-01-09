@@ -1,9 +1,7 @@
 package org.ballistic.dreamjournalai.user_authentication.data.repository
 
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -439,7 +437,6 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 }
-
 
 fun FirebaseUser.toUser(registrationTimestamp: Long) = mapOf(
     DISPLAY_NAME to displayName,

@@ -6,6 +6,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -296,6 +297,7 @@ class DictionaryScreenViewModel @Inject constructor(
 }
 
 
+@Stable
 data class DictionaryScreenState(
     val authRepository: AuthRepository,
     val dictionaryWordList: List<DictionaryWord> = emptyList(),
@@ -312,6 +314,7 @@ data class DictionaryScreenState(
     val searchedText: MutableStateFlow<String> = MutableStateFlow(""),
 )
 
+@Stable
 data class DictionaryWord(
     val word: String,
     val definition: String,
