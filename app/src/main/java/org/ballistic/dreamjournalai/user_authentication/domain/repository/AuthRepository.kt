@@ -11,7 +11,6 @@ import org.ballistic.dreamjournalai.core.Resource
 
 
 typealias OneTapSignInResponse = Resource<BeginSignInResult>
-typealias SignInWithGoogleResponse = Resource<Unit>
 typealias SignUpResponse = Resource<Boolean>
 typealias SendEmailVerificationResponse = Resource<Boolean>
 typealias SignInResponse = Boolean

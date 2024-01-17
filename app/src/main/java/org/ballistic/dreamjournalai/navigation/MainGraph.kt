@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.navigation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,7 +11,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenView
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModel
 import org.ballistic.dreamjournalai.onboarding.presentation.OnboardingScreen
-import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreScreenViewModel
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
@@ -57,7 +55,6 @@ fun MainGraph(
 
         composable(route = Screens.MainScreen.route) {
             val mainScreenViewModel: MainScreenViewModel = hiltViewModel()
-            val storeScreenViewModel: StoreScreenViewModel = hiltViewModel()
             MainScreenView(
                 mainScreenViewModelState = mainScreenViewModel.mainScreenViewModelState.collectAsStateWithLifecycle().value,
                 onDataLoaded = {
@@ -65,9 +62,6 @@ fun MainGraph(
                 },
                 onMainEvent = {
                     mainScreenViewModel.onEvent(it)
-                },
-                onStoreEvent = {
-                    storeScreenViewModel.onEvent(it)
                 },
                 onNavigateToOnboardingScreen = {
                     navController.popBackStack()

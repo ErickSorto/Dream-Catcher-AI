@@ -1,8 +1,6 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage
 
 import android.app.Activity
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,9 +18,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -64,12 +63,11 @@ fun AIPage(
     pagerState: PagerState,
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
-    mainScreenViewModelState: MainScreenViewModelState
 ) {
 
     val pages = listOf("Painting", "Interpretation", "Advice", "Question", "Story", "Mood")
     val pagerSate2 = rememberPagerState()
-
+    val dreamTokens = addEditDreamState.dreamTokens.collectAsStateWithLifecycle().value
     val responseState = addEditDreamState.dreamAIExplanation
     val imageState = addEditDreamState.dreamAIImage
     val questionState = addEditDreamState.dreamQuestionAIAnswer
@@ -135,11 +133,10 @@ fun AIPage(
 
     if (addEditDreamState.imageGenerationPopUpState.value) {
         ImageGenerationPopUp(
-            mainScreenViewModelState = mainScreenViewModelState,
             addEditDreamState = addEditDreamState,
             onDreamTokenClick = {
                 addEditDreamState.imageGenerationPopUpState.value = false
-                if (mainScreenViewModelState.dreamTokens.value < 2) {
+                if (dreamTokens < 2) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -183,7 +180,7 @@ fun AIPage(
     if (addEditDreamState.dreamInterpretationPopUpState.value) {
         DreamInterpretationPopUp(
             title = "Dream Interpreter",
-            mainScreenViewModelState = mainScreenViewModelState,
+            dreamTokens = dreamTokens,
             onAdClick = { amount ->
                 addEditDreamState.dreamInterpretationPopUpState.value = false
                 scope.launch {
@@ -199,7 +196,7 @@ fun AIPage(
             },
             onDreamTokenClick = { amount ->
                 addEditDreamState.dreamInterpretationPopUpState.value = false
-                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -230,7 +227,7 @@ fun AIPage(
     if(addEditDreamState.dreamAdvicePopUpState.value){
         DreamInterpretationPopUp(
             title = "Dream Advice",
-            mainScreenViewModelState = mainScreenViewModelState,
+            dreamTokens = dreamTokens,
             onAdClick = { amount ->
                 addEditDreamState.dreamAdvicePopUpState.value = false
                 scope.launch {
@@ -246,7 +243,7 @@ fun AIPage(
             },
             onDreamTokenClick = { amount ->
                 addEditDreamState.dreamAdvicePopUpState.value = false
-                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -277,12 +274,11 @@ fun AIPage(
 
     if (addEditDreamState.questionPopUpState.value) {
         QuestionAIGenerationBottomSheet(
-            mainScreenViewModelState = mainScreenViewModelState,
             addEditDreamState = addEditDreamState,
             onAddEditDreamEvent = onAddEditDreamEvent,
             onDreamTokenClick = { amount ->
                 addEditDreamState.questionPopUpState.value = false
-                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -325,10 +321,10 @@ fun AIPage(
     if (addEditDreamState.storyPopupState.value) {
         DreamInterpretationPopUp(
             title = "Dream Story",
-            mainScreenViewModelState = mainScreenViewModelState,
+            dreamTokens = dreamTokens,
             onDreamTokenClick = { amount ->
                 addEditDreamState.storyPopupState.value = false
-                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -371,7 +367,7 @@ fun AIPage(
     if (addEditDreamState.moodPopupState.value) {
         DreamInterpretationPopUp(
             title = "Dream Mood",
-            mainScreenViewModelState = mainScreenViewModelState,
+            dreamTokens = dreamTokens,
             onAdClick = { amount ->
                 addEditDreamState.moodPopupState.value = false
                 scope.launch {
@@ -387,7 +383,7 @@ fun AIPage(
             },
             onDreamTokenClick = { amount ->
                 addEditDreamState.moodPopupState.value = false
-                if (mainScreenViewModelState.dreamTokens.value <= 0) {
+                if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -454,7 +450,7 @@ fun AIPage(
                         .background(color = colorResource(id = R.color.white))
                 )
                 DreamTokenLayout(
-                    totalDreamTokens = mainScreenViewModelState.dreamTokens.value,
+                    totalDreamTokens = dreamTokens,
                 )
             }
 

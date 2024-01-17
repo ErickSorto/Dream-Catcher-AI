@@ -59,13 +59,11 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.compo
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.navigation.ScreenGraph
 import org.ballistic.dreamjournalai.navigation.Screens
-import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreEvent
 
 @Composable
 fun MainScreenView(
     mainScreenViewModelState: MainScreenViewModelState,
     onMainEvent: (MainScreenEvent) -> Unit = {},
-    onStoreEvent: (StoreEvent) -> Unit = {},
     onNavigateToOnboardingScreen: () -> Unit = {},
     onDataLoaded: () -> Unit
 ) {
@@ -181,7 +179,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.1.4",
+                        text = "Version: 1.1.5",
                         color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)
@@ -247,7 +245,6 @@ fun MainScreenView(
                         navController = navController,
                         mainScreenViewModelState = mainScreenViewModelState,
                         onMainEvent = { onMainEvent(it) },
-                        onStoreEvent = { onStoreEvent(it) },
                     ) { onNavigateToOnboardingScreen() }
                 }
             }

@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -15,7 +13,6 @@ import androidx.compose.ui.UiComposable
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -27,7 +24,6 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.InfoPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.dictionary_page.WordPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 
 @OptIn(ExperimentalPagerApi::class)
@@ -35,7 +31,6 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 @UiComposable
 fun TabLayout(
     dreamBackgroundImage: MutableState<Int>,
-    mainScreenViewModelState: MainScreenViewModelState,
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
 ) {
@@ -99,15 +94,13 @@ fun TabLayout(
                     pagerState,
                     addEditDreamState = addEditDreamState,
                     onAddEditDreamEvent = onAddEditDreamEvent,
-                    mainScreenViewModelState = mainScreenViewModelState
                 )
             }
 
             2 -> {
                 WordPage(
                     addEditDreamState = addEditDreamState,
-                    onAddEditDreamEvent = onAddEditDreamEvent,
-                    mainScreenViewModelState = mainScreenViewModelState
+                    onAddEditDreamEvent = onAddEditDreamEvent
                 )
             }
 

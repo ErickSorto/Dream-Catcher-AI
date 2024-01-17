@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,16 +30,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageGenerationPopUp(
-    mainScreenViewModelState: MainScreenViewModelState,
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
     onDreamTokenClick: (amount: Int) -> Unit,
@@ -68,7 +65,7 @@ fun ImageGenerationPopUp(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                ){
+                ) {
                     Text(
                         text = "Dream Painter",
                         style = MaterialTheme.typography.headlineMedium,
@@ -76,7 +73,8 @@ fun ImageGenerationPopUp(
                         modifier = Modifier.padding(8.dp)
                     )
                     DreamTokenLayout(
-                        totalDreamTokens = mainScreenViewModelState.dreamTokens.value,
+                        totalDreamTokens = addEditDreamState.dreamTokens
+                            .collectAsStateWithLifecycle().value,
                     )
                 }
 

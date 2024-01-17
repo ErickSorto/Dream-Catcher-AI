@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
@@ -35,15 +36,14 @@ import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.Dic
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.ArcRotationAnimation
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 
 @Composable
 fun WordPage(
     addEditDreamState: AddEditDreamState,
-    onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
-    mainScreenViewModelState: MainScreenViewModelState
+    onAddEditDreamEvent: (AddEditDreamEvent) -> Unit
 ) {
+    val dreamTokens = addEditDreamState.dreamTokens.collectAsStateWithLifecycle().value
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -125,7 +125,7 @@ fun WordPage(
                 onClickOutside = {
                     addEditDreamState.bottomSheetState.value = false
                 },
-                token = mainScreenViewModelState.dreamTokens.value,
+                token = dreamTokens,
                 amount = addEditDreamState.clickedWord.cost
             )
         } else if (addEditDreamState.isClickedWordUnlocked && addEditDreamState.bottomSheetState.value) {

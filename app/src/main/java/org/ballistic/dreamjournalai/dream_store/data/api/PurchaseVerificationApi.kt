@@ -1,7 +1,7 @@
-package org.ballistic.dreamjournalai.store_billing.data.api
+package org.ballistic.dreamjournalai.dream_store.data.api
 
 import com.google.errorprone.annotations.Keep
-import org.ballistic.dreamjournalai.store_billing.domain.entities.PurchaseVerificationResponse
+import org.ballistic.dreamjournalai.dream_store.domain.entities.PurchaseVerificationResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -3,14 +3,13 @@ package org.ballistic.dreamjournalai.di
 import android.content.Context
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.PurchasesUpdatedListener
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.ballistic.dreamjournalai.store_billing.data.repository.BillingRepositoryImpl
-import org.ballistic.dreamjournalai.store_billing.domain.repository.BillingRepository
+import org.ballistic.dreamjournalai.dream_store.data.repository.BillingRepositoryImpl
+import org.ballistic.dreamjournalai.dream_store.domain.repository.BillingRepository
 import javax.inject.Singleton
 
 @Module

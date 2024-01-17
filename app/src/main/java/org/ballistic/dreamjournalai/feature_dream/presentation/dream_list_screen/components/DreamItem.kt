@@ -50,7 +50,7 @@ fun DreamItem(
     dream: Dream,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 8.dp,
-    playAnimation: Boolean = true,
+    playAnimation: Boolean = false,
     onDeleteClick: () -> Unit
 ) {
     val animatedProgress = remember { Animatable(initialValue = 0.8f) }

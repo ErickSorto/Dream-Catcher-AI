@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.store_billing.data.repository
+package org.ballistic.dreamjournalai.dream_store.data.repository
 
 import android.app.Activity
 import android.util.Log
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import org.ballistic.dreamjournalai.store_billing.domain.repository.BillingRepository
+import org.ballistic.dreamjournalai.dream_store.domain.repository.BillingRepository
 
 class BillingRepositoryImpl(
     val billingClient: BillingClient
@@ -142,6 +142,7 @@ class BillingRepositoryImpl(
             }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun acknowledgePurchase(purchase: Purchase): Boolean =
         suspendCancellableCoroutine { continuation ->
             val acknowledgeParams = AcknowledgePurchaseParams.newBuilder()
@@ -158,13 +159,14 @@ class BillingRepositoryImpl(
         }
 
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun consumePurchase(purchase: Purchase): Boolean =
         suspendCancellableCoroutine { continuation ->
             val consumeParams = ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)
                 .build()
 
-            billingClient.consumeAsync(consumeParams) { billingResult, purchaseToken ->
+            billingClient.consumeAsync(consumeParams) { billingResult, _ ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     continuation.resume(true, onCancellation = { })
                 } else {

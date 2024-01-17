@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.store_billing.domain.entities
+package org.ballistic.dreamjournalai.dream_store.domain.entities
 
 data class PurchaseVerificationResponse(
     val isValid: Boolean

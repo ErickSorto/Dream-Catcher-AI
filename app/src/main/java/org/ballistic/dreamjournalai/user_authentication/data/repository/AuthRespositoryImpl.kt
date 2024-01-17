@@ -92,7 +92,7 @@ class AuthRepositoryImpl @Inject constructor(
             val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
             val snapshot = userDocRef?.get()?.await()
             val unlockedWords = snapshot?.get("unlockedWords") as? ArrayList<String> ?: arrayListOf()
-            val userTokens = snapshot?.get("tokens") as? Int ?: 0
+            val userTokens = snapshot?.get("dreamTokens") as? Long ?: 0
 
             if (unlockedWords.contains(word)) {
                 return@withContext Resource.Success(true)

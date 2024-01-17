@@ -55,7 +55,11 @@ class AddEditDreamViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _addEditDreamState = MutableStateFlow(AddEditDreamState())
+    private val _addEditDreamState = MutableStateFlow(
+        AddEditDreamState(
+            authRepository = authRepository
+        )
+    )
     val addEditDreamState: StateFlow<AddEditDreamState> = _addEditDreamState.asStateFlow()
 
     init {
@@ -108,7 +112,8 @@ class AddEditDreamViewModel @Inject constructor(
                                     dreamGeneratedDetails = DreamAIGeneratedDetails(
                                         response = dream.generatedDetails,
                                     ),
-                                    isLoading = false
+                                    isLoading = false,
+                                    authRepository = authRepository
                                 )
                             }
                         }
@@ -657,10 +662,9 @@ class AddEditDreamViewModel @Inject constructor(
                     isDreamExitOff = false
                 )
                 val message =
-                    if (addEditDreamState.value.dreamContent.isEmpty()){
+                    if (addEditDreamState.value.dreamContent.isEmpty()) {
                         "Dream content is empty"
-                    }
-                    else {
+                    } else {
                         "Dream content is too short"
                     }
                 addEditDreamState.value.snackBarHostState.value.showSnackbar(
@@ -862,7 +866,10 @@ class AddEditDreamViewModel @Inject constructor(
             val dictionaryWordLower = dictionary.word.lowercase(Locale.getDefault())
             if (dictionaryWordLower.contains(" ") && dreamContent.contains(dictionaryWordLower)) {
                 words.add(dictionary)
-            } else if (!dictionaryWordLower.contains(" ") && dictionaryWordLower.length >= 5 && dreamContent.contains(dictionaryWordLower)) {
+            } else if (!dictionaryWordLower.contains(" ") && dictionaryWordLower.length >= 5 && dreamContent.contains(
+                    dictionaryWordLower
+                )
+            ) {
                 words.add(dictionary)
             }
         }
@@ -1064,6 +1071,8 @@ data class AddEditDreamState(
     val clickedWord: DictionaryWord = DictionaryWord("", "", false, 0),
     val isClickedWordUnlocked: Boolean = false,
     val isDreamFilterLoading: Boolean = false,
+    val authRepository: AuthRepository,
+    val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
 )
 
 data class DreamAIExplanation(

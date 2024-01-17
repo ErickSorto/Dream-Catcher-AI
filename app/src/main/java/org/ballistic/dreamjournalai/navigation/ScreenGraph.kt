@@ -25,8 +25,9 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen
 import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.viewmodel.DreamJournalListViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
-import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreEvent
-import org.ballistic.dreamjournalai.store_billing.presentation.store_screen.StoreScreen
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreEvent
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreen
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
@@ -35,7 +36,6 @@ fun ScreenGraph(
     navController: NavHostController,
     mainScreenViewModelState: MainScreenViewModelState,
     onMainEvent: (MainScreenEvent) -> Unit = {},
-    onStoreEvent: (StoreEvent) -> Unit = {},
     onNavigateToOnboardingScreen: () -> Unit = {},
 ) {
     NavHost(
@@ -55,10 +55,13 @@ fun ScreenGraph(
         }
         //store
         composable(route = Screens.StoreScreen.route) {
+            val storeScreenViewModel: StoreScreenViewModel = hiltViewModel()
+            val storeScreenViewModelState = storeScreenViewModel.storeScreenViewModelState
+                .collectAsStateWithLifecycle().value
             StoreScreen(
-                mainScreenViewModelState = mainScreenViewModelState,
+                storeScreenViewModelState = storeScreenViewModelState,
                 onMainEvent = { onMainEvent(it) },
-                onStoreEvent = { onStoreEvent(it) },
+                onStoreEvent = { storeScreenViewModel.onEvent(it) },
                 navigateToAccountScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.AccountSettings.route)
@@ -88,7 +91,6 @@ fun ScreenGraph(
             val addEditDreamViewModel: AddEditDreamViewModel = hiltViewModel()
             AddEditDreamScreen(
                 dreamImage = image,
-                mainScreenViewModelState = mainScreenViewModelState,
                 addEditDreamState = addEditDreamViewModel.addEditDreamState
                     .collectAsStateWithLifecycle().value,
                 onMainEvent = { onMainEvent(it) },

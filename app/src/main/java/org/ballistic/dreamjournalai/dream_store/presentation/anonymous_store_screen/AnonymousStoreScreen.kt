@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.store_billing.presentation.anonymous_store_screen
+package org.ballistic.dreamjournalai.dream_store.presentation.anonymous_store_screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

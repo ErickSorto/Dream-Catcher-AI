@@ -33,6 +33,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
@@ -42,7 +43,6 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionAIGenerationBottomSheet(
-    mainScreenViewModelState: MainScreenViewModelState,
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
     onDreamTokenClick: (amount: Int) -> Unit,
@@ -74,7 +74,8 @@ fun QuestionAIGenerationBottomSheet(
                         modifier = Modifier.padding(8.dp)
                     )
                     DreamTokenLayout(
-                        totalDreamTokens = mainScreenViewModelState.dreamTokens.value,
+                        totalDreamTokens = addEditDreamState.dreamTokens
+                            .collectAsStateWithLifecycle().value,
                     )
                 }
                 OutlinedTextField(

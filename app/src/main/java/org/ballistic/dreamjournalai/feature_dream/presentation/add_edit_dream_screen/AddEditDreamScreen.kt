@@ -20,7 +20,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -37,14 +37,12 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.TabLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditDreamScreen(
     dreamImage: Int,
     addEditDreamState: AddEditDreamState,
-    mainScreenViewModelState: MainScreenViewModelState,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},
     onNavigateToDreamJournalScreen: () -> Unit = {},
@@ -68,7 +66,7 @@ fun AddEditDreamScreen(
     }
 
     val dreamBackgroundImage = remember {
-        mutableStateOf(
+        mutableIntStateOf(
             when {
                 dreamImage != -1 && dreamImage in Dream.dreamBackgroundImages -> dreamImage
                 dreamImage != -1 -> R.drawable.background_during_day
@@ -77,7 +75,7 @@ fun AddEditDreamScreen(
         )
     }
 
-    Crossfade(targetState = dreamBackgroundImage.value, label = "") { image ->
+    Crossfade(targetState = dreamBackgroundImage.intValue, label = "") { image ->
         Image(
             painter = painterResource(id = image),
             contentDescription = "Dream Background",
@@ -171,7 +169,6 @@ fun AddEditDreamScreen(
         ) {
             TabLayout(
                 dreamBackgroundImage,
-                mainScreenViewModelState = mainScreenViewModelState,
                 addEditDreamState = addEditDreamState,
                 onAddEditDreamEvent = onAddEditDreamEvent
             )

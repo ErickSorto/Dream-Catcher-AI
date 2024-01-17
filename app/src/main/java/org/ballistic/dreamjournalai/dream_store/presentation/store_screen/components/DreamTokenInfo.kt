@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.store_billing.presentation.store_screen.components
+package org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +20,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,14 +35,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModelState
 
 
 @Composable
-fun DreamTokenInfo(modifier: Modifier, mainScreenViewModelState: MainScreenViewModelState) {
+fun DreamTokenInfo(modifier: Modifier, storeScreenViewModelState: StoreScreenViewModelState) {
 
     Column(
         modifier = modifier
@@ -50,14 +53,14 @@ fun DreamTokenInfo(modifier: Modifier, mainScreenViewModelState: MainScreenViewM
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
-        SubInfoMonthlyYearlyPrice(mainScreenViewModelState = mainScreenViewModelState)
+        SubInfoMonthlyYearlyPrice(storeScreenViewModelState)
         SubInfoFeatures()
     }
 }
 
 @Composable
 fun SubInfoMonthlyYearlyPrice(
-    mainScreenViewModelState: MainScreenViewModelState
+    storeScreenViewModelState: StoreScreenViewModelState
 ) {
     Column(
         modifier = Modifier
@@ -79,7 +82,8 @@ fun SubInfoMonthlyYearlyPrice(
                 color = Color.White
             )
             DreamTokenLayout(
-                totalDreamTokens = mainScreenViewModelState.dreamTokens.value
+                totalDreamTokens = storeScreenViewModelState.dreamTokens
+                    .collectAsStateWithLifecycle().value,
             )
         }
     }
@@ -181,9 +185,11 @@ fun SubTextDialog(subText: String, onDismiss: () -> Unit) {
 
 @Composable
 fun CustomButtonLayout(
+    storeScreenViewModelState: StoreScreenViewModelState,
     buy500IsClicked: () -> Unit,
     buy100IsClicked: () -> Unit
 ) {
+    val lastClickTime = remember { mutableStateOf(0L) }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -192,29 +198,30 @@ fun CustomButtonLayout(
         val (monthly, annual, tag) = createRefs()
 
         DreamToken500ButtonBuy(
+            storeScreenViewModelState = storeScreenViewModelState,
             modifier = Modifier.constrainAs(annual) {
                 bottom.linkTo(monthly.top)
             },
-            buy500IsClicked = {
-                buy500IsClicked()
-            })
+            buy500IsClicked = singleClick(lastClickTime) { buy500IsClicked() }
+        )
 
         DreamToken100ButtonBuy(
+            storeScreenViewModelState = storeScreenViewModelState,
             modifier = Modifier.constrainAs(monthly) {
                 bottom.linkTo(parent.bottom)
             },
-            buy100IsClicked = {
-                buy100IsClicked()
-            }
+            buy100IsClicked = singleClick(lastClickTime) { buy100IsClicked() }
         )
-        MostPopularBanner(modifier = Modifier.constrainAs(tag) {
 
-        })
+        MostPopularBanner(modifier = Modifier
+            .constrainAs(tag) {}
+            .offset(y = (-10).dp))
     }
 }
 
 @Composable
 fun DreamToken500ButtonBuy(
+    storeScreenViewModelState: StoreScreenViewModelState,
     modifier: Modifier,
     buy500IsClicked: () -> Unit = {}
 ) {
@@ -228,7 +235,8 @@ fun DreamToken500ButtonBuy(
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(id = R.color.Yellow).copy(alpha = 0.8f),
             contentColor = Color.White
-        )
+        ),
+        enabled = !storeScreenViewModelState.isBillingClientLoading
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -268,6 +276,7 @@ fun DreamToken500ButtonBuy(
 
 @Composable
 fun DreamToken100ButtonBuy(
+    storeScreenViewModelState: StoreScreenViewModelState,
     modifier: Modifier,
     buy100IsClicked: () -> Unit
 ) {
@@ -281,7 +290,8 @@ fun DreamToken100ButtonBuy(
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(id = R.color.sky_blue).copy(alpha = 0.8f),
             contentColor = Color.White
-        )
+        ),
+        enabled = !storeScreenViewModelState.isBillingClientLoading
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -336,5 +346,19 @@ fun MostPopularBanner(modifier: Modifier) {
             maxLines = 1,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+@Composable
+fun singleClick(
+    lastClickTimeState: MutableState<Long>,
+    onClick: () -> Unit
+): () -> Unit {
+    return {
+        val now = System.currentTimeMillis()
+        if (now - lastClickTimeState.value >= 300) {
+            onClick()
+            lastClickTimeState.value = now
+        }
     }
 }

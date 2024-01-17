@@ -29,13 +29,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DreamInterpretationPopUp(
-    mainScreenViewModelState: MainScreenViewModelState,
     title: String,
+    dreamTokens: Int,
     onAdClick: (amount: Int) -> Unit,
     onDreamTokenClick: (amount: Int) -> Unit,
     onClickOutside: () -> Unit,
@@ -65,7 +66,7 @@ fun DreamInterpretationPopUp(
                             modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 8.dp)
                         )
                         DreamTokenLayout(
-                            totalDreamTokens = mainScreenViewModelState.dreamTokens.value,
+                            totalDreamTokens = dreamTokens,
                         )
                     }
 

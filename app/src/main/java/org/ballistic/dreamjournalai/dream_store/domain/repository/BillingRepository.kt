@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.store_billing.domain.repository
+package org.ballistic.dreamjournalai.dream_store.domain.repository
 
 import android.app.Activity
 import com.android.billingclient.api.*
