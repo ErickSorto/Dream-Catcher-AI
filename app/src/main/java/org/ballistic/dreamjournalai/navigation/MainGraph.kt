@@ -11,7 +11,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenView
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModel
 import org.ballistic.dreamjournalai.onboarding.presentation.OnboardingScreen
-import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
@@ -20,7 +19,6 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 fun MainGraph(
     navController: NavHostController,
     onDataLoaded: () -> Unit,
-    optionalDelay : Boolean = false,
 ) {
     NavHost(
         navController = navController,

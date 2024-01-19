@@ -39,10 +39,8 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     //  val screen by splashViewModel.state
                     MainGraph(
-                        navController = navController,
-                        onDataLoaded = { keepSplashOpened = false },
-                        optionalDelay = keepSplashOpened
-                    )
+                        navController = navController
+                    ) { keepSplashOpened = false }
                 }
             }
         }
