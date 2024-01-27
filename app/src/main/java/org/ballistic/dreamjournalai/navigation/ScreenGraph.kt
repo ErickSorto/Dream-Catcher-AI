@@ -28,6 +28,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreEvent
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreen
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
+import org.ballistic.dreamjournalai.dream_tools.presentation.DreamToolsScreen
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
@@ -139,11 +140,13 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Tools.route) {
-            FeatureComingSoonScreen(
-                onNavigateToAboutMeScreen = {
+            DreamToolsScreen(
+                mainScreenViewModelState = mainScreenViewModelState,
+                onNavigate = { route ->
                     navController.popBackStack()
-                    navController.navigate(Screens.AboutMe.route)
-                })
+                    navController.navigate(route)
+                }
+            )
         }
 
         composable(route = Screens.Statistics.route) {

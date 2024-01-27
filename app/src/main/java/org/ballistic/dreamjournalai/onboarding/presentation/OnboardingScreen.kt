@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -47,7 +46,6 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModelState
 
 @ExperimentalAnimationApi
-@ExperimentalPagerApi
 @Composable
 fun OnboardingScreen(
     loginViewModelState: LoginViewModelState,

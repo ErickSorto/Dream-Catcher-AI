@@ -7,14 +7,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.google.accompanist.pager.ExperimentalPagerApi
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenView
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModel
 import org.ballistic.dreamjournalai.onboarding.presentation.OnboardingScreen
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainGraph(
     navController: NavHostController,

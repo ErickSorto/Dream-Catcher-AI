@@ -66,6 +66,16 @@ class DreamToolsScreenViewModel @Inject constructor(
                     )
                 }
             }
+            is ToolsEvent.ChooseRandomDream -> {
+                viewModelScope.launch {
+                    val randomDream = _dreamToolsScreen.value.dreams.randomOrNull()
+                    if (randomDream != null) {
+                        _dreamToolsScreen.value = _dreamToolsScreen.value.copy(
+                            randomDream = randomDream
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -222,6 +232,7 @@ class DreamToolsScreenViewModel @Inject constructor(
 @Stable
 data class DreamToolsScreenState(
     val dreams: List<Dream> = emptyList(),
+    val randomDream: Dream? = null,
     val topSixWordsInDreams: Map<DictionaryWord, Int> = mapOf(),
     val dictionaryWordMutableList: List<DictionaryWord> = emptyList(),
     val totalLucidDreams: Int = 0,

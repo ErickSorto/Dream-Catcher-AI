@@ -155,7 +155,7 @@ fun InfoPage(
                         text = "Lucid Dream",
                         modifier = Modifier
                             .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
+                            .padding(16.dp, 8.dp, 16.dp, 0.dp),
                         style = typography.bodyLarge.copy(color = colorResource(id = R.color.white)),
                     )
 
@@ -283,7 +283,7 @@ fun InfoPage(
                     steps = 9,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 0.dp, 16.dp, 16.dp),
+                        .padding(16.dp, 0.dp, 16.dp, 8.dp),
                     thumb = {
                         Icon(
                             imageVector = Icons.Filled.Favorite,
@@ -318,7 +318,7 @@ fun InfoPage(
                     steps = 9,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 0.dp, 16.dp, 16.dp),
+                        .padding(16.dp, 0.dp, 16.dp, 8.dp),
                     thumb = {
                         Icon(
                             imageVector = Icons.Filled.ShieldMoon,
@@ -353,7 +353,7 @@ fun InfoPage(
                     steps = 9,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 0.dp, 16.dp, 16.dp),
+                        .padding(16.dp, 0.dp, 16.dp, 8.dp),
                     thumb = {
                         Icon(
                             imageVector = Icons.Filled.Mood,
@@ -383,8 +383,8 @@ fun InfoPage(
                     singleLine = false,
                     maxLines = 5,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
+                        focusedBorderColor = Color.White.copy(alpha = 0.3f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
                         cursorColor = colorResource(id = R.color.white),
                         focusedLabelColor = colorResource(id = R.color.white),
                         unfocusedLabelColor = colorResource(id = R.color.white),

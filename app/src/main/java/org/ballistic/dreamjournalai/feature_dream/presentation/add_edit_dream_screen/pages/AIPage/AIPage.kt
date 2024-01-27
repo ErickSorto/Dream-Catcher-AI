@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -434,8 +435,7 @@ fun AIPage(
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
-                        .height(1.dp)
-                        .background(color = colorResource(id = R.color.white))
+
                 )
                 Text(
                     modifier = Modifier.padding(8.dp),
@@ -443,14 +443,12 @@ fun AIPage(
                     style = typography.titleMedium.copy(color = colorResource(id = R.color.brighter_white)),
                     fontWeight = FontWeight.Light,
                 )
+                DreamTokenLayout(
+                    totalDreamTokens = dreamTokens,
+                )
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
-                        .height(1.dp)
-                        .background(color = colorResource(id = R.color.white))
-                )
-                DreamTokenLayout(
-                    totalDreamTokens = dreamTokens,
                 )
             }
 
