@@ -17,6 +17,11 @@ import org.ballistic.dreamjournalai.dream_nightmares.presentation.DreamNightmare
 import org.ballistic.dreamjournalai.dream_nightmares.presentation.DreamNightmareScreenViewModel
 import org.ballistic.dreamjournalai.dream_statistics.presentation.DreamStatisticScreen
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenViewModel
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreen
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
+import org.ballistic.dreamjournalai.dream_tools.presentation.DreamToolsScreen
+import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomDreamToolScreen
+import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomDreamToolScreenViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.about_me_screen.AboutMeScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.AccountSettingsScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamScreen
@@ -25,10 +30,6 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen
 import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.viewmodel.DreamJournalListViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
-import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreEvent
-import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreen
-import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
-import org.ballistic.dreamjournalai.dream_tools.presentation.DreamToolsScreen
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
@@ -145,6 +146,26 @@ fun ScreenGraph(
                 onNavigate = { route ->
                     navController.popBackStack()
                     navController.navigate(route)
+                }
+            )
+        }
+
+        composable(route = Screens.RandomDreamPicker.route) {
+            val randomDreamToolScreenViewModel: RandomDreamToolScreenViewModel = hiltViewModel()
+            val randomDreamToolScreenState =
+                randomDreamToolScreenViewModel.randomDreamToolScreenState
+                    .collectAsStateWithLifecycle()
+            RandomDreamToolScreen(
+                randomDreamToolScreenState = randomDreamToolScreenState.value,
+                onEvent = {
+                    randomDreamToolScreenViewModel.onEvent(it)
+                },
+                navigateTo = { route ->
+                    navController.popBackStack()
+                    navController.navigate(route)
+                },
+                navigateUp = {
+                    navController.navigateUp()
                 }
             )
         }

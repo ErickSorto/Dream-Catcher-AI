@@ -52,6 +52,18 @@ sealed class Screens(
         icon = Icons.Default.Build
     )
 
+    data object RandomDreamPicker : Screens(
+        route = "random_dream_picker",
+        title = "Random Dream Picker",
+        icon = Icons.Default.Casino
+    )
+
+    data object AnalyzeMultipleDreams : Screens(
+        route = "analyze_multiple_dream",
+        title = "Analyze Multiple Dreams",
+        icon = Icons.Default.Analytics
+    )
+
     data object Statistics : Screens(
         route = "statistics",
         title = "Statistics",
