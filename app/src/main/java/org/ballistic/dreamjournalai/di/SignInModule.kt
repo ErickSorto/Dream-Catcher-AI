@@ -40,7 +40,7 @@ object SignInModule {
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                 .setSupported(true)
                 .setServerClientId(app.getString(R.string.web_client_id))
-                .setFilterByAuthorizedAccounts(true)
+                .setFilterByAuthorizedAccounts(false)
                 .build()
         )
         .setAutoSelectEnabled(true)
@@ -72,7 +72,6 @@ object SignInModule {
         context: Context
     ) = Identity.getSignInClient(context)
 
-
     @Provides
     fun provideGoogleSignInOptions(
         app: Application
@@ -101,7 +100,6 @@ object SignInModule {
         auth = auth,
         oneTapClient = oneTapClient,
         signInRequest = signInRequest,
-        signUpRequest = signUpRequest,
         signInClient = signInClient,
         db = db
     )

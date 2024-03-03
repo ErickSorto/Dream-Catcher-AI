@@ -141,13 +141,18 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Tools.route) {
-            DreamToolsScreen(
-                mainScreenViewModelState = mainScreenViewModelState,
-                onNavigate = { route ->
-                    navController.popBackStack()
-                    navController.navigate(route)
-                }
-            )
+//            DreamToolsScreen(
+//                mainScreenViewModelState = mainScreenViewModelState,
+//                onNavigate = { route ->
+//                    navController.popBackStack()
+//                    navController.navigate(route)
+//                }
+//            )
+
+            FeatureComingSoonScreen {
+                navController.popBackStack()
+                navController.navigate(Screens.AboutMe.route)
+            }
         }
 
         composable(route = Screens.RandomDreamPicker.route) {

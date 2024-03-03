@@ -2,6 +2,7 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 
 import android.app.Activity
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,7 +31,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -36,10 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
@@ -55,10 +53,9 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIQuestionPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIStoryPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AIPage(
     pagerState: PagerState,
@@ -67,7 +64,7 @@ fun AIPage(
 ) {
 
     val pages = listOf("Painting", "Interpretation", "Advice", "Question", "Story", "Mood")
-    val pagerSate2 = rememberPagerState()
+    val pagerSate2 = rememberPagerState(pageCount = { pages.size })
     val dreamTokens = addEditDreamState.dreamTokens.collectAsStateWithLifecycle().value
     val responseState = addEditDreamState.dreamAIExplanation
     val imageState = addEditDreamState.dreamAIImage
@@ -421,7 +418,7 @@ fun AIPage(
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
+                .background(color = colorResource(id = R.color.light_black).copy(alpha = 0.7f))
                 .verticalScroll(scrollState, true)
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -453,21 +450,14 @@ fun AIPage(
             }
 
             HorizontalPager(
-                count = pages.size,
+                state = pagerSate2,
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
-                                colorResource(id = R.color.white).copy(alpha = 0.1f),
-                                colorResource(id = R.color.dark_blue).copy(alpha = 0.1f),
-                            ),
-                        )
-                    ),
-                pagerSate2
+                        color = colorResource(id = R.color.light_black).copy(alpha = 0.5f)
+                    )
             ) { page ->
 
                 when (page) {

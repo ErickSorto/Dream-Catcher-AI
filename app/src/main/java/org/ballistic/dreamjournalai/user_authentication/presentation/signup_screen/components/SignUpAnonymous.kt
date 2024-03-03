@@ -4,26 +4,27 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
-import com.google.accompanist.pager.ExperimentalPagerApi
 import org.ballistic.dreamjournalai.R
 
 @Composable
 fun AnonymousButton(
     modifier: Modifier,
-    isVisible: MutableState<Boolean>,
+    isVisible: Boolean,
     onClick: () -> Unit,
 ) {
     Row(
@@ -32,15 +33,14 @@ fun AnonymousButton(
         horizontalArrangement = Arrangement.Center
     ) {
         AnimatedVisibility(
-            visible = isVisible.value,
+            visible = isVisible,
             enter = slideInHorizontally(initialOffsetX = { 1000 }),
             exit = slideOutHorizontally { -1000 }
         ) {
             Button(
                 modifier = Modifier.padding().fillMaxWidth(),
-                shape = RoundedCornerShape(6.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(R.color.dark_blue)
+                    containerColor = colorResource(R.color.dark_blue)
                 ),
                 onClick = onClick
             ) {

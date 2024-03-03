@@ -1,20 +1,31 @@
 package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel
 
 import android.util.Log
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.user_authentication.domain.repository.*
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.ReloadUserResponse
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.SendPasswordResetEmailResponse
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.SignInResponse
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.LoginEvent
 import javax.inject.Inject
 
@@ -39,33 +50,43 @@ class LoginViewModel @Inject constructor(
             is LoginEvent.OneTapSignIn -> {
                 oneTapSignIn()
             }
+
             is LoginEvent.SignInWithGoogle -> {
                 signInWithGoogle(event.googleCredential)
             }
+
             is LoginEvent.LoginWithEmailAndPassword -> {
                 loginWithEmailAndPassword(event.email, event.password)
             }
+
             is LoginEvent.SendPasswordResetEmail -> {
                 sendPasswordResetEmail(event.email)
             }
+
             is LoginEvent.EnteredLoginEmail -> {
                 _state.update { it.copy(loginEmail = event.email) }
             }
+
             is LoginEvent.EnteredLoginPassword -> {
                 _state.update { it.copy(loginPassword = event.password) }
             }
+
             is LoginEvent.EnteredForgotPasswordEmail -> {
                 _state.update { it.copy(forgotPasswordEmail = event.email) }
             }
+
             is LoginEvent.ReloadUser -> {
                 reloadUser()
             }
+
             is LoginEvent.SignOut -> {
                 signOut()
             }
+
             is LoginEvent.RevokeAccess -> {
                 revokeAccess(event.password)
             }
+
             is LoginEvent.UserAccountStatus -> {
                 checkUserAccountStatus()
             }
@@ -86,20 +107,43 @@ class LoginViewModel @Inject constructor(
     }.launchIn(viewModelScope)
 
     private fun oneTapSignIn() = viewModelScope.launch {
-        _state.value.oneTapSignInResponse.value = Resource.Loading()
-        val response = repo.oneTapSignInWithGoogle()
-        _state.value.oneTapSignInResponse.value = response
+       handleResource(
+           resourceFlow = repo.oneTapSignInWithGoogle(),
+           transform = {
+               _state.value.copy(
+                   oneTapSignInResponse = MutableStateFlow(Resource.Success(it))
+               )
+           },
+           errorTransform = { error ->
+               viewModelScope.launch {
+                   _state.value.snackBarHostState.value.showSnackbar(
+                       error,
+                       duration = SnackbarDuration.Long,
+                       actionLabel = "dismiss"
+                   )
+               }
+               _state.value.copy(
+                   oneTapSignInResponse = MutableStateFlow(Resource.Error(error))
+               )
+           },
+           loadingTransform = {
+               _state.value.copy(
+                   oneTapSignInResponse = MutableStateFlow(Resource.Loading())
+               )
+           }
+       )
     }
+
 
     private suspend fun signInWithGoogle(googleCredential: AuthCredential) {
         handleResource(
             resourceFlow = repo.firebaseSignInWithGoogle(googleCredential),
             transform = {
-
                 viewModelScope.launch {
                     repo.transferDreamsFromAnonymousToPermanent(
-                        it.first.user?.uid ?: "", it.second?: "")
-                    }
+                        it.first.user?.uid ?: "", it.second ?: ""
+                    )
+                }
 
                 _state.value.copy(
                     isEmailVerified = it.first.user?.isEmailVerified ?: false,
@@ -109,6 +153,13 @@ class LoginViewModel @Inject constructor(
                 )
             },
             errorTransform = { error ->
+                viewModelScope.launch {
+                    _state.value.snackBarHostState.value.showSnackbar(
+                        error,
+                        duration = SnackbarDuration.Long,
+                        actionLabel = "dismiss"
+                    )
+                }
                 _state.value.copy(
                     login = MutableStateFlow(LoginState(error = error)),
                     signInWithGoogleResponse = MutableStateFlow(Resource.Error(error))
@@ -130,8 +181,19 @@ class LoginViewModel @Inject constructor(
                 _state.value.copy(
                     isLoggedIn = true,
                     isUserExist = true,
-                    isEmailVerified = true) },
-            errorTransform = { error -> _state.value.copy(login = MutableStateFlow(LoginState(error = error))) },
+                    isEmailVerified = true
+                )
+            },
+            errorTransform = { error ->
+                viewModelScope.launch {
+                    _state.value.snackBarHostState.value.showSnackbar(
+                        error,
+                        duration = SnackbarDuration.Long,
+                        actionLabel = "dismiss"
+                    )
+                }
+                _state.value.copy(login = MutableStateFlow(LoginState(error = error)))
+            },
             loadingTransform = { _state.value.copy(login = MutableStateFlow(LoginState(isLoading = true))) }
         )
     }
@@ -190,12 +252,15 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun checkUserAccountStatus() = viewModelScope.launch {
-        _state.update { it.copy(
-            user = repo.currentUser.value,
-            isLoggedIn = repo.isLoggedIn.value,
-            isEmailVerified = repo.isEmailVerified.value,
-            isUserAnonymous = repo.isUserAnonymous.value,
-            isUserExist = repo.isUserExist.value) }
+        _state.update {
+            it.copy(
+                user = repo.currentUser.value,
+                isLoggedIn = repo.isLoggedIn.value,
+                isEmailVerified = repo.isEmailVerified.value,
+                isUserAnonymous = repo.isUserAnonymous.value,
+                isUserExist = repo.isUserExist.value
+            )
+        }
     }
 }
 
@@ -204,11 +269,14 @@ data class LoginViewModelState(
     val loginPassword: String = "",
     val forgotPasswordEmail: String = "",
     val oneTapClient: SignInClient? = null,
-    val signInWithGoogleResponse: MutableStateFlow<Resource<Pair<AuthResult, String?>>> = MutableStateFlow(Resource.Loading()),
+    val signInWithGoogleResponse: MutableStateFlow<Resource<Pair<AuthResult, String?>>> = MutableStateFlow(
+        Resource.Loading()
+    ),
     val isLoginLayout: MutableState<Boolean> = mutableStateOf(true),
     val isSignUpLayout: MutableState<Boolean> = mutableStateOf(false),
     val isForgotPasswordLayout: MutableState<Boolean> = mutableStateOf(false),
-    val oneTapSignInResponse: MutableState<OneTapSignInResponse> = mutableStateOf(Resource.Success()),
+    val oneTapSignInResponse: MutableStateFlow<Resource<BeginSignInResult>> = MutableStateFlow(
+        Resource.Success()),
     val signInResponse: MutableState<Resource<SignInResponse>> = mutableStateOf(Resource.Success()),
     val sendPasswordResetEmailResponse: MutableState<SendPasswordResetEmailResponse> = mutableStateOf(
         Resource.Success()
@@ -218,7 +286,7 @@ data class LoginViewModelState(
     val revokeAccess: StateFlow<RevokeAccessState> = MutableStateFlow(RevokeAccessState()),
     val user: FirebaseUser? = null,
     val isUserExist: Boolean = false,
-    val isEmailVerified:Boolean = false,
+    val isEmailVerified: Boolean = false,
     val isLoggedIn: Boolean = false,
     val isUserAnonymous: Boolean = false,
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),

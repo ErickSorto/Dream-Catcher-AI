@@ -92,7 +92,6 @@ class DreamJournalListViewModel @Inject constructor(
     }
 }
 
-@Stable
 data class DreamJournalListState(
     val dreams: List<Dream> = emptyList(),
     val orderType: OrderType = OrderType.Date,

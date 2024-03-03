@@ -150,7 +150,7 @@ fun AddEditDreamScreen(
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
+                    containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.7f),
                     navigationIconContentColor = Color.Black,
                     titleContentColor = Color.Black,
                     actionIconContentColor = Color.Black

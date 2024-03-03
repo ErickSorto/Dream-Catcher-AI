@@ -6,17 +6,24 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.Constants.EMAIL_LABEL
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.onKeyboardDismiss
 
 @Composable
 fun EmailField(
@@ -25,7 +32,7 @@ fun EmailField(
     onValueChange: (String) -> Unit,
     isVisible: MutableState<Boolean> = mutableStateOf(false)
 ) {
-
+    val focusManager = LocalFocusManager.current
     AnimatedVisibility(
         visible = isVisible.value,
         enter = slideInHorizontally(initialOffsetX = { 1000 }),
@@ -38,31 +45,39 @@ fun EmailField(
             },
             label = {
                 Text(
-                    text = EMAIL_LABEL
+                    text = EMAIL_LABEL,
+                    color = Color.White
                 )
             },
+            textStyle = LocalTextStyle.current.copy(
+                color = Color.White,
+                fontSize = 16.sp,
+            ),
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email
             ),
             modifier = modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.White.copy(alpha = 0.1f),
+                .padding(bottom = 8.dp)
+                .onKeyboardDismiss {
+                    focusManager.clearFocus()
+                },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = colorResource(id = R.color.light_black).copy(alpha = 0.7f),
+                unfocusedContainerColor = colorResource(id = R.color.light_black).copy(alpha = 0.7f),
+                disabledContainerColor = Color.Transparent,
+                errorContainerColor = Color.Transparent,
+                cursorColor = Color.White,
+                errorCursorColor = Color.Red,
+                focusedBorderColor = Color.White.copy(alpha = 0.4f),
                 unfocusedBorderColor = Color.Transparent,
-                cursorColor = Color.Black,
+                disabledBorderColor = Color.Black,
+                errorBorderColor = Color.Red,
                 focusedLabelColor = Color.Black,
                 unfocusedLabelColor = Color.Black,
                 disabledLabelColor = Color.Black,
-                disabledBorderColor = Color.Black,
-                textColor = Color.Black,
-                backgroundColor = Color.White.copy(alpha = 0.3f),
-                leadingIconColor = Color.Black,
-                trailingIconColor = Color.Black,
                 errorLabelColor = Color.Red,
-                errorBorderColor = Color.Red,
-                errorCursorColor = Color.Red
             )
         )
     }

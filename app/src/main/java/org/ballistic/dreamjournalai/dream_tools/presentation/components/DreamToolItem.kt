@@ -46,7 +46,7 @@ fun DreamToolItem(
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = description,
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.size(48.dp),
                 colorFilter = ColorFilter.tint(Color.White)
             )
             Text(

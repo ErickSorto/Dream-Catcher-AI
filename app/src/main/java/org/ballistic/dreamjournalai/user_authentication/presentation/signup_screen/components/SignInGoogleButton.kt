@@ -2,30 +2,31 @@ package org.ballistic.dreamjournalai.user_authentication.presentation.signup_scr
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.Constants.SIGN_IN_WITH_GOOGLE
 
 @Composable
 fun SignInGoogleButton(
     modifier: Modifier,
-    isVisible: MutableState<Boolean>,
+    isVisible: Boolean,
     onClick: () -> Unit,
 ) {
 
@@ -34,15 +35,14 @@ fun SignInGoogleButton(
         horizontalArrangement = Arrangement.Center
     ) {
         AnimatedVisibility(
-            visible = isVisible.value,
+            visible = isVisible,
             enter = slideInHorizontally(initialOffsetX = { 1000 }),
             exit = slideOutHorizontally { -1000 }
         ) {
             Button(
                 modifier = Modifier.padding().fillMaxWidth(),
-                shape = RoundedCornerShape(6.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(R.color.sky_blue)
+                    containerColor = colorResource(R.color.sky_blue)
                 ),
                 onClick = onClick
             ) {
@@ -56,49 +56,8 @@ fun SignInGoogleButton(
                 Text(
                     text = SIGN_IN_WITH_GOOGLE,
                     modifier = Modifier.padding(start = 8.dp),
-                    fontSize = 18.sp
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun ReauthenticateSignInGoogleButton(
-    modifier: Modifier,
-    onClick: () -> Unit,
-    enabled: Boolean = false,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(16.dp, 8.dp, 16.dp, 16.dp),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = enabled
-        ) {
-            Button(
-                modifier = Modifier.padding(),
-                shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(R.color.sky_blue)
-                ),
-                onClick = onClick
-            ) {
-                Image(
-                    painter = painterResource(
-                        id = R.drawable.ic_google_logo
-                    ),
-                    contentDescription = null
-                )
-                Text(
-                    text = "Reauthenticate",
-                    modifier = Modifier.padding(start = 8.dp),
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    color = Color.Black
                 )
             }
         }

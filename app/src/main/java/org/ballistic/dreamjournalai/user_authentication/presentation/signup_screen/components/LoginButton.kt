@@ -4,13 +4,13 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.sp
@@ -19,7 +19,6 @@ import org.ballistic.dreamjournalai.core.Constants
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.LoginEvent
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModelState
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginButton(
     modifier: Modifier,
@@ -46,12 +45,13 @@ fun LoginButton(
                 )
             },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.lighter_yellow)
+                containerColor = colorResource(id = R.color.lighter_yellow)
             )
         ) {
             Text(
                 text = Constants.LOGIN,
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                color = Color.Black
             )
         }
     }

@@ -25,7 +25,7 @@ interface AuthRepository {
     val isLoggedIn: StateFlow<Boolean>
     val isUserAnonymous: StateFlow<Boolean>
 
-    suspend fun oneTapSignInWithGoogle(): OneTapSignInResponse
+    suspend fun oneTapSignInWithGoogle(): Flow<Resource<BeginSignInResult>>
 
     suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): Flow<Resource<Pair<AuthResult, String?>>>
 

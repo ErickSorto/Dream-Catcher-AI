@@ -7,8 +7,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,8 +39,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.AnonymousButton
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.GoogleSignInHandler
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserveLoginState
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignInGoogleButton
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignupLoginLayout
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.LoginEvent
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.SignupEvent
@@ -55,6 +59,7 @@ fun OnboardingScreen(
     onSignupEvent: (SignupEvent) -> Unit,
     onDataLoaded: () -> Unit,
 ) {
+    val isUserAnonymous = loginViewModelState.isUserAnonymous
     val showLoginLayout = remember { mutableStateOf(false) }
     val titleText = remember { mutableStateOf("Welcome Dreamer!") }
     val visible = remember { mutableStateOf(true) }
@@ -93,10 +98,13 @@ fun OnboardingScreen(
             SnackbarHost(hostState = loginViewModelState.snackBarHostState.value)
         },
         containerColor = Color.Transparent
-    ) {
-        it
+    ) { it ->
+        GoogleSignInHandler(
+            loginViewModelState = loginViewModelState,
+            onLoginEvent = { onLoginEvent(it) }
+        )
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.padding(it).fillMaxSize().navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -107,7 +115,7 @@ fun OnboardingScreen(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .background(
-                        color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
+                        color = colorResource(id = R.color.light_black).copy(alpha = 0.7f),
                         shape = RoundedCornerShape(16.dp)
                     )
             ) {
@@ -122,45 +130,34 @@ fun OnboardingScreen(
                     ),
                     textAlign = TextAlign.Center
                 )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    TypewriterText(
-                        text = if (visible.value) titleText.value else "Dream Journal AI",
-                        modifier = Modifier.padding(16.dp),
-                        style = TextStyle(
-                            color = transition.animateColor(label = "") { if (it) Color.White else Color.Transparent }.value,
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        textAlign = TextAlign.Center,
-                        animationDuration = 5000,
-                        onAnimationComplete = {
-                            scope.launch {
-                                if(!showLoginLayout.value) {
-                                    loginViewModelState.isLoginLayout.value = true
-                                }
-                                showLoginLayout.value = true
-                                delay(1000)  // Delay for 1 second
-                                visible.value = !visible.value
-                                if (visible.value) {
-                                    titleText.value = "Dream Journal AI"
-                                    showSubheader.value = true
-                                }
+                TypewriterText(
+                    text = if (visible.value) titleText.value else "Dream Journal AI",
+                    modifier = Modifier.padding(16.dp),
+                    style = TextStyle(
+                        color = transition.animateColor(label = "") { if (it) Color.White else Color.Transparent }.value,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    textAlign = TextAlign.Center,
+                    animationDuration = 5000,
+                    onAnimationComplete = {
+                        scope.launch {
+                            if (!showLoginLayout.value) {
+                                loginViewModelState.isLoginLayout.value = true
+                            }
+                            showLoginLayout.value = true
+                            delay(1000)  // Delay for 1 second
+                            visible.value = !visible.value
+                            if (visible.value) {
+                                titleText.value = "Dream Journal AI"
+                                showSubheader.value = true
                             }
                         }
-                    )
-                    if (showSubheader.value) {
-                        TypewriterText(
-                            text = "Light the way to your unconscious. Paint, explore," +
-                                    " and understand your dreams with the help of AI",
-                            modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 16.dp),
-                        )
                     }
-                }
+                )
             }
-
-            if(showLoginLayout.value){
+            Spacer(modifier = Modifier.weight(1f))
+            if (showLoginLayout.value) {
                 SignupLoginLayout(
                     loginViewModelState = loginViewModelState,
                     signupViewModelState = signupViewModelState,
@@ -169,10 +166,29 @@ fun OnboardingScreen(
                 )
             }
 
-            GoogleSignInHandler(
-                loginViewModelState = loginViewModelState,
-                onLoginEvent = { onLoginEvent(it) }
+            Spacer(modifier = Modifier.weight(1f))
+
+            SignInGoogleButton(
+                onClick = {
+                    onLoginEvent(LoginEvent.OneTapSignIn)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp, top = 32.dp, start = 16.dp, end = 16.dp),
+                isVisible = true
             )
+
+            if (!isUserAnonymous) {
+                AnonymousButton(
+                    modifier = Modifier
+                        .padding(bottom = 8.dp, top = 8.dp, start = 16.dp, end = 16.dp),
+                    isVisible = true,
+                    onClick = {
+                        onSignupEvent(SignupEvent.AnonymousSignIn)
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.padding(16.dp))
         }
     }
 }

@@ -6,16 +6,16 @@
         <State>
           <targetSelectedWithDropDown>
             <Target>
-              <type value="COLD_BOOT_TARGET" />
+              <type value="QUICK_BOOT_TARGET" />
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\Ninja\.android\avd\Pixel_7_Pro_API_34.avd" />
+                  <value value="C:\Users\Ninja\.android\avd\Pixel_5_API_33.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-12-23T22:15:48.599570100Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-02-28T04:18:00.985486600Z" />
         </State>
       </entry>
     </value>

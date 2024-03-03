@@ -1,13 +1,13 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
@@ -18,15 +18,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateButtonsLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.TransparentHintTextField
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DreamPage(
     pagerState: PagerState,
@@ -52,7 +50,7 @@ fun DreamPage(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .background(
-                    colorResource(id = R.color.dark_blue).copy(.7f)
+                    colorResource(id = R.color.light_black).copy(.7f)
                 )
                 .padding(16.dp)
                 .focusable()
@@ -74,7 +72,7 @@ fun DreamPage(
                 .weight(1f)
                 .clip(RoundedCornerShape(8.dp))
                 .background(
-                    colorResource(id = R.color.dark_blue).copy(.7f)
+                    colorResource(id = R.color.light_black).copy(.7f)
                 )
                 .padding(8.dp)
                 .onFocusEvent {

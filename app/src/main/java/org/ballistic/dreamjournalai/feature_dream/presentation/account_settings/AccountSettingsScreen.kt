@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -27,9 +28,11 @@ import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.components.DreamAccountSettingsScreenTopBar
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.components.LogoutDeleteLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.AnonymousButton
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.GoogleSignInHandler
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserveLoginState
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserverLogoutDeleteState
+import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignInGoogleButton
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignupLoginLayout
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.LoginEvent
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.SignupEvent
@@ -47,6 +50,7 @@ fun AccountSettingsScreen(
     navigateToDreamJournalScreen: () -> Unit = {}
 ) {
     val animationDisplay = remember { mutableStateOf(false) }
+    val isUserAnonymous = loginViewModelState.isUserAnonymous
 
     LaunchedEffect(Unit) {
         onLoginEvent(LoginEvent.UserAccountStatus)
@@ -117,6 +121,27 @@ fun AccountSettingsScreen(
                          animationDisplay.value = true                    },
                 )
 
+                SignInGoogleButton(
+                    onClick = {
+                        onLoginEvent(LoginEvent.OneTapSignIn)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp, top = 32.dp, start = 16.dp, end = 16.dp),
+                    isVisible = true
+                )
+
+                if (!isUserAnonymous) {
+                    AnonymousButton(
+                        modifier = Modifier
+                            .padding(bottom = 8.dp, top = 8.dp, start = 16.dp, end = 16.dp),
+                        isVisible = true,
+                        onClick = {
+                            onSignupEvent(SignupEvent.AnonymousSignIn)
+                        }
+                    )
+                }
+
                 if(
                    animationDisplay.value
                 ){
@@ -124,7 +149,7 @@ fun AccountSettingsScreen(
                         modifier = Modifier
                             .padding(16.dp)
                             .background(
-                                color = colorResource(id = R.color.RedOrange).copy(alpha = 0.5f),
+                                color = colorResource(id = R.color.RedOrange).copy(alpha = 0.8f),
                                 shape = RoundedCornerShape(16.dp)
                             )
                     ) {

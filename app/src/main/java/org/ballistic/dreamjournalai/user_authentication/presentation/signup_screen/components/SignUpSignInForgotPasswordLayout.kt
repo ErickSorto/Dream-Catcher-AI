@@ -1,16 +1,23 @@
 package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults.buttonColors
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -30,9 +37,7 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 @Composable
 fun SignupLoginTabLayout(loginViewModelState: LoginViewModelState) {
     if (!loginViewModelState.isForgotPasswordLayout.value) {
-        Row(
-
-        ) {
+        Row {
             LoginOrSignupTab(
                 text = "Login",
                 isLoginLayout = loginViewModelState.isLoginLayout.value,
@@ -86,7 +91,7 @@ fun ForgotPasswordLayout(
             },
             modifier = Modifier.fillMaxWidth(.5f),
             colors = buttonColors(
-                backgroundColor = colorResource(id = R.color.lighter_yellow)
+                containerColor = colorResource(id = R.color.lighter_yellow)
             )
         ) {
             Text(
@@ -102,7 +107,7 @@ fun ForgotPasswordLayout(
             },
             modifier = Modifier.fillMaxWidth(.5f),
             colors = buttonColors(
-                backgroundColor = colorResource(id = R.color.sky_blue)
+                containerColor = colorResource(id = R.color.sky_blue)
             )
         ) {
             Text(
@@ -125,7 +130,6 @@ fun ForgotPasswordLayout(
 }
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SignupLayout(
     signupViewModelState: SignupViewModelState,
@@ -173,12 +177,13 @@ fun SignupLayout(
                 )
             },
             colors = buttonColors(
-                backgroundColor = colorResource(id = R.color.sky_blue)
+                containerColor = colorResource(id = R.color.sky_blue)
             ),
         ) {
             Text(
                 text = SIGNUP,
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                color = Color.Black
             )
         }
     }
@@ -188,10 +193,9 @@ fun SignupLayout(
 fun LoginLayout(
     loginViewModelState: LoginViewModelState,
     onLoginEvent: (LoginEvent) -> Unit,
-    onSignupEvent: (SignupEvent) -> Unit,
-    onAnimationComplete : () -> Unit = {}
+    onAnimationComplete: () -> Unit = {}
 ) {
-    val isUserAnonymous = loginViewModelState.isUserAnonymous
+
     val staggeredDelay = 100L
     val composablesData = listOf(
         ComposableData(key = "Email", visible = remember { mutableStateOf(false) }),
@@ -213,7 +217,10 @@ fun LoginLayout(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         EmailField(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .padding(horizontal = 16.dp)
+                .focusable(),
             email = loginViewModelState.loginEmail,
             onValueChange = {
                 onLoginEvent(LoginEvent.EnteredLoginEmail(it))
@@ -222,7 +229,10 @@ fun LoginLayout(
         )
 
         PasswordField(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .padding(horizontal = 16.dp)
+                .focusable(),
             password = loginViewModelState.loginPassword,
             onValueChange = { newValue ->
                 onLoginEvent(LoginEvent.EnteredLoginPassword(newValue))
@@ -241,27 +251,6 @@ fun LoginLayout(
             onLoginEvent = onLoginEvent,
             isVisible = composablesData.first { it.key == "LoginButton" }.visible,
         )
-
-        SignInGoogleButton(
-            onClick = {
-                onLoginEvent(LoginEvent.OneTapSignIn)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp, top = 32.dp, start = 16.dp, end = 16.dp),
-            isVisible = composablesData.first { it.key == "SignInGoogleButton" }.visible
-        )
-
-        if (!isUserAnonymous) {
-            AnonymousButton(
-                modifier = Modifier
-                    .padding(bottom = 8.dp, top = 8.dp, start = 16.dp, end = 16.dp),
-                isVisible = composablesData.first { it.key == "AnonymousButton" }.visible,
-                onClick = {
-                    onSignupEvent(SignupEvent.AnonymousSignIn)
-                }
-            )
-        }
     }
     LogIn(showErrorMessage = { /*TODO*/ }, loginViewModelState = loginViewModelState)
 }
@@ -278,22 +267,23 @@ fun LoginOrSignupTab(
         modifier = modifier
             .background(
                 if (isLoginLayout && text == "Login" || isSignUpLayout && text == "Signup") {
-                    Color.White.copy(alpha = 0.4f)
+                    colorResource(id = R.color.light_black).copy(alpha = 0.7f)
                 } else {
-                    Color.White.copy(alpha = 0.1f)
+                   colorResource(id = R.color.light_black).copy(alpha = 0.1f)
                 },
                 shape = RoundedCornerShape(8.dp)
             ),
         onClick = { isClicked() },
+        shape = RoundedCornerShape(8.dp)
     )
     {
-        androidx.compose.material3.Text(
+        Text(
             text = text,
             fontSize = 16.sp,
             color = if (isLoginLayout && text == "Login" || isSignUpLayout && text == "Signup") {
-                Color.Black
+                Color.White
             } else {
-                Color.Black.copy(alpha = 0.5f)
+                Color.White.copy(alpha = 0.5f)
             },
             fontWeight = FontWeight.Bold,
             maxLines = 1,

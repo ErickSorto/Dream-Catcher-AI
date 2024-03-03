@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +32,7 @@ import co.yml.charts.ui.piechart.models.PieChartData
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenState
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @Composable
 fun TopSixDreamWordPieChart(
     dreamStatisticScreenState: DreamStatisticScreenState

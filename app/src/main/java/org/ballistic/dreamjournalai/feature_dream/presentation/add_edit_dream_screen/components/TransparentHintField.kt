@@ -1,10 +1,14 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldLineLimits
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -17,6 +21,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import org.ballistic.dreamjournalai.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransparentHintTextField(
     text: String,
@@ -29,21 +34,18 @@ fun TransparentHintTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions(),
 ) {
-    val focusManager = LocalFocusManager.current
     Box(modifier = modifier)
     {
-        BasicTextField(
+        BasicTextField2(
             value = text,
             onValueChange = onValueChange,
-            singleLine = singleLine,
             textStyle = textStyle,
+            lineLimits = if (singleLine) TextFieldLineLimits.SingleLine else TextFieldLineLimits.Default,
+            scrollState = rememberScrollState(),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             modifier = Modifier
-                .fillMaxWidth()
-                .onKeyboardDismiss {
-                    focusManager.clearFocus()
-                },
+                .fillMaxWidth(),
             cursorBrush = Brush.verticalGradient(
                 colors = listOf(
                     colorResource(id = R.color.white),

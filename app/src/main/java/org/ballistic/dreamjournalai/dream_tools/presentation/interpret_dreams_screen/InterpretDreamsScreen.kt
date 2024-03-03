@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen
+package org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,36 +28,22 @@ import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolScreenWithNavigateUpTopBar
-import org.ballistic.dreamjournalai.navigation.Screens
+import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomToolEvent
 
 @Composable
 fun RandomDreamToolScreen(
-    randomDreamToolScreenState: RandomDreamToolScreenState,
+    interpretDreamsViewModel: InterpretDreamsViewModel,
     onEvent: (RandomToolEvent) -> Unit,
-    navigateTo: (String) -> Unit,
     navigateUp: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         onEvent(RandomToolEvent.GetDreams)
     }
 
-    // In your composable function
-    LaunchedEffect(key1 = randomDreamToolScreenState) {
-        snapshotFlow { randomDreamToolScreenState.randomDream }
-            .collect { randomDream ->
-                randomDream?.let {
-                    navigateTo(
-                        Screens.AddEditDreamScreen.route +
-                                "?dreamId=${it.id}&dreamImageBackground=${it.backgroundImage}"
-                    )
-                }
-            }
-    }
-
     Scaffold(
         topBar = {
             DreamToolScreenWithNavigateUpTopBar(
-                title = "Random Dream",
+                title = "Interpret Dreams",
                 navigateUp = navigateUp
             )
         },

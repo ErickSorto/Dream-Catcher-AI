@@ -84,6 +84,13 @@ class SignupViewModel @Inject constructor(
                 }
             },
             errorTransform = { error ->
+                viewModelScope.launch {
+                    _state.value.snackBarHostState.value.showSnackbar(
+                        error,
+                        duration = SnackbarDuration.Short,
+                        actionLabel = "dismiss"
+                    )
+                }
                 _state.value.copy(
                     signUp = MutableStateFlow(
                         SignUpState(
@@ -113,7 +120,16 @@ class SignupViewModel @Inject constructor(
                     }
                 }
             },
-            errorTransform = { error -> _state.value.copy(login = MutableStateFlow(LoginState(error = error))) },
+            errorTransform = { error ->
+                viewModelScope.launch {
+                    _state.value.snackBarHostState.value.showSnackbar(
+                        error,
+                        duration = SnackbarDuration.Short,
+                        actionLabel = "dismiss"
+                    )
+                }
+                _state.value.copy(login = MutableStateFlow(LoginState(error = error)))
+                             },
             loadingTransform = { _state.value.copy(login = MutableStateFlow(LoginState(isLoading = true))) }
         )
     }
@@ -153,17 +169,6 @@ class SignupViewModel @Inject constructor(
             }
         }
     }
-
-    private fun checkUserAccountStatus() = viewModelScope.launch {
-        _state.value = _state.value.copy(
-            user = repo.currentUser,
-            isUserAnonymous = repo.isUserAnonymous.value,
-            isLoggedIn = repo.isLoggedIn.value,
-            isEmailVerified = repo.isEmailVerified.value,
-            isUserExist = repo.isUserExist.value,
-        )
-    }
-
 }
 
 data class SignupViewModelState(

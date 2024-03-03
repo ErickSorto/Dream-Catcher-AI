@@ -1,29 +1,36 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.InfiniteTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -31,8 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
+import kotlinx.coroutines.delay
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.ArcRotationAnimation
@@ -43,8 +49,9 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.MoodAnalyzerButton
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.PaintCustomButton
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
+import java.util.UUID
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AIInterpreterPage(
     addEditDreamState: AddEditDreamState,
@@ -106,7 +113,8 @@ fun AIInterpreterPage(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AIPainterPage(
     addEditDreamState: AddEditDreamState,
@@ -116,39 +124,68 @@ fun AIPainterPage(
 ) {
     val imageState = addEditDreamState.dreamAIImage
 
-    AnimatedVisibility(
-        visible = addEditDreamState.dreamAIImage.image != null,
-        enter = fadeIn(),
-        exit = fadeOut()
+    // Remember a flag to track if the first image load has been processed
+
+    val alphaAnimatable = remember { Animatable(0f) } // Start fully transparent
+    val scaleAnimatable = remember { Animatable(0.98f) } // Start slightly zoomed out
+
+    LaunchedEffect(imageState.image) {
+        // Apply delay only for the first load
+        if (imageState.image != null && imageState.isLoading) {
+            delay(500) // Half a second delay for the first load
+           
+        }
+
+        // Ensure there's an image to load
+        if (imageState.image != null) {
+            // Reset animations to initial state for the new image
+            alphaAnimatable.snapTo(0f)
+            scaleAnimatable.snapTo(0.98f)
+
+            // Start animations
+            alphaAnimatable.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 1500, easing = LinearOutSlowInEasing)
+            )
+            scaleAnimatable.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 1500, easing = LinearOutSlowInEasing)
+            )
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .padding(8.dp)
+            .clip(RoundedCornerShape(10.dp)),
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painter,
-            contentDescription = "AI Generated Image",
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .padding(8.dp, 8.dp, 8.dp, 8.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            contentScale = ContentScale.Crop
-        )
-    }
-    if (imageState.image == null && !imageState.isLoading) {
-        PaintCustomButton(
-            addEditDreamState = addEditDreamState,
-            pagerState = pagerState,
-            size = 120.dp,
-            fontSize = 24.sp
-        )
-    }
-    if (imageState.isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .padding(16.dp, 0.dp, 16.dp, 16.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            contentAlignment = Alignment.Center
-        ) {
+        if (imageState.image != null) {
+            Image(
+                painter = painter,
+                contentDescription = "AI Generated Image",
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = alphaAnimatable.value
+                        scaleX = scaleAnimatable.value
+                        scaleY = scaleAnimatable.value
+                    }
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
+        if (imageState.image == null && !imageState.isLoading) {
+            PaintCustomButton(
+                addEditDreamState = addEditDreamState,
+                pagerState = pagerState,
+                size = 120.dp,
+                fontSize = 24.sp
+            )
+        }
+        if (imageState.isLoading) {
             ArcRotationAnimation(
                 infiniteTransition = infiniteTransition,
             )
@@ -156,7 +193,14 @@ fun AIPainterPage(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+
+
+
+
+
+
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AIDreamAdvicePage(
     addEditDreamState: AddEditDreamState,
@@ -219,7 +263,8 @@ fun AIDreamAdvicePage(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AIQuestionPage(
     addEditDreamState: AddEditDreamState,
@@ -290,7 +335,8 @@ fun AIQuestionPage(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AIStoryPage(
     addEditDreamState: AddEditDreamState,
@@ -353,7 +399,8 @@ fun AIStoryPage(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AIMoodPage(
     addEditDreamState: AddEditDreamState,

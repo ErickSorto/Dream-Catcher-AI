@@ -2,9 +2,11 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,15 +30,13 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import com.smarttoolfactory.animatedlist.AnimatedInfiniteLazyRow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GenerateButtonsLayout(
     addEditDreamState: AddEditDreamState,
@@ -57,12 +57,12 @@ fun GenerateButtonsLayout(
         modifier = Modifier
             .padding(top = 8.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
+            .background(color = colorResource(id = R.color.light_black).copy(alpha = 0.7f))
     ) {
         AnimatedInfiniteLazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(horizontal = 8.dp),
             items = buttons,
             initialFirstVisibleIndex = initialSelectedItem,
             visibleItemCount = 4,
@@ -87,14 +87,15 @@ fun GenerateButtonsLayout(
 }
 
 
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PaintCustomButton(
     addEditDreamState: AddEditDreamState,
     pagerState: PagerState,
     subtitle : String = "Paint Dream",
-    size: Dp = 40.dp,
-    fontSize: TextUnit = 16.sp
+    size: Dp = 32.dp,
+    fontSize: TextUnit = 14.sp
 ) {
     val scope = rememberCoroutineScope()
     Column(
@@ -127,21 +128,21 @@ fun PaintCustomButton(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun InterpretCustomButton(
     addEditDreamState: AddEditDreamState,
     pagerState: PagerState,
     subtitle: String = "Interpret Dream",
-    size: Dp = 40.dp,
-    fontSize: TextUnit = 16.sp
+    size: Dp = 32.dp,
+    fontSize: TextUnit = 14.sp
 ) {
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier.padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        androidx.compose.material3.IconButton(
+        IconButton(
             onClick = {
                 scope.launch {
                     delay(100)
@@ -166,14 +167,15 @@ fun InterpretCustomButton(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GenerateStoryButton(
     addEditDreamState: AddEditDreamState,
     pagerState: PagerState,
     subtitle: String = "Dream Story",
-    size: Dp = 40.dp,
-    fontSize: TextUnit = 16.sp
+    size: Dp = 32.dp,
+    fontSize: TextUnit = 14.sp
 ) {
     val scope = rememberCoroutineScope()
     Column(
@@ -205,14 +207,15 @@ fun GenerateStoryButton(
 }
 
 
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GenerateAdviceButton(
     addEditDreamState: AddEditDreamState,
     pagerState: PagerState,
     subtitle: String = "Dream Advice",
-    size: Dp = 40.dp,
-    fontSize: TextUnit = 16.sp
+    size: Dp = 32.dp,
+    fontSize: TextUnit = 14.sp
 ) {
     val scope = rememberCoroutineScope()
     Column(
@@ -248,14 +251,15 @@ fun GenerateAdviceButton(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AskQuestionButton(
     addEditDreamState: AddEditDreamState,
     pagerState: PagerState,
     subtitle: String = "Ask a Question",
-    size: Dp = 40.dp,
-    fontSize: TextUnit = 16.sp
+    size: Dp = 32.dp,
+    fontSize: TextUnit = 14.sp
 ) {
     val scope = rememberCoroutineScope()
     Column(
@@ -287,14 +291,15 @@ fun AskQuestionButton(
         Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
-@OptIn(ExperimentalPagerApi::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoodAnalyzerButton(
     addEditDreamState: AddEditDreamState, // Define a class to manage the state related to mood analysis
     pagerState: PagerState,
     subtitle: String = "Analyze Mood",
-    size: Dp = 40.dp,
-    fontSize: TextUnit = 16.sp
+    size: Dp = 32.dp,
+    fontSize: TextUnit = 14.sp
 ) {
     val scope = rememberCoroutineScope()
     Column(

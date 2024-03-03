@@ -76,63 +76,54 @@ export const deleteAnonymousInactiveUsers = functions.pubsub.schedule("every 24 
 });
 
 
-export const handleAccountLinking = functions.https.onCall(async (data, context) => {
+exports.handleAccountLinking = functions.https.onCall(async (data, context) => {
+    // Destructure and validate UIDs
     const {permanentUid, anonymousUid} = data;
 
-    functions.logger.info("Starting account linking. Anon UID: " + anonymousUid + ", Perm UID: " + permanentUid);
+    // Log starting of account linking process
+    functions.logger.info(`Starting account linking. Anon UID: ${anonymousUid}, Perm UID: ${permanentUid}`);
 
+    // Ensure that the function is called by an authenticated user
     if (!context.auth || !context.auth.uid) {
         functions.logger.error("No context.auth or context.auth.uid found. The function must be called while authenticated.");
         throw new functions.https.HttpsError("unauthenticated", "The function must be called while authenticated.");
     }
 
-    if (context.auth.uid !== permanentUid) {
-        functions.logger.error("Context.auth.uid (" + context.auth.uid +
-        ") does not match permanent UID (" + permanentUid + "). The authenticated user does not have sufficient permissions.");
-        throw new functions.https.HttpsError("permission-denied", "The authenticated user does not have sufficient permissions.");
+    // Ensure that the provided UIDs are valid
+    if (!anonymousUid || !permanentUid || context.auth.uid !== permanentUid) {
+        functions.logger.error("Invalid UIDs or insufficient permissions.");
+        throw new functions.https.HttpsError("invalid-argument", "Invalid UIDs or insufficient permissions.");
     }
 
-    const anonymousDreamsRef = firestore.collection("users").doc(anonymousUid).collection("my_dreams");
-    const permanentDreamsRef = firestore.collection("users").doc(permanentUid).collection("my_dreams");
+    try {
+        const anonymousDreamsRef = firestore.collection("users").doc(anonymousUid).collection("my_dreams");
+        const permanentDreamsRef = firestore.collection("users").doc(permanentUid).collection("my_dreams");
+        let lastSnapshot = null;
 
-    let lastSnapshot = null;
+        do {
+            // Fetch anonymous user's dreams and prepare for transfer
+            const anonymousDreamsSnapshot = await (lastSnapshot ? anonymousDreamsRef.startAfter(lastSnapshot.docs[lastSnapshot.docs.length - 1]).limit(500).get() : anonymousDreamsRef.limit(500).get());
+            const batch = firestore.batch();
 
-    do {
-        const anonymousDreamsSnapshot: FirebaseFirestore.QuerySnapshot = await (lastSnapshot ?
-                anonymousDreamsRef.startAfter(lastSnapshot.docs[lastSnapshot.docs.length - 1]).limit(500).get() :
-                anonymousDreamsRef.limit(500).get());
+            anonymousDreamsSnapshot.forEach((doc) => {
+                const newDreamRef = permanentDreamsRef.doc(doc.id);
+                batch.set(newDreamRef, doc.data());
+            });
 
-        const batch = firestore.batch();
+            // Commit the batch transfer of dreams
+            await batch.commit();
+            lastSnapshot = anonymousDreamsSnapshot;
+        } while (lastSnapshot && lastSnapshot.size === 500);
 
-        // Log the number of dreams
-        functions.logger.info("Anon UID " + anonymousUid + " has " + anonymousDreamsSnapshot.size + " dreams.");
+        // Optional: Delete the anonymous user account if needed
+        // await admin.auth().deleteUser(anonymousUid);
 
-        // Create new dream docs in the permanent account and keep in the anonymous account
-        anonymousDreamsSnapshot.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
-            const newDreamRef = permanentDreamsRef.doc(doc.id);
-            functions.logger.info("Transferring dream with ID " + doc.id + " to permanent account (" + permanentUid + ").");
-            batch.set(newDreamRef, doc.data());
-        });
-
-        // Commit the batch
-        await batch.commit();
-
-        functions.logger.info("Successfully committed batch");
-
-        lastSnapshot = anonymousDreamsSnapshot;
-    } while (lastSnapshot && lastSnapshot.size === 500);
-
-    // Fetch the user record for the permanent user
-    const permanentUserRecord = await admin.auth().getUser(permanentUid);
-
-    // If the permanent user's email is verified, delete the anonymous account
-    if (permanentUserRecord.emailVerified) {
-        await admin.auth().deleteUser(anonymousUid);
-        await firestore.collection("users").doc(anonymousUid).delete();
-        functions.logger.info(`Deleted anonymous user with UID: ${anonymousUid} after transfer.`);
+        functions.logger.info("Account linking and dream transfer successful.");
+        return {success: true, message: "All dreams transferred successfully."};
+    } catch (error) {
+        functions.logger.error(`Error during account linking: ${error.message}`);
+        throw new functions.https.HttpsError("internal", "Error during account linking process.");
     }
-
-    return {success: true, message: "All dreams transferred successfully."};
 });
 
 
@@ -195,44 +186,45 @@ type FirebaseAuthError = {
     message: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isFirebaseAuthError(error: any): error is FirebaseAuthError {
     return typeof error.code === "string" && typeof error.message === "string";
 }
 
-export const createAccountAndSendEmailVerification = functions.https.onCall(async (data, context) => {
-    console.log("Starting createAccount function");
+exports.createAccountAndSendEmailVerification = functions.https.onCall(async (data, context) => {
+    functions.logger.info("Starting createAccount function", { structuredData: true });
 
     const userEmail = data.email;
     const userPassword = data.password;
-    console.log(`Processing for Email: ${userEmail}`);
+    functions.logger.info("Processing for Email: ${userEmail}", { userEmail: userEmail });
 
     try {
         const existingUser = await admin.auth().getUserByEmail(userEmail);
         if (existingUser.emailVerified) {
-            console.log("Account exists and is verified");
+            functions.logger.info("Account exists and is verified", { userEmail: userEmail });
             return { message: "Account exists already" };
         } else {
-            console.log("Account exists but is not verified, sending verification email");
+            functions.logger.info("Account exists but is not verified, sending verification email", { userEmail: userEmail });
             const verificationLink = await admin.auth().generateEmailVerificationLink(userEmail);
-            await sendVerificationEmail(userEmail, verificationLink); // Extracted the email sending logic to its own function
+            await sendVerificationEmail(userEmail, verificationLink);
             return { message: "Verification email sent!" };
         }
     } catch (error) {
-        if (isFirebaseAuthError(error) && error.code === "auth/user-not-found") {
+        if (error.code === "auth/user-not-found") {
             // User does not exist, create the user
             const userRecord = await admin.auth().createUser({
                 email: userEmail,
                 password: userPassword,
                 emailVerified: false
             });
-            console.log(`User created with UID: ${userRecord.uid}`);
+            functions.logger.info("User created with UID: ${userRecord.uid}", { uid: userRecord.uid, userEmail: userEmail });
 
             const verificationLink = await admin.auth().generateEmailVerificationLink(userEmail);
             await sendVerificationEmail(userEmail, verificationLink); // Use the extracted email sending logic
-
             return { message: "Verification email sent and account created! Please verify email to log in." };
         } else {
-            throw error; // Re-throw the error if it's not a 'user-not-found' error
+            functions.logger.error("An error occurred while creating account or sending verification email", { error: error, userEmail: userEmail });
+            throw new functions.https.HttpsError("internal", "Unable to create account or send verification email");
         }
     }
 });

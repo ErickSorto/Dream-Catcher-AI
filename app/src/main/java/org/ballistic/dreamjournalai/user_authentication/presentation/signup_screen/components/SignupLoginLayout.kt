@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,8 +22,10 @@ fun SignupLoginLayout(
 
     Column(
         modifier = Modifier
-            .padding(0.dp, 0.dp, 0.dp, 0.dp),
+            .padding(0.dp, 0.dp, 0.dp, 0.dp)
+            .navigationBarsPadding(),
     ) {
+
         SignupLoginTabLayout(loginViewModelState = loginViewModelState)
         when {
             loginViewModelState.isLoginLayout.value -> {
@@ -30,9 +33,6 @@ fun SignupLoginLayout(
                     loginViewModelState = loginViewModelState,
                     onLoginEvent = {
                         onLoginEvent(it)
-                    },
-                    onSignupEvent = {
-                        onSignupEvent(it)
                     },
                     onAnimationComplete = onAnimationComplete
                 )

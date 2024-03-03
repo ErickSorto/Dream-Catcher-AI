@@ -1,21 +1,25 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.compose.material3.TabRowDefaults.PrimaryIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
@@ -26,7 +30,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 @UiComposable
 fun TabLayout(
@@ -35,7 +39,7 @@ fun TabLayout(
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
 ) {
     val pages = listOf("Dream", "AI", "Words", "Info")
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { pages.size })
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
@@ -43,19 +47,17 @@ fun TabLayout(
     //keyboard control
     val keyboardController = LocalSoftwareKeyboardController.current
 
-
-    //create tab layout with 3 tabs, one for dream title and content, one for dream information and one for dream artificial intelligence
-    TabRow(
+    PrimaryTabRow(
         modifier = Modifier,
         selectedTabIndex = pagerState.currentPage,
-        indicator = { tabPositions ->
-            SecondaryIndicator(// custom indicator
-                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                color = colorResource(id = R.color.white)
+        indicator = {
+            PrimaryIndicator(
+                color = colorResource(id = R.color.white),
+                modifier = Modifier.tabIndicatorOffset(pagerState.currentPage)
             )
         },
         contentColor = colorResource(id = R.color.white),
-        containerColor = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
+        containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.7f),
     ) {
         pages.forEachIndexed { index, page ->
             Tab(
@@ -77,7 +79,6 @@ fun TabLayout(
 
     }
     HorizontalPager(
-        count = pages.size,
         state = pagerState,
     ) { page ->
         when (page) {

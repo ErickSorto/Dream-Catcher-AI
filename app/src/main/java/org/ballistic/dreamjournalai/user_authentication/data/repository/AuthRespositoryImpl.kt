@@ -3,8 +3,10 @@ package org.ballistic.dreamjournalai.user_authentication.data.repository
 
 import android.util.Log
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FieldValue.serverTimestamp
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,7 +23,6 @@ import org.ballistic.dreamjournalai.core.Constants.CREATED_AT
 import org.ballistic.dreamjournalai.core.Constants.DISPLAY_NAME
 import org.ballistic.dreamjournalai.core.Constants.EMAIL
 import org.ballistic.dreamjournalai.core.Constants.SIGN_IN_REQUEST
-import org.ballistic.dreamjournalai.core.Constants.SIGN_UP_REQUEST
 import org.ballistic.dreamjournalai.core.Constants.USERS
 import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.user_authentication.domain.repository.*
@@ -35,8 +36,6 @@ class AuthRepositoryImpl @Inject constructor(
     private var oneTapClient: SignInClient,
     @Named(SIGN_IN_REQUEST)
     private var signInRequest: BeginSignInRequest,
-    @Named(SIGN_UP_REQUEST)
-    private var signUpRequest: BeginSignInRequest,
     private var signInClient: GoogleSignInClient,
     private val db: FirebaseFirestore,
 ) : AuthRepository {
@@ -181,25 +180,28 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun oneTapSignInWithGoogle(): OneTapSignInResponse {
+    override suspend fun oneTapSignInWithGoogle(): Flow<Resource<BeginSignInResult>> = flow {
         anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
             auth.currentUser?.uid
         } else {
             null
         }
-
-        return try {
+        emit(Resource.Loading())
+        try {
             val signInResult = oneTapClient.beginSignIn(signInRequest).await()
-            Resource.Success(signInResult)
-        } catch (e: Exception) {
-            try {
-                val signUpResult = oneTapClient.beginSignIn(signUpRequest).await()
-                Resource.Success(signUpResult)
-            } catch (e: Exception) {
-                Resource.Error(e.message ?: "Unknown error")
+            // Assuming signInResult needs to be transformed or directly used
+            emit(Resource.Success(signInResult))
+        } catch (e: ApiException) {
+            val message = when (e.statusCode) {
+                16 -> "Too many sign-in attempts. Try again in 24 hours."
+                else -> "Sign-in failed"
             }
+
+            Log.e("AuthDebug", "One-tap sign-in failed: ${e.message}")
+            emit(Resource.Error(message))
         }
     }
+
 
     override suspend fun firebaseSignInWithGoogle(
         googleCredential: AuthCredential
@@ -253,23 +255,27 @@ class AuthRepositoryImpl @Inject constructor(
     ): Flow<Resource<String>> {
 
         anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
-            auth.currentUser?.uid
+            auth.currentUser?.uid.also {
+                Log.d("SignUp", "Current user is anonymous with UID: $it")
+            }
         } else {
+            Log.d("SignUp", "No anonymous user found.")
             null
         }
 
         return flow {
             emit(Resource.Loading())
+            Log.d("SignUp", "Attempting to sign up with email: $email")
             try {
                 val firebaseFunctions = FirebaseFunctions.getInstance()
 
-                // Call the createAccount function
+                // Prepare data for the Firebase Function call
                 val data = hashMapOf(
                     "email" to email,
                     "password" to password
                 )
 
-                Log.d("SignUp", "data: $data")
+                Log.d("SignUp", "Calling 'createAccountAndSendEmailVerification' with data: $data")
                 val result = firebaseFunctions
                     .getHttpsCallable("createAccountAndSendEmailVerification")
                     .call(data)
@@ -279,21 +285,21 @@ class AuthRepositoryImpl @Inject constructor(
                 val message = dataMap?.get("message") as? String
 
                 if (message != null) {
-                    // If you still want to add the user to Firestore after receiving the message, you can keep the next lines
-                    addUserToFirestore(
-                        registrationTimestamp = System.currentTimeMillis()
-                    )
-                    Log.d("SignUp", "Response: $message")
+                    Log.d("SignUp", "Received message from Firebase Function: $message")
+                    // Further actions such as adding user to Firestore can be logged as well
+                    addUserToFirestore(registrationTimestamp = System.currentTimeMillis())
                     emit(Resource.Success(message))
                 } else {
+                    Log.e("SignUp", "Invalid or null response received from Firebase Function.")
                     throw Exception("Invalid response from Firebase Function")
                 }
             } catch (e: Exception) {
-                Log.e("SignUp", "Error: $e")
-                emit(Resource.Error(e.toString()))
+                Log.e("SignUp", "SignUp failed with exception: $e")
+                emit(Resource.Error("SignUp error: ${e.localizedMessage}"))
             }
         }
     }
+
 
 
     override suspend fun sendEmailVerification(): Flow<Resource<Boolean>> {

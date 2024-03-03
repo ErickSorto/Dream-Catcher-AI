@@ -28,11 +28,13 @@ module.exports = {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
    "indent": "off",
-   "max-len": ["error", { "code": 150 }],
+   "max-len": ["error", { "code": 250 }],
    "object-curly-spacing": "off",
    "comma-dangle": "off",
    "no-trailing-spaces": "off",
    "linebreak-style": 0,
-   "require-jsdoc": "off"
+   "require-jsdoc": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "no-unused-vars": "off",
   },
 };

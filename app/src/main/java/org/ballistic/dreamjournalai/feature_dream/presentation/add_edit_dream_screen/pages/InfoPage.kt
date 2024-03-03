@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,22 +12,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Mood
 import androidx.compose.material.icons.filled.ShieldMoon
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
@@ -107,7 +106,7 @@ fun InfoPage(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
+                .background(color = colorResource(id = R.color.light_black).copy(alpha = 0.7f))
         ) {
             Column {
                 Text(
@@ -135,7 +134,7 @@ fun InfoPage(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
+                .background(color = colorResource(id = R.color.light_black).copy(alpha = 0.7f))
         ) {
             //row for isLucid
             Column(
@@ -150,12 +149,17 @@ fun InfoPage(
                     onAddEditDreamEvent = onAddEditDreamEvent
                 )
                 DateAndTimeButtonsLayout(addEditDreamState = addEditDreamState)
-                Row {
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                )  {
                     Text(
                         text = "Lucid Dream",
                         modifier = Modifier
                             .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 8.dp, 16.dp, 0.dp),
+                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
                         style = typography.bodyLarge.copy(color = colorResource(id = R.color.white)),
                     )
 
@@ -179,7 +183,9 @@ fun InfoPage(
                 }
 
                 //row for isNightmare
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                )  {
                     Text(
                         text = "Nightmare",
                         modifier = Modifier
@@ -207,7 +213,9 @@ fun InfoPage(
                     )
                 }
                 //isRecurring
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                )  {
                     Text(
                         text = "Recurring Dream",
                         modifier = Modifier
@@ -236,7 +244,9 @@ fun InfoPage(
                 }
 
                 //row for false awakenings
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = "False Awakening",
                         modifier = Modifier
@@ -254,7 +264,7 @@ fun InfoPage(
                         },
                         modifier = Modifier
                             .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 16.dp),
+                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color.Red,
                             uncheckedThumbColor = Color.White,
@@ -366,37 +376,6 @@ fun InfoPage(
                         thumbColor = colorResource(id = R.color.white),
                         activeTrackColor = Color.Red.copy(alpha = 0.5f),
                         inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
-                    )
-                )
-                //AI details text field
-
-                OutlinedTextField(
-                    value = addEditDreamState.dreamGeneratedDetails.response,
-                    onValueChange = {
-                        onAddEditDreamEvent(AddEditDreamEvent.ChangeDetailsOfDream(it))
-                    },
-                    label = { Text(text = "Explanation for Image", style = typography.bodyLarge) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp, 0.dp, 8.dp, 16.dp),
-                    textStyle = typography.bodyLarge.copy(color = colorResource(id = R.color.white)),
-                    singleLine = false,
-                    maxLines = 5,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.White.copy(alpha = 0.3f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
-                        cursorColor = colorResource(id = R.color.white),
-                        focusedLabelColor = colorResource(id = R.color.white),
-                        unfocusedLabelColor = colorResource(id = R.color.white),
-                        disabledLabelColor = Color.Black,
-                        disabledBorderColor = Color.Black,
-                        textColor = colorResource(id = R.color.white),
-                        backgroundColor = Color.White.copy(alpha = 0.3f),
-                        leadingIconColor = Color.Black,
-                        trailingIconColor = Color.Black,
-                        errorLabelColor = Color.Red,
-                        errorBorderColor = Color.Red,
-                        errorCursorColor = Color.Red
                     )
                 )
             }
