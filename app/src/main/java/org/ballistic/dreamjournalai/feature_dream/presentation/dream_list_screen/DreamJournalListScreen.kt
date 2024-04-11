@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -44,7 +43,6 @@ fun DreamJournalListScreen(
     onDreamListEvent: (DreamListEvent) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     onMainEvent(MainScreenEvent.SetBottomBarState(true))
     onMainEvent(MainScreenEvent.SetFloatingActionButtonState(true))
@@ -111,7 +109,6 @@ fun DreamJournalListScreen(
                                 onDreamListEvent(
                                     DreamListEvent.DeleteDream(
                                         dream = dream,
-                                        context = context
                                     )
                                 )
                                 scope.launch {

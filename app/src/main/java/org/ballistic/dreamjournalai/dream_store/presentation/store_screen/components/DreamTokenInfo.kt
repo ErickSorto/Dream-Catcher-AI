@@ -1,187 +1,41 @@
 package org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components
 
-import androidx.compose.foundation.Image
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModelState
 
-
-@Composable
-fun DreamTokenInfo(modifier: Modifier, storeScreenViewModelState: StoreScreenViewModelState) {
-
-    Column(
-        modifier = modifier
-            .padding(top = 32.dp)
-            .background(
-                colorResource(id = R.color.sky_blue).copy(alpha = 0.8f),
-                shape = RoundedCornerShape(16.dp)
-            )
-    ) {
-        SubInfoMonthlyYearlyPrice(storeScreenViewModelState)
-        SubInfoFeatures()
-    }
-}
-
-@Composable
-fun SubInfoMonthlyYearlyPrice(
-    storeScreenViewModelState: StoreScreenViewModelState
-) {
-    Column(
-        modifier = Modifier
-            .padding(paddingValues = PaddingValues(8.dp, 16.dp, 8.dp, 8.dp))
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Dream Token Benefits",
-                fontSize = 20.sp,
-                fontWeight = Bold,
-                color = Color.White
-            )
-            DreamTokenLayout(
-                totalDreamTokens = storeScreenViewModelState.dreamTokens
-                    .collectAsStateWithLifecycle().value,
-            )
-        }
-    }
-}
-
-@Composable
-fun SubInfoFeatures() {
-    Column(
-        modifier = Modifier
-            .padding(paddingValues = PaddingValues(0.dp, 8.dp, 0.dp, 0.dp))
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        colorResource(id = R.color.Yellow).copy(alpha = 0.8f),
-                        colorResource(id = R.color.Yellow).copy(alpha = 1f)
-                    )
-                ),
-                shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp)
-            )
-            .fillMaxWidth(),
-    ) {
-        CheckmarkAndText(
-            text = "Paint Your Dreams",
-            subText = "Unlock the power to visualize your dreams in full color with 100 monthly tokens.",
-            modifier = Modifier
-        )
-        CheckmarkAndText(
-            text = "Interpret Your Dreams",
-            subText = "Unlock exclusive access to our dream interpretation feature when it's available.",
-            modifier = Modifier
-        )
-        CheckmarkAndText(
-            text = "Discover New Words",
-            subText = "Expand your dream vocabulary with our upcoming dream dictionary feature.",
-            modifier = Modifier
-        )
-        CheckmarkAndText(
-            text = "Enjoy an Ad-Free Experience",
-            subText = "Say goodbye to interruptions and enhance your dream journaling experience.",
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-    }
-}
-
-@Composable
-fun CheckmarkAndText(
-    text: String,
-    subText: String,
-    modifier: Modifier = Modifier
-) {
-    val showDialog = remember { mutableStateOf(false) }
-
-    Row(
-        modifier = modifier
-            .padding(8.dp, 8.dp, 8.dp, 0.dp)
-            .fillMaxWidth()
-            .clickable { showDialog.value = true },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(R.drawable.baseline_check_24),
-            contentDescription = "checkmark",
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .size(48.dp)
-                .padding(0.dp, 0.dp, 8.dp, 0.dp)
-        )
-        Column {
-            Text(
-                text = text,
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = Bold,
-            )
-            if (showDialog.value) {
-                SubTextDialog(subText = subText, onDismiss = { showDialog.value = false })
-            }
-        }
-    }
-}
-
-@Composable
-fun SubTextDialog(subText: String, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(text = "Details") },
-        text = { Text(text = subText, textAlign = TextAlign.Center, color = Color.White) },
-        confirmButton = {
-            TextButton(
-                onClick = { onDismiss() },
-                content = { Text(text = "OK") }
-            )
-        },
-        shape = RoundedCornerShape(16.dp),
-        containerColor = colorResource(id = R.color.Yellow),
-    )
-}
 
 @Composable
 fun CustomButtonLayout(
@@ -189,7 +43,7 @@ fun CustomButtonLayout(
     buy500IsClicked: () -> Unit,
     buy100IsClicked: () -> Unit
 ) {
-    val lastClickTime = remember { mutableStateOf(0L) }
+    val lastClickTime = remember { mutableLongStateOf(0L) }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -231,9 +85,9 @@ fun DreamToken500ButtonBuy(
             .padding(8.dp, 0.dp, 8.dp, 8.dp)
             .fillMaxWidth()
             .height(80.dp),
-        shape = RoundedCornerShape(0.dp, 16.dp, 16.dp, 16.dp),
+        shape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.Yellow).copy(alpha = 0.8f),
+            containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.8f),
             contentColor = Color.White
         ),
         enabled = !storeScreenViewModelState.isBillingClientLoading
@@ -253,21 +107,22 @@ fun DreamToken500ButtonBuy(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Display the original price with a strikethrough
                 Text(
-                    text = "\$4.99",
+                    text = "\$14.99",
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    textDecoration = TextDecoration.LineThrough, // Apply strikethrough
+                    modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 0.dp)
+                )
+                // Display the new price below
+                Text(
+                    text = "\$4.99", // New price
                     fontSize = 20.sp,
                     fontWeight = Bold,
                     maxLines = 1,
-                    modifier = Modifier
-                        .padding(8.dp, 8.dp, 8.dp, 0.dp)
-                )
-                Text(
-                    text = "Save 50%",
-                    fontSize = 12.sp,
-                    fontWeight = Bold,
-                    maxLines = 1,
-                    modifier = Modifier
-                        .padding(8.dp, 0.dp, 8.dp, 8.dp)
+                    modifier = Modifier.padding(8.dp, 0.dp, 8.dp, 8.dp)
                 )
             }
         }
@@ -286,9 +141,9 @@ fun DreamToken100ButtonBuy(
             .padding(8.dp, 8.dp, 8.dp, 8.dp)
             .fillMaxWidth()
             .height(80.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.sky_blue).copy(alpha = 0.8f),
+            containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.8f),
             contentColor = Color.White
         ),
         enabled = !storeScreenViewModelState.isBillingClientLoading
@@ -306,7 +161,7 @@ fun DreamToken100ButtonBuy(
 
             Column(modifier = Modifier.align(Alignment.CenterEnd)) {
                 Text(
-                    text = "\$1.99",
+                    text = "\$2.99",
                     fontSize = 20.sp,
                     fontWeight = Bold,
                     maxLines = 1,
@@ -319,26 +174,58 @@ fun DreamToken100ButtonBuy(
 }
 
 @Composable
-fun MostPopularBanner(modifier: Modifier) {
-    //offset by item height/ 2
+fun MostPopularBanner(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.02f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
+
+    // Slowing down the shimmer to make it less frequent
+    val shinePosition by infiniteTransition.animateFloat(
+        initialValue = 0f, // Adjusted to start from the beginning
+        targetValue = 1f, // Adjusted to move fully across
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 4000, easing = LinearEasing), // Slower duration
+            repeatMode = RepeatMode.Restart
+        ), label = ""
+    )
+
+    // Defining a more vibrant red-orange gradient background
+    val backgroundBrush = Brush.horizontalGradient(
+        colors = listOf(
+            colorResource(id = R.color.RedOrange).copy(alpha = 0.9f),
+            colorResource(id = R.color.RedOrange).copy(alpha = 1f)
+        )
+    )
+
+    // Adjusting the shimmer effect to be more focused and visible
+    val shimmerBrush = Brush.horizontalGradient(
+        colors = listOf(
+            Color.Transparent,
+            Color.White.copy(alpha = 0.3f), // Adjusted alpha for visibility
+            Color.Transparent
+        ),
+        startX = lerp(fraction = shinePosition - 0.1f) * scale,
+        endX = lerp(fraction = shinePosition) * scale
+    )
+
     Box(
         modifier = modifier
             .padding(8.dp, 8.dp, 8.dp, 0.dp)
-            .offset(y = (-20).dp)
+            .offset(y = (-15).dp)
             .fillMaxWidth(.5f)
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(
-                        colorResource(id = R.color.RedOrange).copy(alpha = 0.9f),
-                        colorResource(id = R.color.RedOrange),
-                    )
-                ),
-            )
+            .background(brush = backgroundBrush)
+            .background(brush = shimmerBrush)
     ) {
         Text(
-            text = "Best Value (Save 50%)",
+            text = "Best Value (Save 66%)",
             modifier = Modifier
-                .padding(8.dp)
+                .padding(4.dp)
                 .align(Alignment.Center),
             fontSize = 12.sp,
             color = Color.White,
@@ -347,6 +234,11 @@ fun MostPopularBanner(modifier: Modifier) {
             textAlign = TextAlign.Center,
         )
     }
+}
+
+// Helper function for linear interpolation
+private fun lerp(fraction: Float): Float {
+    return (1 - fraction) * -1000f + fraction * 1000f
 }
 
 @Composable

@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.SnackbarDuration
@@ -11,9 +9,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.Resource
@@ -30,6 +30,13 @@ class MainScreenViewModel @Inject constructor(
     private val _mainScreenViewModelState = MutableStateFlow(MainScreenViewModelState(authRepo = repo))
     val mainScreenViewModelState: StateFlow<MainScreenViewModelState> = _mainScreenViewModelState.asStateFlow()
 
+    init {
+        updateBackgroundPeriodically()
+        _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
+            backgroundResource = getBackgroundResource()
+        )
+    }
+
     private fun getBackgroundResource(): Int {
         val currentTime = LocalDateTime.now()
         val currentHour = currentTime.hour
@@ -42,10 +49,18 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
-    init {
-        _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
-            backgroundResource = getBackgroundResource()
-        )
+    private fun updateBackgroundPeriodically() {
+        viewModelScope.launch {
+            while (isActive) {
+                val newResource = getBackgroundResource()
+                if (newResource != _mainScreenViewModelState.value.backgroundResource) {
+                    _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
+                        backgroundResource = newResource
+                    )
+                }
+                delay(60000) // Check every minute
+            }
+        }
     }
 
     fun onEvent (event: MainScreenEvent) = viewModelScope.launch {

@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -11,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
@@ -58,7 +55,7 @@ fun DateHeader(dateString: String) {
         modifier = Modifier
             .padding(12.dp, 16.dp, 8.dp, 10.dp)
             .background(
-                colorResource(id = R.color.dark_blue).copy(alpha = 0.7f),
+                colorResource(id = R.color.light_black).copy(alpha = 0.7f),
                 shape = RoundedCornerShape(8.dp)
             )
     ) {

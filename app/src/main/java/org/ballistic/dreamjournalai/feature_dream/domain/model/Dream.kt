@@ -1,15 +1,12 @@
 package org.ballistic.dreamjournalai.feature_dream.domain.model
 
-import android.os.Build
 import android.os.Parcelable
 import androidx.annotation.Keep
-import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.PropertyName
 import kotlinx.parcelize.Parcelize
 import org.ballistic.dreamjournalai.R
 import java.time.Clock
 import java.time.LocalDate
-import java.util.*
 
 @Keep
 @Parcelize
@@ -57,7 +54,7 @@ data class Dream (
         val dreamBackgroundImages = listOf(
             R.drawable.purple_skies_lighthouse,
             R.drawable.red_lighthouse_background,
-            R.drawable.dark_blue_lighthouse_background,
+            R.drawable.green_lighthouse_background,
             R.drawable.blue_lighthouse,
             R.drawable.full_life_lighthouse,
             R.drawable.heaven_lighthouse,

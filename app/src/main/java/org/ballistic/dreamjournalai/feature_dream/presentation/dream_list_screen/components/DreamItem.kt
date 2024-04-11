@@ -3,7 +3,6 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_scree
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -44,7 +43,6 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream.Companion.dreamBackgroundImages
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DreamItem(
     dream: Dream,
@@ -81,7 +79,7 @@ fun DreamItem(
     Box(
         modifier = animatedModifier
             .clip(RoundedCornerShape(cornerRadius))
-            .background(colorResource(id = R.color.dark_blue).copy(alpha = 0.7f))
+            .background(colorResource(id = R.color.light_black).copy(alpha = 0.7f))
     ) {
         Row(
             modifier = Modifier

@@ -820,7 +820,7 @@ class AddEditDreamViewModel @Inject constructor(
                     )
                 )
 
-                authRepository.consumeDreamTokens(2)
+                authRepository.consumeDreamTokens(cost)
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     isDreamExitOff = false
                 )

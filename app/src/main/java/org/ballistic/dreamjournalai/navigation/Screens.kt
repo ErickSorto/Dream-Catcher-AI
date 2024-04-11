@@ -3,21 +3,17 @@ package org.ballistic.dreamjournalai.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Book
-import androidx.compose.material.icons.outlined.Shop
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screens(
     val route: String,
     val title: String? = null,
-    val icon: ImageVector? = null,
-    val iconOutlined: ImageVector? = null
+    val icon: ImageVector? = null
 ) {
     data object DreamJournalScreen : Screens(
         route = "dreams_screen",
-        title = "My Dream Journal",
+        title = "Dream Journal",
         icon = Icons.Filled.Book, // Assuming filled version exists
-        iconOutlined = Icons.Outlined.Book // Assuming outlined version exists
     )
 
     data object AddEditDreamScreen : Screens(
@@ -29,8 +25,8 @@ sealed class Screens(
     data object StoreScreen : Screens(
         route = "dream_store",
         title = "Store",
-        icon = Icons.Filled.Shop, // Assuming filled version exists
-        iconOutlined = Icons.Outlined.Shop // Assuming outlined version exists
+        icon = Icons.Filled.Shop // Assuming filled version exists
+        // Assuming outlined version exists
     )
 
     data object Favorites : Screens(
