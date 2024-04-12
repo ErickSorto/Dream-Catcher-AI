@@ -97,6 +97,7 @@ fun DreamJournalListScreen(
                                 .fillMaxWidth()
                                 .padding(bottom = 10.dp)
                                 .padding(horizontal = 12.dp)
+                                .animateItemPlacement()
                                 .clickable {
                                     navController.navigate(
                                         Screens.AddEditDreamScreen.route +

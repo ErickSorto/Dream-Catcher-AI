@@ -92,14 +92,10 @@ class SignupViewModel @Inject constructor(
                     )
                 }
                 _state.value.copy(
-                    signUp = MutableStateFlow(
-                        SignUpState(
-                            error = error
-                        )
-                    )
+                    error = error,
                 )
             },
-            loadingTransform = { _state.value.copy(signUp = MutableStateFlow(SignUpState(isLoading = true))) }
+            loadingTransform = { _state.value.copy(isLoading = true) }
         )
     }
 
@@ -128,9 +124,9 @@ class SignupViewModel @Inject constructor(
                         actionLabel = "dismiss"
                     )
                 }
-                _state.value.copy(login = MutableStateFlow(LoginState(error = error)))
+                _state.value.copy(error = error)
                              },
-            loadingTransform = { _state.value.copy(login = MutableStateFlow(LoginState(isLoading = true))) }
+            loadingTransform = { _state.value.copy(isLoading = true) }
         )
     }
 
@@ -184,13 +180,13 @@ data class SignupViewModelState(
     val isForgotPasswordLayout: MutableState<Boolean> = mutableStateOf(false),
     val signUpResponse: MutableState<Resource<SignUpResponse>> = mutableStateOf(Resource.Success()),
     val sendEmailVerificationResponse: MutableState<Resource<Boolean>> = mutableStateOf(Resource.Success()),
-    val login: StateFlow<LoginState> = MutableStateFlow(LoginState()),
-    val signUp: StateFlow<SignUpState> = MutableStateFlow(SignUpState()),
     val emailVerification: StateFlow<VerifyEmailState> = MutableStateFlow(VerifyEmailState()),
     val revokeAccess: StateFlow<RevokeAccessState> = MutableStateFlow(RevokeAccessState()),
     val isUserExist: Boolean = false,
     val isEmailVerified: Boolean = false,
     val isLoggedIn: Boolean = false,
+    val isLoading: Boolean = false,
+    val error: String = "",
     val isUserAnonymous: Boolean = false,
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
 )
@@ -198,12 +194,6 @@ data class SignupViewModelState(
 data class VerifyEmailState(
     val verified: Boolean = false,
     val sent: Boolean = false,
-    val isLoading: Boolean = false,
-    val error: String = ""
-)
-
-data class SignUpState(
-    val signUp: String? = null,
     val isLoading: Boolean = false,
     val error: String = ""
 )

@@ -7,7 +7,7 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 
 @Composable
 fun ObserverLogoutDeleteState(
-    loginViewModelState: LoginViewModelState = LoginViewModelState(),
+    loginViewModelState: LoginViewModelState,
     navigateToLoginScreen: () -> Unit,
 ) {
 

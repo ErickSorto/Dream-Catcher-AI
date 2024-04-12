@@ -2,12 +2,12 @@ package org.ballistic.dreamjournalai.user_authentication.data.repository
 
 
 import android.util.Log
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.BeginSignInResult
-import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.*
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue.serverTimestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -15,28 +15,33 @@ import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.google.firebase.functions.ktx.functions
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import org.ballistic.dreamjournalai.core.Constants.CREATED_AT
 import org.ballistic.dreamjournalai.core.Constants.DISPLAY_NAME
 import org.ballistic.dreamjournalai.core.Constants.EMAIL
-import org.ballistic.dreamjournalai.core.Constants.SIGN_IN_REQUEST
 import org.ballistic.dreamjournalai.core.Constants.USERS
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.user_authentication.domain.repository.*
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.ReloadUserResponse
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.SendPasswordResetEmailResponse
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    private var oneTapClient: SignInClient,
-    @Named(SIGN_IN_REQUEST)
-    private var signInRequest: BeginSignInRequest,
-    private var signInClient: GoogleSignInClient,
     private val db: FirebaseFirestore,
 ) : AuthRepository {
     override val currentUser = MutableStateFlow(auth.currentUser)
@@ -64,6 +69,40 @@ class AuthRepositoryImpl @Inject constructor(
 
     init {
         validateUser()
+    }
+
+    override suspend fun firebaseSignInWithGoogle(
+        googleCredential: AuthCredential
+    ): Flow<Resource<Pair<AuthResult, String?>>> {
+        return flow {
+            Log.d("SignInWithGoogle", "Signing in with Google")
+            emit(Resource.Loading())
+            try {
+                val anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
+                    Log.d("SignInWithGoogle", "Current user is anonymous with UID: ${auth.currentUser?.uid}")
+                    auth.currentUser?.uid
+                } else {
+                    null
+                }
+
+                Log.d("SignInWithGoogle", "Attempting to sign in with Google")
+                val result = auth.signInWithCredential(googleCredential).await()
+
+                val isNewUser = result.additionalUserInfo?.isNewUser ?: false
+
+
+                Log.d("SignInWithGoogle", "Firebase sign-in completed. Is new user: $isNewUser")
+
+                emit(Resource.Success(Pair(result, anonymousUserId)))
+            } catch (e: FirebaseAuthUserCollisionException) {
+                Log.e("SignInWithGoogle", "User collision: ${e.message}")
+                emit(Resource.Error("An existing user account was found with the same credentials: ${e.message}"))
+            } catch (e: Exception) {
+                Log.e("SignInWithGoogle", "Failed to sign in with Firebase: ${e.message}")
+                emit(Resource.Error("Failed to sign in with Google: ${e.message}"))
+            }
+
+        }
     }
 
     override suspend fun consumeDreamTokens(tokensToConsume: Int): Resource<Boolean> {
@@ -180,56 +219,27 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun oneTapSignInWithGoogle(): Flow<Resource<BeginSignInResult>> = flow {
-        anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
-            auth.currentUser?.uid
-        } else {
-            null
-        }
-        emit(Resource.Loading())
-        try {
-            val signInResult = oneTapClient.beginSignIn(signInRequest).await()
-            // Assuming signInResult needs to be transformed or directly used
-            emit(Resource.Success(signInResult))
-        } catch (e: ApiException) {
-            val message = when (e.statusCode) {
-                16 -> "Too many sign-in attempts. Try again in 24 hours."
-                else -> "Sign-in failed"
-            }
-
-            Log.e("AuthDebug", "One-tap sign-in failed: ${e.message}")
-            emit(Resource.Error(message))
-        }
-    }
+//    override suspend fun oneTapSignInWithGoogle(): Flow<Resource<BeginSignInResult>> = flow {
+//        anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
+//            auth.currentUser?.uid
+//        } else {
+//            null
+//        }
+//        emit(Resource.Loading())
+//        try {
+//            val signInResult = oneTapClient.beginSignIn(signInRequest).await()
+//            // Assuming signInResult needs to be transformed or directly used
+//            emit(Resource.Success(signInResult))
+//        } catch (e: Exception) {
+//
+//
+//            Log.e("AuthDebug", "One-tap sign-in failed: ${e.message}")
+//            emit(Resource.Error(e.message ?: "Unknown error"))
+//        }
+//    }
 
 
-    override suspend fun firebaseSignInWithGoogle(
-        googleCredential: AuthCredential
-    ): Flow<Resource<Pair<AuthResult, String?>>> {
-        return flow {
-            emit(Resource.Loading())
-            try {
-                val result = auth.signInWithCredential(googleCredential).await()
-                if (anonymousUserId != null) {
-                    Log.d("SignIn", "result ${result.user?.uid} ${result.user?.isAnonymous} anonymousUserId $anonymousUserId")
-                    emit(Resource.Success(Pair(result, anonymousUserId)))
-                } else{
-                    emit(Resource.Success(Pair(result, null)))
-                }
-            } catch (e: FirebaseAuthUserCollisionException) {
-                val result = auth.signInWithCredential(googleCredential).await()
 
-                if (anonymousUserId != null) {
-                    Log.d("SignIn", "result ${result.user?.uid} ${result.user?.isAnonymous} anonymousUserId $anonymousUserId")
-                    emit(Resource.Success(Pair(result, anonymousUserId)))
-                } else {
-                    emit(Resource.Success(Pair(result, null)))
-                }
-            } catch (e: Exception) {
-                emit(Resource.Error(e.toString()))
-            }
-        }
-    }
 
 
     override suspend fun anonymousSignIn(): Flow<Resource<AuthResult>> {
@@ -377,24 +387,32 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun revokeAccess(
         password: String?
-    ): Flow<RevokeAccessResponse> {
+    ): Flow<Resource<Boolean>> {
         return flow {
             emit(Resource.Loading())
-            auth.currentUser?.apply {
-                if (password != null) {
-                    val credential = EmailAuthProvider.getCredential(email!!, password)
-                    reauthenticate(credential).await()
-                }
-                signInClient.revokeAccess().await()
-                oneTapClient.signOut().await()
-                delete().await()
-            }
+            try {
+                auth.currentUser?.let { user ->
+                    if (password != null && user.email != null) {
+                        // If a password is provided, re-authenticate the user
+                        val credential = EmailAuthProvider.getCredential(user.email!!, password)
+                        user.reauthenticate(credential).await()
+                    }
 
-            emit(Resource.Success(true))
-        }.catch { e ->
-            emit(Resource.Error(e.toString()))
+                    // Perform additional cleanup or revocation if necessary
+                    // For example, revoking OAuth tokens if applicable
+                    // yourOAuthService.revokeTokens(user.uid)
+
+                    // Delete the user
+                    user.delete().await()
+
+                    emit(Resource.Success(true))
+                } ?: throw IllegalStateException("No authenticated user found")
+            } catch (e: Exception) {
+                emit(Resource.Error("Failed to revoke access: ${e.localizedMessage}", false))
+            }
         }
     }
+
 
     override fun getAuthState(viewModelScope: CoroutineScope) = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
@@ -416,13 +434,15 @@ class AuthRepositoryImpl @Inject constructor(
                 .call(mapOf("permanentUid" to permanentUid, "anonymousUid" to anonymousUid))
                 .await()
 
+
+
             val data = result.data as? Map<*, *>
             if (data?.get("success") == true) {
-                // The dreams were transferred successfully
-                (data["message"] as? String)?.let { Log.i("TransferDreams", it) }
+                Log.i("TransferDreams", "Dreams transferred successfully. Proceed to clean up anonymous account if needed.")
+
             } else {
-                // There was a problem
-                Log.e("TransferDreams", "Error transferring dreams: ${data?.get("message")}")
+                Log.e("TransferDreams", "Failed to transfer dreams: ${data?.get("message")}")
+                // Handle the failure accordingly, possibly retrying or asking the user to try again
             }
         } catch (e: Exception) {
             when (e) {
@@ -437,7 +457,7 @@ class AuthRepositoryImpl @Inject constructor(
                 }
 
                 else -> {
-                    Log.e("TransferDreams", "Error transferring dreams: $e")
+                    Log.e("TransferDreams", "Error transferring dreams2: $e")
                 }
             }
         }
@@ -450,5 +470,4 @@ fun FirebaseUser.toUser(registrationTimestamp: Long) = mapOf(
     CREATED_AT to serverTimestamp(),
     "registrationTimestamp" to registrationTimestamp,
     "lastSignInTimestamp" to serverTimestamp(),
-    "dreamTokens" to 50,
 )

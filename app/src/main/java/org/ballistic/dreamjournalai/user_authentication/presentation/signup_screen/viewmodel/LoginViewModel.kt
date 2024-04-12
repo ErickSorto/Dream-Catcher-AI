@@ -7,8 +7,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.auth.api.identity.BeginSignInResult
-import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
@@ -32,12 +30,11 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repo: AuthRepository,
-    signInClient: SignInClient
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
         LoginViewModelState(
-            oneTapClient = signInClient,
+            authRepository = repo,
             isLoggedIn = repo.isLoggedIn.value,
             isUserAnonymous = repo.isUserAnonymous.value,
         )
@@ -47,11 +44,9 @@ class LoginViewModel @Inject constructor(
     fun onEvent(event: LoginEvent) = viewModelScope.launch {
 
         when (event) {
-            is LoginEvent.OneTapSignIn -> {
-                oneTapSignIn()
-            }
 
             is LoginEvent.SignInWithGoogle -> {
+                Log.d("LoginViewModel", "signInWithGoogle called")
                 signInWithGoogle(event.googleCredential)
             }
 
@@ -90,8 +85,17 @@ class LoginViewModel @Inject constructor(
             is LoginEvent.UserAccountStatus -> {
                 checkUserAccountStatus()
             }
+
+            is LoginEvent.ToggleLoading -> {
+                _state.update {
+                    it.copy(
+                        isLoading = true
+                    )
+                }
+            }
         }
     }
+
 
     private fun <T> handleResource(
         resourceFlow: Flow<Resource<T>>,
@@ -106,45 +110,23 @@ class LoginViewModel @Inject constructor(
         }
     }.launchIn(viewModelScope)
 
-    private fun oneTapSignIn() = viewModelScope.launch {
-       handleResource(
-           resourceFlow = repo.oneTapSignInWithGoogle(),
-           transform = {
-               _state.value.copy(
-                   oneTapSignInResponse = MutableStateFlow(Resource.Success(it))
-               )
-           },
-           errorTransform = { error ->
-               viewModelScope.launch {
-                   _state.value.snackBarHostState.value.showSnackbar(
-                       error,
-                       duration = SnackbarDuration.Long,
-                       actionLabel = "dismiss"
-                   )
-               }
-               _state.value.copy(
-                   oneTapSignInResponse = MutableStateFlow(Resource.Error(error))
-               )
-           },
-           loadingTransform = {
-               _state.value.copy(
-                   oneTapSignInResponse = MutableStateFlow(Resource.Loading())
-               )
-           }
-       )
-    }
 
 
     private suspend fun signInWithGoogle(googleCredential: AuthCredential) {
+        Log.d("SignInWithGoogle", "Attempting to sign in with Google")
         handleResource(
             resourceFlow = repo.firebaseSignInWithGoogle(googleCredential),
             transform = {
                 viewModelScope.launch {
-                    repo.transferDreamsFromAnonymousToPermanent(
-                        it.first.user?.uid ?: "", it.second ?: ""
-                    )
+                    try{
+                        Log.d("SignInWithGoogle", "Sign-in with Google successful")
+                        repo.transferDreamsFromAnonymousToPermanent(
+                            it.first.user?.uid ?: "", it.second ?: ""
+                        )
+                    } catch (e: Exception) {
+                        Log.e("SignInWithGoogle", "Error transferring dreams: $e")
+                    }
                 }
-
                 _state.value.copy(
                     isEmailVerified = it.first.user?.isEmailVerified ?: false,
                     isLoggedIn = true,
@@ -153,26 +135,28 @@ class LoginViewModel @Inject constructor(
                 )
             },
             errorTransform = { error ->
+                Log.e("SignInWithGoogle", "Sign-in with Google failed: $error")
                 viewModelScope.launch {
                     _state.value.snackBarHostState.value.showSnackbar(
-                        error,
-                        duration = SnackbarDuration.Long,
-                        actionLabel = "dismiss"
+                        error, duration = SnackbarDuration.Long, actionLabel = "Dismiss"
                     )
                 }
                 _state.value.copy(
-                    login = MutableStateFlow(LoginState(error = error)),
+                    isLoading = false,
+                    error = error,
                     signInWithGoogleResponse = MutableStateFlow(Resource.Error(error))
                 )
             },
             loadingTransform = {
+                Log.d("SignInWithGoogle", "Sign-in with Google is loading")
                 _state.value.copy(
-                    login = MutableStateFlow(LoginState(isLoading = true)),
+                    isLoading = true,
                     signInWithGoogleResponse = MutableStateFlow(Resource.Loading())
                 )
             }
         )
     }
+
 
     private suspend fun loginWithEmailAndPassword(email: String, password: String) {
         handleResource(
@@ -192,9 +176,12 @@ class LoginViewModel @Inject constructor(
                         actionLabel = "dismiss"
                     )
                 }
-                _state.value.copy(login = MutableStateFlow(LoginState(error = error)))
+                _state.value.copy(
+                    isLoading = false,
+                    error = error
+                )
             },
-            loadingTransform = { _state.value.copy(login = MutableStateFlow(LoginState(isLoading = true))) }
+            loadingTransform = { _state.value.copy(isLoading = true) }
         )
     }
 
@@ -265,41 +252,34 @@ class LoginViewModel @Inject constructor(
 }
 
 data class LoginViewModelState(
+    val authRepository: AuthRepository,
     val loginEmail: String = "",
     val loginPassword: String = "",
     val forgotPasswordEmail: String = "",
-    val oneTapClient: SignInClient? = null,
     val signInWithGoogleResponse: MutableStateFlow<Resource<Pair<AuthResult, String?>>> = MutableStateFlow(
         Resource.Loading()
     ),
     val isLoginLayout: MutableState<Boolean> = mutableStateOf(true),
     val isSignUpLayout: MutableState<Boolean> = mutableStateOf(false),
     val isForgotPasswordLayout: MutableState<Boolean> = mutableStateOf(false),
-    val oneTapSignInResponse: MutableStateFlow<Resource<BeginSignInResult>> = MutableStateFlow(
-        Resource.Success()),
     val signInResponse: MutableState<Resource<SignInResponse>> = mutableStateOf(Resource.Success()),
     val sendPasswordResetEmailResponse: MutableState<SendPasswordResetEmailResponse> = mutableStateOf(
         Resource.Success()
     ),
     val reloadUserResponse: MutableState<Resource<ReloadUserResponse>> = mutableStateOf(Resource.Success()),
-    val login: StateFlow<LoginState> = MutableStateFlow(LoginState()),
     val revokeAccess: StateFlow<RevokeAccessState> = MutableStateFlow(RevokeAccessState()),
     val user: FirebaseUser? = null,
     val isUserExist: Boolean = false,
     val isEmailVerified: Boolean = false,
     val isLoggedIn: Boolean = false,
+    val isLoading: Boolean = false,
+    val error: String = "",
     val isUserAnonymous: Boolean = false,
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
 )
 
 data class RevokeAccessState(
     val isRevoked: Boolean = false,
-    val isLoading: Boolean = false,
-    val error: String = ""
-)
-
-data class LoginState(
-    val isLoggedIn: Boolean = false,
     val isLoading: Boolean = false,
     val error: String = ""
 )

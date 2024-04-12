@@ -66,23 +66,32 @@ fun AddEditDreamScreen(
     }
 
     val dreamBackgroundImage = remember {
-        mutableIntStateOf(
-            when {
-                dreamImage != -1 && dreamImage in Dream.dreamBackgroundImages -> dreamImage
-                dreamImage != -1 -> R.drawable.background_during_day
-                else -> addEditDreamState.dreamInfo.dreamBackgroundImage
+        val initialIndex = when {
+            dreamImage >= 0 && dreamImage < Dream.dreamBackgroundImages.size -> {
+                // dreamImage is a valid index within the list range
+                dreamImage
             }
+            addEditDreamState.dreamInfo.dreamBackgroundImage >= 0 &&
+                    addEditDreamState.dreamInfo.dreamBackgroundImage < Dream.dreamBackgroundImages.size -> {
+                // Fallback to the stored dream background image index if within the valid range
+                addEditDreamState.dreamInfo.dreamBackgroundImage
+            }
+            else -> {
+                Dream.dreamBackgroundImages.indices.random()
+            }
+        }
+        mutableIntStateOf(initialIndex)
+    }
+
+    Crossfade(targetState = dreamBackgroundImage.intValue, label = "Background Image Crossfade") { index ->
+        Image(
+            painter = painterResource(id = Dream.dreamBackgroundImages[index]),
+            contentDescription = "Dream Background",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize().blur(5.dp)
         )
     }
 
-    Crossfade(targetState = dreamBackgroundImage.intValue, label = "") { image ->
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = "Dream Background",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize().blur(10.dp)
-        )
-    }
 
     if (addEditDreamState.dialogState.value) {
         AlertSave(

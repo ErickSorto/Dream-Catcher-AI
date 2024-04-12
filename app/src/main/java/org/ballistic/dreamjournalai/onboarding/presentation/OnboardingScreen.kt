@@ -1,5 +1,7 @@
 package org.ballistic.dreamjournalai.onboarding.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.updateTransition
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -33,6 +36,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.credentials.GetCredentialRequest
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -40,7 +47,6 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.AnonymousButton
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.GoogleSignInHandler
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.ObserveLoginState
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignInGoogleButton
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components.SignupLoginLayout
@@ -48,7 +54,10 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.events.SignupEvent
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModelState
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModelState
+import java.security.MessageDigest
+import java.util.UUID
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @ExperimentalAnimationApi
 @Composable
 fun OnboardingScreen(
@@ -65,8 +74,49 @@ fun OnboardingScreen(
     val visible = remember { mutableStateOf(true) }
     val transition = updateTransition(visible.value, label = "")
     val showSubheader = remember { mutableStateOf(false) }
-
+    val isLoading = loginViewModelState.isLoading
     val scope = CoroutineScope(Dispatchers.Main)
+    val context = LocalContext.current
+
+    val onClick: () -> Unit = {
+        val credentialManager = androidx.credentials.CredentialManager.create(context)
+        val rawNonce = UUID.randomUUID().toString()
+        val bytes = rawNonce.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
+
+        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(context.getString(R.string.web_client_id))
+            .setNonce(hashedNonce)  // Use the generated nonce
+            .build()
+
+
+        val request: GetCredentialRequest = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption).build()
+
+        scope.launch {
+            val result = credentialManager.getCredential(
+                request = request,
+                context = context,
+            )
+
+            val credential = result.credential
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+
+            val googleIdToken = googleIdTokenCredential.idToken
+            onLoginEvent(
+                LoginEvent.SignInWithGoogle(
+                    GoogleAuthProvider.getCredential(
+                        googleIdToken,
+                        null
+                    )
+                )
+            )
+        }
+
+    }
 
     LaunchedEffect(key1 = Unit) {
         onLoginEvent(LoginEvent.UserAccountStatus)
@@ -99,12 +149,12 @@ fun OnboardingScreen(
         },
         containerColor = Color.Transparent
     ) { it ->
-        GoogleSignInHandler(
-            loginViewModelState = loginViewModelState,
-            onLoginEvent = { onLoginEvent(it) }
-        )
+
         Column(
-            modifier = Modifier.padding(it).fillMaxSize().navigationBarsPadding(),
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+                .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -170,13 +220,17 @@ fun OnboardingScreen(
 
             SignInGoogleButton(
                 onClick = {
-                    onLoginEvent(LoginEvent.OneTapSignIn)
+                    onClick()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp, top = 32.dp, start = 16.dp, end = 16.dp),
-                isVisible = true
+                isVisible = true,
+                isEnabled = !isLoading
+
             )
+
+
 
             if (!isUserAnonymous) {
                 AnonymousButton(
@@ -185,7 +239,8 @@ fun OnboardingScreen(
                     isVisible = true,
                     onClick = {
                         onSignupEvent(SignupEvent.AnonymousSignIn)
-                    }
+                    },
+                    isEnabled = !isLoading
                 )
             }
             Spacer(modifier = Modifier.padding(16.dp))

@@ -1,6 +1,5 @@
 package org.ballistic.dreamjournalai.user_authentication.domain.repository
 
-import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
@@ -10,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.ballistic.dreamjournalai.core.Resource
 
 
-typealias OneTapSignInResponse = Resource<BeginSignInResult>
 typealias SignUpResponse = Resource<Boolean>
 typealias SendEmailVerificationResponse = Resource<Boolean>
 typealias SignInResponse = Boolean
@@ -24,9 +22,6 @@ interface AuthRepository {
     val isEmailVerified: StateFlow<Boolean>
     val isLoggedIn: StateFlow<Boolean>
     val isUserAnonymous: StateFlow<Boolean>
-
-    suspend fun oneTapSignInWithGoogle(): Flow<Resource<BeginSignInResult>>
-
     suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): Flow<Resource<Pair<AuthResult, String?>>>
 
     suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): Flow<Resource<String>>

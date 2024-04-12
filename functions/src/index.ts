@@ -80,6 +80,13 @@ exports.handleAccountLinking = functions.https.onCall(async (data, context) => {
     // Destructure and validate UIDs
     const {permanentUid, anonymousUid} = data;
 
+
+    if (typeof permanentUid !== "string" || permanentUid.trim() === "" ||
+        typeof anonymousUid !== "string" || anonymousUid.trim() === "") {
+        functions.logger.error("One or both UIDs are invalid.");
+        throw new functions.https.HttpsError("invalid-argument", "The function requires valid UIDs.");
+    }
+
     // Log starting of account linking process
     functions.logger.info(`Starting account linking. Anon UID: ${anonymousUid}, Perm UID: ${permanentUid}`);
 
@@ -96,6 +103,7 @@ exports.handleAccountLinking = functions.https.onCall(async (data, context) => {
     }
 
     try {
+        functions.logger.info(`Anon UID: ${anonymousUid}, Perm UID: ${permanentUid}`);
         const anonymousDreamsRef = firestore.collection("users").doc(anonymousUid).collection("my_dreams");
         const permanentDreamsRef = firestore.collection("users").doc(permanentUid).collection("my_dreams");
         let lastSnapshot = null;

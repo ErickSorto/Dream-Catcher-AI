@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -27,6 +26,7 @@ import org.ballistic.dreamjournalai.core.Constants.SIGN_IN_WITH_GOOGLE
 fun SignInGoogleButton(
     modifier: Modifier,
     isVisible: Boolean,
+    isEnabled: Boolean,
     onClick: () -> Unit,
 ) {
 
@@ -44,6 +44,7 @@ fun SignInGoogleButton(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.sky_blue)
                 ),
+                enabled = isEnabled,
                 onClick = onClick
             ) {
                 Image(

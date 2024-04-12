@@ -41,6 +41,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainS
 
 //import all compose-
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StoreScreen(
     storeScreenViewModelState: StoreScreenViewModelState,
