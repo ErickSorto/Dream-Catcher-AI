@@ -1,14 +1,11 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen
 
 import android.app.Activity
-import org.ballistic.dreamjournalai.dream_dictionary.presentation.DictionaryEvent
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryWord
 import java.time.LocalDate
 import java.time.LocalTime
 
 sealed class AddEditDreamEvent {
-    data class EnteredTitle(val value: String) : AddEditDreamEvent()
-    data class EnteredContent(val value: String) : AddEditDreamEvent()
     data class ChangeDreamBackgroundImage(val dreamBackGroundImage: Int) : AddEditDreamEvent()
     data class ChangeLucidity(val lucidity: Int) : AddEditDreamEvent()
     data class ChangeVividness(val vividness: Int) : AddEditDreamEvent()
@@ -47,7 +44,23 @@ sealed class AddEditDreamEvent {
 
     data object LoadWords : AddEditDreamEvent()
 
+    data object StartListening : AddEditDreamEvent()
+
     data object FilterDreamWordInDictionary : AddEditDreamEvent()
 
     data class ClickBuyWord(val dictionaryWord: DictionaryWord, val isAd: Boolean, val activity: Activity) : AddEditDreamEvent()
+
+    data class ToggleDreamImageGenerationPopUpState(val value: Boolean) : AddEditDreamEvent()
+    data class ToggleDreamInterpretationPopUpState(val value: Boolean) : AddEditDreamEvent()
+    data class ToggleDreamAdvicePopUpState(val value: Boolean) : AddEditDreamEvent()
+
+    data class ToggleDreamQuestionPopUpState(val value: Boolean) : AddEditDreamEvent()
+
+    data class ToggleDreamStoryPopUpState(val value: Boolean) : AddEditDreamEvent()
+
+    data class ToggleDreamMoodPopUpState(val value: Boolean) : AddEditDreamEvent()
+
+    data class ToggleDialogState(val value: Boolean) : AddEditDreamEvent()
+
+    data class ToggleBottomSheetState(val value: Boolean) : AddEditDreamEvent()
 }

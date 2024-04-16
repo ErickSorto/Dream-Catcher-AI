@@ -196,7 +196,7 @@ fun LoginLayout(
     onAnimationComplete: () -> Unit = {}
 ) {
 
-    val staggeredDelay = 100L
+    val staggeredDelay = 200L
     val composablesData = listOf(
         ComposableData(key = "Email", visible = remember { mutableStateOf(false) }),
         ComposableData(key = "Password", visible = remember { mutableStateOf(false) }),

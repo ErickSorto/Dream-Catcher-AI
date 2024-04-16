@@ -1,7 +1,6 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
@@ -38,6 +38,7 @@ import java.util.Locale
 fun DreamJournalListScreen(
     navController: NavController,
     mainScreenViewModelState: MainScreenViewModelState,
+    searchTextFieldState: TextFieldState,
     dreamJournalListState: DreamJournalListState,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onDreamListEvent: (DreamListEvent) -> Unit = {},
@@ -53,6 +54,7 @@ fun DreamJournalListScreen(
             DreamListScreenTopBar(
                 dreamJournalListState = dreamJournalListState,
                 mainScreenViewModelState = mainScreenViewModelState,
+                searchTextFieldState = searchTextFieldState,
                 onDreamListEvent = onDreamListEvent
             )
         },
@@ -96,16 +98,15 @@ fun DreamJournalListScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 10.dp)
-                                .padding(horizontal = 12.dp)
-                                .animateItemPlacement()
-                                .clickable {
-                                    navController.navigate(
-                                        Screens.AddEditDreamScreen.route +
-                                                "?dreamId=${dream.id}&dreamImageBackground=${
-                                                    dream.backgroundImage
-                                                }"
-                                    )
-                                },
+                                .padding(horizontal = 12.dp),
+                            onClick = {
+                                navController.navigate(
+                                    Screens.AddEditDreamScreen.route +
+                                            "?dreamId=${dream.id}&dreamImageBackground=${
+                                                dream.backgroundImage
+                                            }"
+                                )
+                            },
                             onDeleteClick = {
                                 onDreamListEvent(
                                     DreamListEvent.DeleteDream(

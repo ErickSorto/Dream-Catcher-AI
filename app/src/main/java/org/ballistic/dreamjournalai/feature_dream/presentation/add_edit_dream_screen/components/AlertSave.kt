@@ -13,16 +13,13 @@ fun AlertSave(
 ) {
     AlertDialog(
         onDismissRequest = {
-            // Dismiss the dialog when the user clicks outside the dialog or on the back
-            // button. If you want to disable that functionality, simply use an empty
-            // onDismissRequest.
             onClickOutside()
         },
         title = {
             Text(text = "Attention!")
         },
         text = {
-            Text(text = "You did not save your dream yet. Do you wish to save it?")
+            Text(text = "Do you want to save this dream?")
         },
         confirmButton = {
             TextButton(
@@ -39,8 +36,8 @@ fun AlertSave(
                     onDismiss()
                 }
             ) {
-                Text("Return to Journal")
+                Text("Leave Dream")
             }
-        }
+        },
     )
 }

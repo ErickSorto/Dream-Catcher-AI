@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.navigation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,7 +20,6 @@ import org.ballistic.dreamjournalai.dream_statistics.presentation.DreamStatistic
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenViewModel
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreen
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
-import org.ballistic.dreamjournalai.dream_tools.presentation.DreamToolsScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomDreamToolScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomDreamToolScreenViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.about_me_screen.AboutMeScreen
@@ -33,6 +33,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ScreenGraph(
     navController: NavHostController,
@@ -47,10 +48,13 @@ fun ScreenGraph(
 
         composable(route = Screens.DreamJournalScreen.route) {
             val dreamJournalListViewModel: DreamJournalListViewModel = hiltViewModel()
+            val searchTextFieldState = dreamJournalListViewModel.searchTextFieldState.collectAsStateWithLifecycle().value
+            val dreamJournalListState = dreamJournalListViewModel.dreamJournalListState.collectAsStateWithLifecycle().value
             DreamJournalListScreen(
                 navController = navController,
                 mainScreenViewModelState = mainScreenViewModelState,
-                dreamJournalListState = dreamJournalListViewModel.dreamJournalListState.collectAsStateWithLifecycle().value,
+                searchTextFieldState = searchTextFieldState,
+                dreamJournalListState = dreamJournalListState,
                 onMainEvent = { onMainEvent(it) },
                 onDreamListEvent = { dreamJournalListViewModel.onEvent(it) },
             )
@@ -91,8 +95,12 @@ fun ScreenGraph(
         ) { value ->
             val image = value.arguments?.getInt("dreamImageBackground") ?: -1
             val addEditDreamViewModel: AddEditDreamViewModel = hiltViewModel()
+            val dreamTitle = addEditDreamViewModel.titleTextFieldState.collectAsStateWithLifecycle().value
+            val dreamContent = addEditDreamViewModel.contentTextFieldState.collectAsStateWithLifecycle().value
             AddEditDreamScreen(
                 dreamImage = image,
+                dreamTitleState = dreamTitle,
+                dreamContentState = dreamContent,
                 addEditDreamState = addEditDreamViewModel.addEditDreamState
                     .collectAsStateWithLifecycle().value,
                 onMainEvent = { onMainEvent(it) },
@@ -212,9 +220,12 @@ fun ScreenGraph(
             val dictionaryScreenViewModel: DictionaryScreenViewModel = hiltViewModel()
             val dictionaryScreenState = dictionaryScreenViewModel.dictionaryScreenState
                 .collectAsStateWithLifecycle()
+            val searchTextFieldState = dictionaryScreenViewModel.searchTextFieldState
+                .collectAsStateWithLifecycle()
             DictionaryScreen(
                 dictionaryScreenState = dictionaryScreenState.value,
                 mainScreenViewModelState = mainScreenViewModelState,
+                searchTextFieldState = searchTextFieldState.value,
                 onMainEvent = { onMainEvent(it) },
                 onEvent = { dictionaryScreenViewModel.onEvent(it) },
             )

@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.account_settings
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,8 +27,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
@@ -47,6 +50,7 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 import java.security.MessageDigest
 import java.util.UUID
 
+
 @Composable
 fun AccountSettingsScreen(
     loginViewModelState: LoginViewModelState,
@@ -63,6 +67,7 @@ fun AccountSettingsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val onClick: () -> Unit = {
+
         val credentialManager = androidx.credentials.CredentialManager.create(context)
         val rawNonce = UUID.randomUUID().toString()
         val bytes = rawNonce.toByteArray()
@@ -77,32 +82,45 @@ fun AccountSettingsScreen(
             .build()
 
 
-
         val request: GetCredentialRequest = GetCredentialRequest.Builder()
             .addCredentialOption(googleIdOption).build()
 
         scope.launch {
-            val result = credentialManager.getCredential(
-                request = request,
-                context = context,
-            )
+            try {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = context,
+                )
 
-            val credential = result.credential
-            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val credential = result.credential
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
 
-            val googleIdToken = googleIdTokenCredential.idToken
-            onLoginEvent(
-                LoginEvent.SignInWithGoogle(
-                    GoogleAuthProvider.getCredential(
-                        googleIdToken,
-                        null
+                val googleIdToken = googleIdTokenCredential.idToken
+                onLoginEvent(
+                    LoginEvent.SignInWithGoogle(
+                        GoogleAuthProvider.getCredential(
+                            googleIdToken,
+                            null
+                        )
                     )
                 )
-            )
+            } catch (e: GoogleIdTokenParsingException) {
+                // Specific exception from parsing the Google ID token
+                Log.d("AccountSettingsScreen", "GoogleIdTokenParsingException: ${e.message}")
+            } catch (e: GetCredentialCancellationException) {
+                // Specific exception when the user cancels the sign-in process
+                Log.d(
+                    "AccountSettingsScreen",
+                    "GetCredentialCancellationException: Sign-in cancelled by the user."
+                )
+                // Optionally, you could also invoke a cancellation event or update UI here
+                // onLoginEvent(LoginEvent.SignInCancelled)
+            } catch (e: Exception) {
+                // A general exception catch, if you need to ensure no crash for any other exception
+                Log.e("AccountSettingsScreen", "Exception: An unexpected error occurred.", e)
+            }
         }
-
     }
-
     LaunchedEffect(Unit) {
         onLoginEvent(LoginEvent.UserAccountStatus)
     }
@@ -116,7 +134,9 @@ fun AccountSettingsScreen(
             SnackbarHost(hostState = loginViewModelState.snackBarHostState.value)
         },
         containerColor = Color.Transparent,
-        modifier = Modifier.navigationBarsPadding().padding(bottom = 64.dp)
+        modifier = Modifier
+            .navigationBarsPadding()
+            .padding(bottom = 64.dp)
     ) {
         if (loginViewModelState.isEmailVerified &&
             loginViewModelState.isLoggedIn &&
@@ -151,7 +171,7 @@ fun AccountSettingsScreen(
                     modifier = Modifier
                         .padding(16.dp)
                         .background(
-                            color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f),
+                            color = colorResource(id = R.color.light_black).copy(alpha = 0.7f),
                             shape = RoundedCornerShape(16.dp)
                         ),
                 ) {
@@ -160,6 +180,7 @@ fun AccountSettingsScreen(
                                 "You are currently using a guest account.",
                         modifier = Modifier.padding(16.dp),
                         textAlign = TextAlign.Center,
+                        color = Color.White,
                     )
                 }
 
@@ -169,13 +190,14 @@ fun AccountSettingsScreen(
                     onLoginEvent = { onLoginEvent(it) },
                     onSignupEvent = { onSignupEvent(it) },
                     onAnimationComplete = {
-                         animationDisplay.value = true                    },
+                        animationDisplay.value = true
+                    },
                 )
 
                 SignInGoogleButton(
                     onClick = {
+                        onLoginEvent(LoginEvent.ToggleLoading)
                         onClick()
-
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -197,9 +219,9 @@ fun AccountSettingsScreen(
                     )
                 }
 
-                if(
-                   animationDisplay.value
-                ){
+                if (
+                    animationDisplay.value
+                ) {
                     Box(
                         modifier = Modifier
                             .padding(16.dp)

@@ -4,6 +4,9 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
@@ -37,6 +40,12 @@ class DictionaryScreenViewModel @Inject constructor(
     val dictionaryScreenState: StateFlow<DictionaryScreenState> =
         _dictionaryScreenState.asStateFlow()
 
+    @OptIn(ExperimentalFoundationApi::class)
+    private val _searchTextFieldState = MutableStateFlow(TextFieldState())
+
+    @OptIn(ExperimentalFoundationApi::class)
+    val searchTextFieldState: StateFlow<TextFieldState> = _searchTextFieldState.asStateFlow()
+
     fun onEvent(event: DictionaryEvent) = viewModelScope.launch {
         when (event) {
             is DictionaryEvent.LoadWords -> {
@@ -53,18 +62,14 @@ class DictionaryScreenViewModel @Inject constructor(
                 }
             }
 
-            is DictionaryEvent.ChangeSearchedQuery -> {
-                _dictionaryScreenState.update { state ->
-                    state.copy(
-                        searchedText = MutableStateFlow(event.query)
-                    )
+            is DictionaryEvent.ListenForSearchChange -> {
+                viewModelScope.launch {
+                    filterBySearchedWord()
                 }
-                filterBySearchedWord()
             }
 
             is DictionaryEvent.SetSearchingState -> {
                 _dictionaryScreenState.update { state ->
-                    filterBySearchedWord()
                     state.copy(
                         isSearching = event.state
                     )
@@ -90,6 +95,7 @@ class DictionaryScreenViewModel @Inject constructor(
                                     )
                                 }
                             }
+
                             is Resource.Error -> {
                                 Log.d("DictionaryScreen", "Error getting unlocked words")
                                 viewModelScope.launch {
@@ -240,18 +246,17 @@ class DictionaryScreenViewModel @Inject constructor(
         return words
     }
 
-    private fun filterBySearchedWord() {
-        viewModelScope.launch {
+    @OptIn(ExperimentalFoundationApi::class)
+    private suspend fun filterBySearchedWord() {
+        _searchTextFieldState.value.textAsFlow().collect { text ->
+            val searchedText = text.trim()
+            val filteredWords = _dictionaryScreenState.value.dictionaryWordList.filter {
+                it.doesMatchSearchQuery(searchedText.toString())
+            }
             _dictionaryScreenState.update { state ->
-                val searchText = state.searchedText.value
-                val filtered = if (searchText.isBlank()) {
-                    state.dictionaryWordList
-                } else {
-                    state.dictionaryWordList.filter {
-                        it.doesMatchSearchQuery(searchText)
-                    }
-                }
-                state.copy(filteredSearchedWords = filtered)
+                state.copy(
+                    filteredSearchedWords = filteredWords.toMutableList()
+                )
             }
         }
     }
@@ -310,8 +315,7 @@ data class DictionaryScreenState(
     val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
     val clickedWord: DictionaryWord = DictionaryWord("", "", false, 0),
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
-    val isSearching: Boolean = false,
-    val searchedText: MutableStateFlow<String> = MutableStateFlow(""),
+    val isSearching: Boolean = false
 )
 
 @Stable

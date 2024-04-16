@@ -2,7 +2,23 @@ package org.ballistic.dreamjournalai.dream_store.presentation.store_screen
 
 import org.ballistic.dreamjournalai.R
 
-enum class DreamTokenBenefit(val title: String, val description: String, val image: Int) {
+enum class DreamTokenBenefit(
+    val title: String,
+    val description: String = "",
+    val benefit1: String = "",
+    val benefit2: String = "",
+    val benefit3: String = "",
+    val benefit4: String = "",
+    val image: Int
+) {
+    DreamTokenSlideBenefit(
+        title = "500 Dream Tokens can unlock:",
+        benefit1 = "500 Dream interpretations",
+        benefit2 = "250 Dream paintings",
+        benefit3 = "250 Dream dictionary words",
+        benefit4 = "Enough tokens for 6 months",
+        image = R.drawable.dream_token_benefit
+    ),
     DreamPainting(
         title = "Visualize your dreams",
         description = "Transform your dreams into art with AI. Instantly turn your visions into digital paintings. " +

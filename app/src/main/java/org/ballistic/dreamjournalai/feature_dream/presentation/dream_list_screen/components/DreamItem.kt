@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.components
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -27,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,13 +38,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
@@ -61,30 +56,9 @@ import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream.Companion.d
 fun DreamItem(
     dream: Dream,
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 8.dp,
-    playAnimation: Boolean = false,
+    onClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    val animatedProgress = remember { Animatable(initialValue = 0.8f) }
-    if (playAnimation) {
-        LaunchedEffect(key1 = dream) {
-            animatedProgress.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(300, easing = FastOutSlowInEasing)
-            )
-        }
-    }
-
-    val animatedModifier = if (playAnimation) {
-        modifier
-            .graphicsLayer(
-                scaleX = animatedProgress.value,
-                scaleY = animatedProgress.value
-            )
-    } else {
-        modifier
-    }
-
     val imageResId = if (dream.backgroundImage >= 0 && dream.backgroundImage < dreamBackgroundImages.size) {
         dreamBackgroundImages[dream.backgroundImage]  // Use backgroundImage as an index to fetch the actual drawable resource ID
     } else {
@@ -93,9 +67,12 @@ fun DreamItem(
 
 
     Box(
-        modifier = animatedModifier
-            .clip(RoundedCornerShape(cornerRadius))
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
             .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f))
+            .clickable {
+                onClick()
+            }
     ) {
         Row(
             modifier = Modifier
@@ -109,9 +86,6 @@ fun DreamItem(
                     .size(75.dp)
                     .background(Color.Transparent)
                     .shadow(4.dp, RoundedCornerShape(8.dp), true)
-                    .clip(
-                        RoundedCornerShape(8.dp)
-                    )
 
 
             ) {

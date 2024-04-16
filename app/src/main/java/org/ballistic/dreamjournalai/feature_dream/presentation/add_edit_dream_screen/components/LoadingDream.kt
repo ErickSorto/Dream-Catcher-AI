@@ -25,7 +25,7 @@ fun ArcRotationAnimation(
         animationSpec = infiniteRepeatable(
             animation = tween(1000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
-        )
+        ), label = ""
     )
 
     val arcAngle2 by infiniteTransition.animateFloat(
@@ -34,7 +34,7 @@ fun ArcRotationAnimation(
         animationSpec = infiniteRepeatable(
             animation = tween(1000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
-        )
+        ), label = ""
     )
 
     val greenCircleAnimation by infiniteTransition.animateFloat(
@@ -43,7 +43,7 @@ fun ArcRotationAnimation(
         animationSpec = infiniteRepeatable(
             animation = tween(1000, delayMillis = 100, easing = FastOutLinearInEasing),
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = ""
     )
 
     Canvas(

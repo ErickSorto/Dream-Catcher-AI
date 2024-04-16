@@ -4,12 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
@@ -36,15 +38,15 @@ import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.Dict
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.TransparentHintTextField
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun DictionaryScreenTopBar(
     mainScreenViewModelState: MainScreenViewModelState,
     dictionaryScreenState: DictionaryScreenState,
+    searchedTextFieldState: TextFieldState,
     onDictionaryEvent: (DictionaryEvent) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
-
     CenterAlignedTopAppBar(
         title = {
             Box(
@@ -77,12 +79,9 @@ fun DictionaryScreenTopBar(
 
                 ) {
                     TransparentHintTextField(
-                        text = dictionaryScreenState.searchedText.value,
+                        textFieldState = searchedTextFieldState,
                         hint = "Search word...",
-                        onValueChange = {
-                            onDictionaryEvent(DictionaryEvent.ChangeSearchedQuery(it))
-                        },
-                        isHintVisible = dictionaryScreenState.searchedText.value.isBlank(),
+                        isHintVisible = searchedTextFieldState.text.toString().isEmpty(),
                         singleLine = true,
                         textStyle = MaterialTheme.typography.headlineSmall.copy(colorResource(id = R.color.white)),
                         modifier = Modifier
@@ -117,6 +116,7 @@ fun DictionaryScreenTopBar(
             if (!dictionaryScreenState.isSearching) {
                 IconButton(
                     onClick = {
+                        onDictionaryEvent(DictionaryEvent.ListenForSearchChange)
                         onDictionaryEvent(DictionaryEvent.SetSearchingState(true))
                     },
                     content = {
@@ -131,7 +131,6 @@ fun DictionaryScreenTopBar(
                 IconButton(
                     onClick = {
                         onDictionaryEvent(DictionaryEvent.SetSearchingState(false))
-                        onDictionaryEvent(DictionaryEvent.ChangeSearchedQuery(""))
                     },
                     content = {
                         Icon(

@@ -1,6 +1,8 @@
 package org.ballistic.dreamjournalai.onboarding.presentation
 
+import android.credentials.GetCredentialException
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColor
@@ -37,8 +39,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +60,7 @@ import org.ballistic.dreamjournalai.user_authentication.presentation.signup_scre
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModelState
 import java.security.MessageDigest
 import java.util.UUID
+
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @ExperimentalAnimationApi
@@ -97,25 +102,43 @@ fun OnboardingScreen(
             .addCredentialOption(googleIdOption).build()
 
         scope.launch {
-            val result = credentialManager.getCredential(
-                request = request,
-                context = context,
-            )
+            try {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = context,
+                )
 
-            val credential = result.credential
-            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val credential = result.credential
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
 
-            val googleIdToken = googleIdTokenCredential.idToken
-            onLoginEvent(
-                LoginEvent.SignInWithGoogle(
-                    GoogleAuthProvider.getCredential(
-                        googleIdToken,
-                        null
+                val googleIdToken = googleIdTokenCredential.idToken
+                onLoginEvent(
+                    LoginEvent.SignInWithGoogle(
+                        GoogleAuthProvider.getCredential(
+                            googleIdToken,
+                            null
+                        )
                     )
                 )
-            )
+            } catch (e: GetCredentialException) {
+                // General exception from getCredential
+                Log.d("AccountSettingsScreen", "GetCredentialException: ${e.message}")
+            } catch (e: GoogleIdTokenParsingException) {
+                // Specific exception from parsing the Google ID token
+                Log.d("AccountSettingsScreen", "GoogleIdTokenParsingException: ${e.message}")
+            } catch (e: GetCredentialCancellationException) {
+                // Specific exception when the user cancels the sign-in process
+                Log.d(
+                    "AccountSettingsScreen",
+                    "GetCredentialCancellationException: Sign-in cancelled by the user."
+                )
+                // Optionally, you could also invoke a cancellation event or update UI here
+                // onLoginEvent(LoginEvent.SignInCancelled)
+            } catch (e: Exception) {
+                // A general exception catch, if you need to ensure no crash for any other exception
+                Log.e("AccountSettingsScreen", "Exception: An unexpected error occurred.", e)
+            }
         }
-
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -220,6 +243,7 @@ fun OnboardingScreen(
 
             SignInGoogleButton(
                 onClick = {
+                    onLoginEvent(LoginEvent.ToggleLoading)
                     onClick()
                 },
                 modifier = Modifier

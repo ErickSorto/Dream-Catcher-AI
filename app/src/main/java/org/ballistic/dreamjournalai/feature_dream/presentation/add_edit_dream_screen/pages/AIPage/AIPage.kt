@@ -4,26 +4,30 @@ import android.app.Activity
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,10 +35,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
@@ -43,9 +51,9 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.DreamInterpretationPopUp
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.GenerateButtonsLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.ImageGenerationPopUp
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.QuestionAIGenerationBottomSheet
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.events.AITool
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIDreamAdvicePage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIInterpreterPage
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.pages.AIPage.AISubPages.AIMoodPage
@@ -55,22 +63,23 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AIPage(
     pagerState: PagerState,
     addEditDreamState: AddEditDreamState,
+    textFieldState: TextFieldState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
 ) {
 
-    val pages = listOf("Painting", "Interpretation", "Advice", "Question", "Story", "Mood")
+    val pages = AITool.entries.map { it.title }
     val pagerSate2 = rememberPagerState(pageCount = { pages.size })
     val dreamTokens = addEditDreamState.dreamTokens.collectAsStateWithLifecycle().value
     val responseState = addEditDreamState.dreamAIExplanation
     val imageState = addEditDreamState.dreamAIImage
     val questionState = addEditDreamState.dreamQuestionAIAnswer
     val adviceState = addEditDreamState.dreamAIAdvice
-    val contentState = addEditDreamState.dreamContent
+    val contentState = textFieldState.text.toString()
     val storyState = addEditDreamState.dreamStoryGeneration
     val moodState = addEditDreamState.dreamMoodAIAnalyser
     val detailState = addEditDreamState.dreamGeneratedDetails.response
@@ -80,6 +89,7 @@ fun AIPage(
     val activity = LocalContext.current as Activity
     val painter =
         rememberAsyncImagePainter(model = addEditDreamState.dreamAIImage.image.toString())
+
 
     LaunchedEffect(key1 = responseState) {
         if (responseState.isLoading) {
@@ -129,11 +139,11 @@ fun AIPage(
         }
     }
 
-    if (addEditDreamState.imageGenerationPopUpState.value) {
+    if (addEditDreamState.dreamImageGenerationPopUpState) {
         ImageGenerationPopUp(
             addEditDreamState = addEditDreamState,
             onDreamTokenClick = {
-                addEditDreamState.imageGenerationPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamImageGenerationPopUpState(false))
                 if (dreamTokens < 2) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
@@ -156,7 +166,7 @@ fun AIPage(
                 }
             },
             onAdClick = {
-                addEditDreamState.imageGenerationPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamImageGenerationPopUpState(false))
                 scope.launch {
                     onAddEditDreamEvent(
                         AddEditDreamEvent.ClickGenerateAIImage(
@@ -169,18 +179,18 @@ fun AIPage(
                 }
             },
             onClickOutside = {
-                addEditDreamState.imageGenerationPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamImageGenerationPopUpState(false))
             },
             onAddEditDreamEvent = onAddEditDreamEvent,
         )
     }
 
-    if (addEditDreamState.dreamInterpretationPopUpState.value) {
+    if (addEditDreamState.dreamInterpretationPopUpState) {
         DreamInterpretationPopUp(
             title = "Dream Interpreter",
             dreamTokens = dreamTokens,
             onAdClick = { amount ->
-                addEditDreamState.dreamInterpretationPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamInterpretationPopUpState(false))
                 scope.launch {
                     onAddEditDreamEvent(
                         AddEditDreamEvent.ClickGenerateAIResponse(
@@ -193,7 +203,7 @@ fun AIPage(
                 }
             },
             onDreamTokenClick = { amount ->
-                addEditDreamState.dreamInterpretationPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamInterpretationPopUpState(false))
                 if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
@@ -217,17 +227,17 @@ fun AIPage(
 
             },
             onClickOutside = {
-                addEditDreamState.dreamInterpretationPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamInterpretationPopUpState(false))
             },
         )
     }
 
-    if(addEditDreamState.dreamAdvicePopUpState.value){
+    if (addEditDreamState.dreamAdvicePopUpState) {
         DreamInterpretationPopUp(
             title = "Dream Advice",
             dreamTokens = dreamTokens,
             onAdClick = { amount ->
-                addEditDreamState.dreamAdvicePopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamAdvicePopUpState(false))
                 scope.launch {
                     onAddEditDreamEvent(
                         AddEditDreamEvent.ClickGenerateAIAdvice(
@@ -240,7 +250,7 @@ fun AIPage(
                 }
             },
             onDreamTokenClick = { amount ->
-                addEditDreamState.dreamAdvicePopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamAdvicePopUpState(false))
                 if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
@@ -264,18 +274,18 @@ fun AIPage(
 
             },
             onClickOutside = {
-                addEditDreamState.dreamAdvicePopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamAdvicePopUpState(false))
             },
         )
     }
 
 
-    if (addEditDreamState.questionPopUpState.value) {
+    if (addEditDreamState.dreamQuestionPopUpState) {
         QuestionAIGenerationBottomSheet(
             addEditDreamState = addEditDreamState,
             onAddEditDreamEvent = onAddEditDreamEvent,
             onDreamTokenClick = { amount ->
-                addEditDreamState.questionPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamQuestionPopUpState(false))
                 if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
@@ -298,7 +308,7 @@ fun AIPage(
                 }
             },
             onAdClick = { amount ->
-                addEditDreamState.questionPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamQuestionPopUpState(false))
                 scope.launch {
                     onAddEditDreamEvent(
                         AddEditDreamEvent.ClickGenerateFromQuestion(
@@ -311,17 +321,17 @@ fun AIPage(
                 }
             },
             onClickOutside = {
-                addEditDreamState.questionPopUpState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamQuestionPopUpState(false))
             },
         )
     }
 
-    if (addEditDreamState.storyPopupState.value) {
+    if (addEditDreamState.dreamStoryPopupState) {
         DreamInterpretationPopUp(
             title = "Dream Story",
             dreamTokens = dreamTokens,
             onDreamTokenClick = { amount ->
-                addEditDreamState.storyPopupState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamStoryPopUpState(false))
                 if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
@@ -344,7 +354,7 @@ fun AIPage(
                 }
             },
             onAdClick = { amount ->
-                addEditDreamState.storyPopupState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamStoryPopUpState(false))
                 scope.launch {
                     onAddEditDreamEvent(
                         AddEditDreamEvent.ClickGenerateStory(
@@ -357,17 +367,17 @@ fun AIPage(
                 }
             },
             onClickOutside = {
-                addEditDreamState.storyPopupState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamStoryPopUpState(false))
             },
         )
     }
 
-    if (addEditDreamState.moodPopupState.value) {
+    if (addEditDreamState.dreamMoodPopupState) {
         DreamInterpretationPopUp(
             title = "Dream Mood",
             dreamTokens = dreamTokens,
             onAdClick = { amount ->
-                addEditDreamState.moodPopupState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamMoodPopUpState(false))
                 scope.launch {
                     onAddEditDreamEvent(
                         AddEditDreamEvent.ClickGenerateMood(
@@ -380,7 +390,7 @@ fun AIPage(
                 }
             },
             onDreamTokenClick = { amount ->
-                addEditDreamState.moodPopupState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamMoodPopUpState(false))
                 if (dreamTokens <= 0) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
@@ -404,7 +414,7 @@ fun AIPage(
 
             },
             onClickOutside = {
-                addEditDreamState.moodPopupState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamMoodPopUpState(false))
             },
         )
     }
@@ -435,28 +445,60 @@ fun AIPage(
 
                 )
                 Text(
-                    modifier = Modifier.padding(8.dp),
-                    text = "Results",
+                    text = "Tokens",
                     style = typography.titleMedium.copy(color = colorResource(id = R.color.brighter_white)),
                     fontWeight = FontWeight.Light,
                 )
                 DreamTokenLayout(
                     totalDreamTokens = dreamTokens,
                 )
-                Spacer(
-                    modifier = Modifier
-                        .weight(1f)
-                )
+                Spacer(modifier = Modifier.weight(1f))
             }
 
+            SecondaryTabRow(
+                modifier = Modifier,
+                selectedTabIndex = pagerSate2.currentPage,
+                indicator = {
+                    TabRowDefaults.SecondaryIndicator(
+                        color = colorResource(id = R.color.white),
+                        modifier = Modifier.tabIndicatorOffset(pagerSate2.currentPage)
+                    )
+                },
+                contentColor = colorResource(id = R.color.white),
+                containerColor = Color.Transparent,
+            ) {
+                pages.forEachIndexed { index, page ->
+                    Tab(
+                        text = {
+                            val modifier = Modifier
+
+                            modifier.rotate(if (index == 2) 45f else 0f)
+
+                            Icon(
+                                painter = painterResource(id = AITool.entries[index].icon),
+                                contentDescription = page,
+                                tint = colorResource(
+                                    if (textFieldState.text.length >= 10) {
+                                        AITool.entries[index].color
+                                    } else R.color.white
+                                ),
+                                modifier = modifier.size(28.dp)
+                            )
+                        },
+                        selected = pagerSate2.currentPage == index,
+                        onClick = {
+                            scope.launch { pagerSate2.animateScrollToPage(index) }
+                        }
+                    )
+                }
+            }
             HorizontalPager(
                 state = pagerSate2,
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .background(
-                        color = colorResource(id = R.color.light_black).copy(alpha = 0.5f)
+                        color = colorResource(id = R.color.light_black).copy(alpha = 0.8f)
                     )
             ) { page ->
 
@@ -464,78 +506,169 @@ fun AIPage(
                     0 -> {
                         AIPainterPage(
                             addEditDreamState = addEditDreamState,
+                            textFieldState = textFieldState,
                             painter = painter,
                             infiniteTransition = infiniteTransition,
                             pagerState = pagerState,
+                            onAddEditEvent = onAddEditDreamEvent
                         )
                     }
 
                     1 -> {
                         AIInterpreterPage(
                             addEditDreamState = addEditDreamState,
+                            textFieldState = textFieldState,
                             infiniteTransition = infiniteTransition,
                             pagerState = pagerState,
+                            onAddEditEvent = onAddEditDreamEvent
                         )
                     }
 
                     2 -> {
                         AIDreamAdvicePage(
                             addEditDreamState = addEditDreamState,
+                            textFieldState = textFieldState,
                             infiniteTransition = infiniteTransition,
                             pagerState = pagerState,
+                            onAddEditEvent = onAddEditDreamEvent
                         )
                     }
+
                     3 -> {
                         AIQuestionPage(
                             addEditDreamState = addEditDreamState,
+                            textFieldState = textFieldState,
                             infiniteTransition = infiniteTransition,
                             pagerState = pagerState,
+                            onAddEditEvent = onAddEditDreamEvent
                         )
                     }
+
                     4 -> {
                         AIStoryPage(
                             addEditDreamState = addEditDreamState,
+                            textFieldState = textFieldState,
                             infiniteTransition = infiniteTransition,
                             pagerState = pagerState,
+                            onAddEditEvent = onAddEditDreamEvent
                         )
                     }
+
                     5 -> {
                         AIMoodPage(
                             addEditDreamState = addEditDreamState,
+                            textFieldState = textFieldState,
                             infiniteTransition = infiniteTransition,
                             pagerState = pagerState,
+                            onAddEditEvent = onAddEditDreamEvent
                         )
                     }
                 }
             }
-            Row(
-                Modifier
-                    .height(50.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(pages.size) { iteration ->
-                    val color =
-                        if (pagerSate2.currentPage == iteration) colorResource(id = R.color.white) else Color.White.copy(
-                            alpha = 0.5f
-                        )
 
-                    val size = if (pagerSate2.currentPage == iteration) 12.dp else 10.dp
-                    Box(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(size)
+            Spacer(modifier = Modifier.weight(1f))
+            when (pagerSate2.currentPage) {
+                0 -> {
+                    AIButton(
+                        text = "Generate Image",
+                        color = R.color.sky_blue,
+                        onClick = {
+                            onAddEditDreamEvent(
+                                AddEditDreamEvent.ToggleDreamImageGenerationPopUpState(
+                                    true
+                                )
+                            )
+                        }
+                    )
+                }
+
+                1 -> {
+                    AIButton(
+                        text = "Interpret Dream",
+                        color = R.color.purple,
+                        onClick = {
+                            onAddEditDreamEvent(
+                                AddEditDreamEvent.ToggleDreamInterpretationPopUpState(
+                                    true
+                                )
+                            )
+                        }
+                    )
+                }
+
+                2 -> {
+                    AIButton(
+                        text = "Dream Advice",
+                        color = R.color.Yellow,
+                        onClick = {
+                            onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamAdvicePopUpState(true))
+                        }
+                    )
+                }
+
+                3 -> {
+                    AIButton(
+                        text = "Ask Question",
+                        color = R.color.RedOrange,
+                        onClick = {
+                            onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamQuestionPopUpState(true))
+                        }
+                    )
+                }
+
+                4 -> {
+                    AIButton(
+                        text = "Generate Story",
+                        color = R.color.lighter_yellow,
+                        onClick = {
+                            onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamStoryPopUpState(true))
+                        }
+                    )
+                }
+
+                5 -> {
+                    AIButton(
+                        text = "Mood Analyser",
+                        color = R.color.green,
+                        onClick = {
+                            onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamMoodPopUpState(true))
+                        }
                     )
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
         }
+    }
+}
 
-        GenerateButtonsLayout(
-            addEditDreamState = addEditDreamState,
-            pagerState = pagerState
+@Composable
+fun AIButton(
+    text: String,
+    color: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = { onClick() },
+        shape = RoundedCornerShape(10.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorResource(color)
+        ),
+        elevation = ButtonDefaults.buttonElevation(5.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .shadow(4.dp, RoundedCornerShape(10.dp)), // Add shadow with rounded corners,
+    ) {
+        Text(
+            text = text,
+            style = typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         )
     }
+
 }

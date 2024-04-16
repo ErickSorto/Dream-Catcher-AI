@@ -8,6 +8,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -34,12 +36,10 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.dream_store.presentation.anonymous_store_screen.AnonymousStoreScreen
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.CustomButtonLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
-
-
-//import all compose-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -53,6 +53,7 @@ fun StoreScreen(
         storeScreenViewModelState.authRepository.reloadFirebaseUser()
     }
     val isAnonymous = storeScreenViewModelState.isUserAnonymous.collectAsStateWithLifecycle().value
+    val tokenTotal = storeScreenViewModelState.dreamTokens.collectAsStateWithLifecycle().value
     val activity = LocalContext.current as Activity
 
 
@@ -96,11 +97,14 @@ fun StoreScreen(
                                 "development of Dream Journal AI",
                         maxLines = 1,
                         style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.basicMarquee().padding(vertical = 12.dp, horizontal = 16.dp)
+                        color = Color.White,
+                        modifier = Modifier
+                            .basicMarquee()
+                            .padding(vertical = 12.dp, horizontal = 16.dp)
                     )
                 }
 
-                DreamBenefitInfoLayout()
+                DreamBenefitInfoLayout(tokenTotal)
 
                 Spacer(modifier = Modifier.weight(1f))
                 CustomButtonLayout(
@@ -121,7 +125,9 @@ fun StoreScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DreamBenefitInfoLayout() {
+fun DreamBenefitInfoLayout(
+    totalDreamTokens: Int = 0
+) {
     //one page and a little bit of the next page is visible
     val oneAndABitPerViewport = object : PageSize {
         override fun Density.calculateMainAxisPageSize(
@@ -132,7 +138,7 @@ fun DreamBenefitInfoLayout() {
         }
     }
     val pagerState = rememberPagerState(pageCount = {
-        4
+        5
     })
 
     HorizontalPager(
@@ -143,42 +149,89 @@ fun DreamBenefitInfoLayout() {
         modifier = Modifier.padding(top = 16.dp)
     ) { page ->
         when (page) {
-            0 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamPainting)
-            1 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamDictionary)
-            2 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamInterpretation)
-            3 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamAdFree)
+            0 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamTokenSlideBenefit, totalDreamTokens)
+            1 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamPainting)
+            2 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamDictionary)
+            3 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamInterpretation)
+            4 -> DreamTokenBenefitItem(DreamTokenBenefit.DreamAdFree)
         }
     }
 }
 
 @Composable
-fun DreamTokenBenefitItem(dreamTokenBenefit: DreamTokenBenefit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(9f / 12f)
-            .clip(RoundedCornerShape(8.dp))
-            .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f))
-    ) {
-        Image(
-            painter = painterResource(id = dreamTokenBenefit.image),
-            contentDescription = null,
+fun DreamTokenBenefitItem(
+    dreamTokenBenefit: DreamTokenBenefit,
+    totalDreamTokens: Int = 0
+) {
+    Box {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(16f / 9f),
+                .aspectRatio(9f / 12f)
+                .clip(RoundedCornerShape(8.dp))
+                .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f))
+        ) {
+            Image(
+                painter = painterResource(id = dreamTokenBenefit.image),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f),
+                contentScale = ContentScale.FillBounds
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(
+                text = dreamTokenBenefit.title,
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            if(dreamTokenBenefit.description.isNotEmpty()){
+                Text(
+                    text = dreamTokenBenefit.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            } else {
+                for (i in 1..4) {
+                    when (i) {
+                        1 -> CheckAndBenefit(dreamTokenBenefit.benefit1)
+                        2 -> CheckAndBenefit(dreamTokenBenefit.benefit2)
+                        3 -> CheckAndBenefit(dreamTokenBenefit.benefit3)
+                        4 -> CheckAndBenefit(dreamTokenBenefit.benefit4)
+                    }
+                }
+            }
+        }
+        if (dreamTokenBenefit == DreamTokenBenefit.DreamTokenSlideBenefit){
+            DreamTokenLayout(
+                totalDreamTokens = totalDreamTokens,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+        }
+    }
+
+}
+
+@Composable
+fun CheckAndBenefit(benefit: String) {
+    Row(
+        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.check_mark),
+            contentDescription = null,
+            modifier = Modifier.size(32.dp),
             contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.size(16.dp))
-        Text(
-            text = dreamTokenBenefit.title,
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier.size(8.dp))
         Text(
-            text = dreamTokenBenefit.description,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            text = benefit,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.White,
         )
     }
 }

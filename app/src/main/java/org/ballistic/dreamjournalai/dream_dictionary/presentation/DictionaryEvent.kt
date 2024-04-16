@@ -19,7 +19,7 @@ sealed class DictionaryEvent {
         val activity: Activity
     ) : DictionaryEvent()
 
-    data class ChangeSearchedQuery(val query: String) : DictionaryEvent()
+    data object ListenForSearchChange : DictionaryEvent()
 
     data class SetSearchingState(val state: Boolean) : DictionaryEvent()
 

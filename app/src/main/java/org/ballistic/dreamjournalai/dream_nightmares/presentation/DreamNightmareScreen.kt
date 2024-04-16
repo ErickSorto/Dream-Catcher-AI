@@ -2,7 +2,6 @@ package org.ballistic.dreamjournalai.dream_nightmares.presentation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -130,15 +129,15 @@ fun DreamNightmareScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 10.dp)
-                                .padding(horizontal = 12.dp)
-                                .clickable {
-                                    navController.navigate(
-                                        Screens.AddEditDreamScreen.route +
-                                                "?dreamId=${dream.id}&dreamImageBackground=${
-                                                    dream.backgroundImage
-                                                }"
-                                    )
-                                },
+                                .padding(horizontal = 12.dp),
+                            onClick = {
+                                navController.navigate(
+                                    Screens.AddEditDreamScreen.route +
+                                            "?dreamId=${dream.id}&dreamImageBackground=${
+                                                dream.backgroundImage
+                                            }"
+                                )
+                            },
                             onDeleteClick = {
                                 onEvent(
                                     NightmareEvent.DeleteDream(

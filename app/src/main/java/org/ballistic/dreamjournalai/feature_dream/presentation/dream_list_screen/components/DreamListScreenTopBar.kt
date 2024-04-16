@@ -4,12 +4,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text2.input.clearText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
@@ -27,9 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.TransparentHintTextField
@@ -37,16 +40,16 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen
 import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.viewmodel.DreamJournalListState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun DreamListScreenTopBar(
     dreamJournalListState: DreamJournalListState,
     mainScreenViewModelState: MainScreenViewModelState,
+    searchTextFieldState: TextFieldState,
     onDreamListEvent: (DreamListEvent) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
-    val searchedText = dreamJournalListState.searchedText.collectAsStateWithLifecycle()
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     CenterAlignedTopAppBar(
         title = {
             Box(
@@ -79,12 +82,9 @@ fun DreamListScreenTopBar(
 
                 ) {
                     TransparentHintTextField(
-                        text = searchedText.value,
+                        textFieldState = searchTextFieldState,
                         hint = "Search dream...",
-                        onValueChange = {
-                            onDreamListEvent(DreamListEvent.SearchDreams(it))
-                        },
-                        isHintVisible = searchedText.value.isBlank(),
+                        isHintVisible = searchTextFieldState.text.isBlank(),
                         singleLine = true,
                         textStyle = MaterialTheme.typography.headlineSmall.copy(colorResource(id = R.color.white)),
                         modifier = Modifier
@@ -127,8 +127,9 @@ fun DreamListScreenTopBar(
             } else {
                 IconButton(
                     onClick = {
+                        keyboardController?.hide()
+                        searchTextFieldState.clearText()
                         onDreamListEvent(DreamListEvent.SetSearchingState(false))
-                        onDreamListEvent(DreamListEvent.SearchDreams(""))
                     },
                 ) {
                     Icon(

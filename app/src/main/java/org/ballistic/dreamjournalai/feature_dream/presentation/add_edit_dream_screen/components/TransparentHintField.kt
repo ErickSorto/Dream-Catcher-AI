@@ -4,11 +4,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.text2.input.TextFieldLineLimits
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreInterceptKeyBeforeSoftKeyboard
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import org.ballistic.dreamjournalai.R
@@ -24,21 +23,19 @@ import org.ballistic.dreamjournalai.R
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransparentHintTextField(
-    text: String,
     hint: String,
     modifier: Modifier = Modifier,
     isHintVisible: Boolean = true,
-    onValueChange: (String) -> Unit,
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions(),
+    textFieldState: TextFieldState
 ) {
     Box(modifier = modifier)
     {
         BasicTextField2(
-            value = text,
-            onValueChange = onValueChange,
+            state = textFieldState,
             textStyle = textStyle,
             lineLimits = if (singleLine) TextFieldLineLimits.SingleLine else TextFieldLineLimits.Default,
             scrollState = rememberScrollState(),
@@ -51,7 +48,7 @@ fun TransparentHintTextField(
                     colorResource(id = R.color.white),
                     colorResource(id = R.color.white)
                 )
-            )
+            ),
         )
 
         if (isHintVisible) {

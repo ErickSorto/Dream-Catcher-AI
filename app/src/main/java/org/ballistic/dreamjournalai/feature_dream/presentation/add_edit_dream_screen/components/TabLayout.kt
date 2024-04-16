@@ -3,6 +3,7 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.PrimaryTabRow
@@ -11,14 +12,11 @@ import androidx.compose.material3.TabRowDefaults.PrimaryIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
@@ -30,22 +28,21 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 @UiComposable
 fun TabLayout(
     dreamBackgroundImage: MutableState<Int>,
+    dreamTitleState: TextFieldState,
+    dreamContentState: TextFieldState,
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
+    keyboardController: SoftwareKeyboardController?
 ) {
     val pages = listOf("Dream", "AI", "Words", "Info")
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
-
-
-    //keyboard control
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     PrimaryTabRow(
         modifier = Modifier,
@@ -70,7 +67,7 @@ fun TabLayout(
                 selected = pagerState.currentPage == index,
                 onClick = {
                     keyboardController?.hide()
-                    focusManager.clearFocus()
+                    focusManager.clearFocus(true)
                     scope.launch { pagerState.animateScrollToPage(index) }
                 }
             )
@@ -85,8 +82,8 @@ fun TabLayout(
             0 -> {
                 DreamPage(
                     pagerState,
-                    addEditDreamState = addEditDreamState,
-                    onAddEditDreamEvent = onAddEditDreamEvent
+                    titleTextFieldState = dreamTitleState,
+                    contentTextFieldState = dreamContentState,
                 )
             }
 
@@ -95,6 +92,7 @@ fun TabLayout(
                     pagerState,
                     addEditDreamState = addEditDreamState,
                     onAddEditDreamEvent = onAddEditDreamEvent,
+                    textFieldState = dreamContentState
                 )
             }
 

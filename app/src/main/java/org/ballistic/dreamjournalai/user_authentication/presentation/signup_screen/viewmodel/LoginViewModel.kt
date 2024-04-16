@@ -11,6 +11,7 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,10 +88,18 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginEvent.ToggleLoading -> {
-                _state.update {
-                    it.copy(
-                        isLoading = true
-                    )
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isLoading = true
+                        )
+                    }
+                    delay(2000)
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
                 }
             }
         }
@@ -120,9 +129,11 @@ class LoginViewModel @Inject constructor(
                 viewModelScope.launch {
                     try{
                         Log.d("SignInWithGoogle", "Sign-in with Google successful")
-                        repo.transferDreamsFromAnonymousToPermanent(
-                            it.first.user?.uid ?: "", it.second ?: ""
-                        )
+                        if (it.second != null){
+                            repo.transferDreamsFromAnonymousToPermanent(
+                                it.first.user?.uid ?: "", it.second ?: ""
+                            )
+                        }
                     } catch (e: Exception) {
                         Log.e("SignInWithGoogle", "Error transferring dreams: $e")
                     }

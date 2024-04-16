@@ -1,6 +1,8 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.viewmodel
 
-import androidx.compose.runtime.Stable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +28,12 @@ class DreamJournalListViewModel @Inject constructor(
 
     private val _dreamJournalListState = MutableStateFlow(DreamJournalListState())
     val dreamJournalListState: StateFlow<DreamJournalListState> = _dreamJournalListState.asStateFlow()
+
+    @OptIn(ExperimentalFoundationApi::class)
+    private val _searchTextFieldState = MutableStateFlow(TextFieldState())
+
+    @OptIn(ExperimentalFoundationApi::class)
+    val searchTextFieldState: StateFlow<TextFieldState> = _searchTextFieldState.asStateFlow()
 
     private var recentlyDeletedDream: Dream? = null
 
@@ -60,9 +68,6 @@ class DreamJournalListViewModel @Inject constructor(
                 }
                 getDreams(event.orderType)
             }
-            is DreamListEvent.SearchDreams -> {
-                _dreamJournalListState.value.searchedText.value = event.searchQuery
-            }
             is DreamListEvent.SetSearchingState -> {
                 _dreamJournalListState.value = _dreamJournalListState.value.copy(
                     isSearching = event.state
@@ -72,14 +77,15 @@ class DreamJournalListViewModel @Inject constructor(
     }
 
 
+    @OptIn(ExperimentalFoundationApi::class)
     private fun getDreams(orderType: OrderType) {
         getDreamJob?.cancel()
         getDreamJob = dreamUseCases.getDreams(orderType)
-            .combine(dreamJournalListState.value.searchedText) { dreams, searchText ->
+            .combine(searchTextFieldState.value.textAsFlow()) { dreams, searchText ->
                 if (searchText.isBlank()) {
                     dreams
                 } else {
-                    dreams.filter { it.doesMatchSearchQuery(searchText) }
+                    dreams.filter { it.doesMatchSearchQuery(searchText.toString()) }
                 }
             }
             .onEach { filteredDreams ->
@@ -96,7 +102,6 @@ data class DreamJournalListState(
     val dreams: List<Dream> = emptyList(),
     val orderType: OrderType = OrderType.Date,
     val isOrderSectionVisible: Boolean = false,
-    val searchedText: MutableStateFlow<String> = MutableStateFlow(""),
     val isLoading: Boolean = false,
     val error: String? = null,
     val isSearching: Boolean = false,

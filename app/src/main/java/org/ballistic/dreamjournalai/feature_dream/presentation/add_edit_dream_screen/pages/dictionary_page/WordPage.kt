@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,7 +20,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +48,7 @@ fun WordPage(
 
     LaunchedEffect(Unit) {
         if (addEditDreamState.dreamContentChanged) {
+            onAddEditDreamEvent(AddEditDreamEvent.StartListening)
             onAddEditDreamEvent(AddEditDreamEvent.FilterDreamWordInDictionary)
         }
     }
@@ -88,10 +87,9 @@ fun WordPage(
         Log.d("DictionaryScreen", "Loading words")
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .aspectRatio(1f)
-                .padding(16.dp, 0.dp, 16.dp, 16.dp)
-                .clip(RoundedCornerShape(10.dp)),
+                .padding(16.dp, 16.dp, 16.dp, 16.dp),
             contentAlignment = Alignment.Center
         ) {
             ArcRotationAnimation(
@@ -99,7 +97,7 @@ fun WordPage(
             )
         }
     } else {
-        if (!addEditDreamState.isClickedWordUnlocked && addEditDreamState.bottomSheetState.value) {
+        if (!addEditDreamState.isClickedWordUnlocked && addEditDreamState.bottomSheetState) {
             BuyDictionaryWordDrawer(
                 title = addEditDreamState.clickedWord.word,
                 onAdClick = {
@@ -123,24 +121,24 @@ fun WordPage(
                     )
                 },
                 onClickOutside = {
-                    addEditDreamState.bottomSheetState.value = false
+                    onAddEditDreamEvent(AddEditDreamEvent.ToggleBottomSheetState(false))
                 },
                 token = dreamTokens,
                 amount = addEditDreamState.clickedWord.cost
             )
-        } else if (addEditDreamState.isClickedWordUnlocked && addEditDreamState.bottomSheetState.value) {
+        } else if (addEditDreamState.isClickedWordUnlocked && addEditDreamState.bottomSheetState) {
             DictionaryWordDrawer(
                 title = addEditDreamState.clickedWord.word,
                 definition = addEditDreamState.clickedWord.definition,
                 onClickOutside = {
-                    addEditDreamState.bottomSheetState.value = false
+                    onAddEditDreamEvent(AddEditDreamEvent.ToggleBottomSheetState(false))
                 },
             )
         }
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 32.dp)
+            contentPadding = PaddingValues(bottom = 8.dp, top = 8.dp)
         ) {
             items(processedWords) { wordItem ->
                 Log.d("DictionaryScreen", "Displaying word: ${wordItem.word}")

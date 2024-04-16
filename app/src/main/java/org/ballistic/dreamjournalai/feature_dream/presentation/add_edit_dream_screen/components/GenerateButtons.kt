@@ -1,19 +1,25 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -21,10 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -34,12 +38,13 @@ import com.smarttoolfactory.animatedlist.AnimatedInfiniteLazyRow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
+import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.AddEditDreamEvent
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GenerateButtonsLayout(
-    addEditDreamState: AddEditDreamState,
+    onAddEditEvent: (AddEditDreamEvent) -> Unit,
+    textFieldState: TextFieldState,
     pagerState: PagerState
 ) {
     val buttons = listOf(
@@ -55,7 +60,6 @@ fun GenerateButtonsLayout(
 
     Box(
         modifier = Modifier
-            .padding(top = 8.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(color = colorResource(id = R.color.light_black).copy(alpha = 0.7f))
     ) {
@@ -74,12 +78,62 @@ fun GenerateButtonsLayout(
             inactiveColor = Color.Gray,
             itemContent = { _, _, item, _ ->
                 when (item) {
-                    "Paint" -> PaintCustomButton(addEditDreamState, pagerState, "Paint")
-                    "Interpret" -> InterpretCustomButton(addEditDreamState, pagerState, "Interpret")
-                    "Advice" -> GenerateAdviceButton(addEditDreamState, pagerState, "Advice")
-                    "Question" -> AskQuestionButton(addEditDreamState, pagerState, "Question")
-                    "Story" -> GenerateStoryButton(addEditDreamState, pagerState, "Story")
-                    "Mood" -> MoodAnalyzerButton(addEditDreamState, pagerState, "Mood")
+                    "Paint" -> PaintCustomButton(
+                        textFieldState = textFieldState,
+                        pagerState = pagerState,
+                        subtitle = "Paint",
+                        modifer = Modifier.padding(8.dp),
+                        hasText = false,
+                        onAddEditEvent = onAddEditEvent
+                    )
+
+                    "Interpret" -> InterpretCustomButton(
+                        textFieldState = textFieldState,
+                        pagerState = pagerState,
+                        subtitle = "Interpret",
+                        modifer = Modifier.padding(8.dp),
+                        hasText = false,
+                        onAddEditEvent = onAddEditEvent
+                    )
+
+                    "Advice" -> GenerateAdviceButton(
+                        textFieldState = textFieldState,
+                        pagerState = pagerState,
+                        subtitle = "Advice",
+                        modifer = Modifier.padding(8.dp),
+                        hasText = false,
+                        onAddEditEvent = onAddEditEvent
+                    )
+
+                    "Question" -> AskQuestionButton(
+                        textFieldState = textFieldState,
+                        pagerState = pagerState,
+                        subtitle = "Question",
+                        modifer = Modifier.padding(8.dp),
+                        hasText = false,
+                        onAddEditEvent = onAddEditEvent
+                    )
+
+                    "Story" -> GenerateStoryButton(
+                        textFieldState = textFieldState,
+                        onAddEditEvent = onAddEditEvent,
+                        pagerState = pagerState,
+                        subtitle = "Story",
+                        modifer = Modifier.padding(8.dp),
+                        hasText = false,
+                    )
+
+                    "Mood" -> MoodAnalyzerButton(
+                        textFieldState = textFieldState,
+                        pagerState = pagerState,
+                        subtitle = "Mood",
+                        modifer = Modifier.padding(8.dp),
+                        hasText = false,
+                        onAddEditEvent = onAddEditEvent
+                    )
+
+                    else -> {
+                    }
                 }
             }
         )
@@ -87,83 +141,88 @@ fun GenerateButtonsLayout(
 }
 
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PaintCustomButton(
-    addEditDreamState: AddEditDreamState,
+    textFieldState: TextFieldState,
+    onAddEditEvent: (AddEditDreamEvent) -> Unit,
     pagerState: PagerState,
-    subtitle : String = "Paint Dream",
+    subtitle: String = "Paint Dream",
     size: Dp = 32.dp,
-    fontSize: TextUnit = 14.sp
+    fontSize: TextUnit = 14.sp,
+    modifer: Modifier = Modifier,
+    hasText: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
     Column(
-        modifier = Modifier.padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifer.clickable {
+            scope.launch {
+                delay(100)
+                pagerState.animateScrollToPage(1)
+            }
+            onAddEditEvent(AddEditDreamEvent.ToggleDreamImageGenerationPopUpState(true))
+        },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        androidx.compose.material3.IconButton(
-            onClick = {
-                scope.launch {
-                    delay(100)
-                    pagerState.animateScrollToPage(1)
-                }
-                addEditDreamState.imageGenerationPopUpState.value = true
-            },
-            modifier = Modifier.size(size)
-        ) {
-            Icon(
-                painter = rememberAsyncImagePainter(R.drawable.paint_vector),
-                contentDescription = "Paint",
-                modifier = Modifier
-                    .size(size)
-                    .rotate(45f),
-                tint = if (addEditDreamState.dreamContent.length >= 10) colorResource(R.color.sky_blue) else colorResource(
-                    id = R.color.white
-                )
-            )
 
+        Icon(
+            painter = rememberAsyncImagePainter(R.drawable.baseline_brush_24),
+            contentDescription = "Paint",
+            modifier = Modifier
+                .padding(8.dp)
+                .size(size),
+            tint = if (
+                textFieldState.text.toString().length >= 10
+                ) colorResource(R.color.sky_blue) else colorResource(
+                id = R.color.white
+            )
+        )
+
+        if (hasText) {
+            Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
         }
-        Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun InterpretCustomButton(
-    addEditDreamState: AddEditDreamState,
+    onAddEditEvent: (AddEditDreamEvent) -> Unit,
+    textFieldState: TextFieldState,
     pagerState: PagerState,
     subtitle: String = "Interpret Dream",
     size: Dp = 32.dp,
-    fontSize: TextUnit = 14.sp
+    fontSize: TextUnit = 14.sp,
+    modifer: Modifier = Modifier,
+    hasText: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
+
     Column(
-        modifier = Modifier.padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifer.clickable {
+            scope.launch {
+                delay(100)
+                pagerState.animateScrollToPage(1)
+            }
+            onAddEditEvent(AddEditDreamEvent.ToggleDreamInterpretationPopUpState(true))
+        },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        IconButton(
-            onClick = {
-                scope.launch {
-                    delay(100)
-                    pagerState.animateScrollToPage(1)
-                }
-                addEditDreamState.dreamInterpretationPopUpState.value = true
-            },
-            modifier = Modifier.size(size),
-        ) {
-            Icon(
-                painter = rememberAsyncImagePainter(R.drawable.interpret_vector),
-                contentDescription = "Interpret",
-                modifier = Modifier
-                    .size(size)
-                    .rotate(45f),
-                tint = if (addEditDreamState.dreamContent.length >= 10) colorResource(R.color.purple) else colorResource(
-                    id = R.color.white
-                )
+        Icon(
+            painter = rememberAsyncImagePainter(R.drawable.interpret_vector),
+            contentDescription = "Interpret",
+            modifier = Modifier
+                .padding(8.dp)
+                .size(size),
+            tint = if (textFieldState.text.length >= 10) colorResource(R.color.purple) else colorResource(
+                id = R.color.white
             )
+        )
+        if (hasText) {
+            Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
         }
-        Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
 
@@ -171,83 +230,87 @@ fun InterpretCustomButton(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GenerateStoryButton(
-    addEditDreamState: AddEditDreamState,
+    onAddEditEvent: (AddEditDreamEvent) -> Unit,
+    textFieldState: TextFieldState,
     pagerState: PagerState,
     subtitle: String = "Dream Story",
     size: Dp = 32.dp,
-    fontSize: TextUnit = 14.sp
+    fontSize: TextUnit = 14.sp,
+    modifer: Modifier = Modifier,
+    hasText: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
     Column(
-        modifier = Modifier.padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifer.clickable {
+            scope.launch {
+                delay(100)
+                pagerState.animateScrollToPage(1) // Change to the appropriate page for story generation
+            }
+            onAddEditEvent(AddEditDreamEvent.ToggleDreamStoryPopUpState(true))
+        },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        androidx.compose.material3.IconButton(
-            onClick = {
-                scope.launch {
-                    delay(100)
-                    pagerState.animateScrollToPage(1) // Change to the appropriate page for story generation
-                }
-                addEditDreamState.storyPopupState.value = true // Update the state to show the story generation popup
-            },
-            modifier = Modifier.size(size),
-        ) {
-            Icon(
-                painter = rememberAsyncImagePainter(R.drawable.baseline_auto_fix_high_24), // Replace with appropriate vector graphic
-                contentDescription = "Generate Story",
-                modifier = Modifier
-                    .size(size),
-                tint = if (addEditDreamState.dreamContent.length >= 10) colorResource(R.color.lighter_yellow) else colorResource(
-                    id = R.color.white
-                )
+        Icon(
+            painter = rememberAsyncImagePainter(R.drawable.baseline_auto_fix_high_24), // Replace with appropriate vector graphic
+            contentDescription = "Generate Story",
+            modifier = Modifier
+                .padding(8.dp)
+                .size(size),
+            tint = if (textFieldState.text.length >= 10) colorResource(R.color.lighter_yellow) else colorResource(
+                id = R.color.white
             )
+        )
+        if (hasText) {
+            Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
         }
-        Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
-
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GenerateAdviceButton(
-    addEditDreamState: AddEditDreamState,
+    textFieldState: TextFieldState,
+    onAddEditEvent: (AddEditDreamEvent) -> Unit,
     pagerState: PagerState,
     subtitle: String = "Dream Advice",
     size: Dp = 32.dp,
-    fontSize: TextUnit = 14.sp
+    fontSize: TextUnit = 14.sp,
+    modifer: Modifier = Modifier,
+    hasText: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
     Column(
-        modifier = Modifier.padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        androidx.compose.material3.IconButton(
-            onClick = {
+        modifier = modifer
+            .clickable {
                 scope.launch {
                     delay(100)
                     pagerState.animateScrollToPage(1)
                 }
-                addEditDreamState.dreamAdvicePopUpState.value = true
+                onAddEditEvent(AddEditDreamEvent.ToggleDreamAdvicePopUpState(true))
             },
-            modifier = Modifier.size(size)
-        ) {
-            Icon(
-                painter = rememberAsyncImagePainter(R.drawable.baseline_lightbulb_24), // Replace with your icon for advice
-                contentDescription = "Advice",
-                modifier = Modifier
-                    .size(size)
-                    .rotate(45f),
-                tint = if (addEditDreamState.dreamContent.length >= 10){
-                    colorResource(R.color.Yellow)
-                } else{
-                    colorResource(
-                        id = R.color.white
-                    )
-                }
-            )
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = rememberAsyncImagePainter(R.drawable.baseline_lightbulb_24), // Replace with your icon for advice
+            contentDescription = "Advice",
+            modifier = Modifier
+                .padding(8.dp)
+                .size(size)
+                .rotate(45f),
+            tint = if (textFieldState.text.length >= 10) {
+                colorResource(R.color.Yellow)
+            } else {
+                colorResource(
+                    id = R.color.white
+                )
+            }
+        )
+        if (hasText) {
+            Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
         }
-        Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
 
@@ -255,78 +318,88 @@ fun GenerateAdviceButton(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AskQuestionButton(
-    addEditDreamState: AddEditDreamState,
+    textFieldState: TextFieldState,
+    onAddEditEvent: (AddEditDreamEvent) -> Unit,
     pagerState: PagerState,
     subtitle: String = "Ask a Question",
     size: Dp = 32.dp,
-    fontSize: TextUnit = 14.sp
+    fontSize: TextUnit = 14.sp,
+    modifer: Modifier = Modifier,
+    hasText: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
     Column(
-        modifier = Modifier.padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        androidx.compose.material3.IconButton(
-            onClick = {
+        modifier = modifer
+            .clickable {
                 scope.launch {
                     delay(100)
                     pagerState.animateScrollToPage(1) // Update the page index as needed
                 }
-                addEditDreamState.questionPopUpState.value = true // Handle the state for asking a question
+                onAddEditEvent(AddEditDreamEvent.ToggleDreamQuestionPopUpState(true))
             },
-            modifier = Modifier.size(size)
-        ) {
-            Icon(
-                painter = rememberAsyncImagePainter(R.drawable.baseline_question_mark_24), // Replace with your icon for asking questions
-                contentDescription = "Question",
-                modifier = Modifier
-                    .size(size),
-                tint = if (addEditDreamState.dreamContent.length >= 10){
-                    colorResource(R.color.RedOrange) // Choose an appropriate color
-                } else{
-                    colorResource(id = R.color.white)
-                }
-            )
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Icon(
+            painter = rememberAsyncImagePainter(R.drawable.baseline_question_answer_24), // Replace with your icon for asking questions
+            contentDescription = "Question",
+            modifier = Modifier
+                .padding(8.dp)
+                .size(size),
+            tint = if (textFieldState.text.length >= 10) {
+                colorResource(R.color.RedOrange) // Choose an appropriate color
+            } else {
+                colorResource(id = R.color.white)
+            }
+        )
+        if (hasText) {
+            Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
         }
-        Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoodAnalyzerButton(
-    addEditDreamState: AddEditDreamState, // Define a class to manage the state related to mood analysis
+    // Define a class to manage the state related to mood analysis
+    textFieldState: TextFieldState,
+    onAddEditEvent: (AddEditDreamEvent) -> Unit,
     pagerState: PagerState,
     subtitle: String = "Analyze Mood",
     size: Dp = 32.dp,
-    fontSize: TextUnit = 14.sp
+    fontSize: TextUnit = 14.sp,
+    modifer: Modifier = Modifier,
+    hasText: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
     Column(
-        modifier = Modifier.padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        IconButton(
-            onClick = {
+        modifier = modifer
+            .clickable {
                 scope.launch {
                     delay(100)
                     pagerState.animateScrollToPage(1) // Change to the appropriate page for mood analysis
                 }
-                addEditDreamState.moodPopupState.value = true // Update the state to show the mood analyzer popup
+                onAddEditEvent(AddEditDreamEvent.ToggleDreamMoodPopUpState(true))
             },
-            modifier = Modifier.size(size)
-        ) {
-            Icon(
-                painter = rememberAsyncImagePainter(R.drawable.baseline_mood_24), // Replace with an appropriate mood analyzer icon
-                contentDescription = "Analyze Mood",
-                modifier = Modifier
-                    .size(size),
-                tint = if (addEditDreamState.dreamContent.length >= 10) colorResource(R.color.green) else colorResource(
-                    id = R.color.white
-                )
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Icon(
+            painter = rememberAsyncImagePainter(R.drawable.baseline_mood_24), // Replace with an appropriate mood analyzer icon
+            contentDescription = "Analyze Mood",
+            modifier = Modifier
+                .padding(8.dp)
+                .size(size),
+            tint = if (textFieldState.text.length >= 10) colorResource(R.color.green) else colorResource(
+                id = R.color.white
             )
+        )
+        if (hasText) {
+            Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
         }
-        Text(text = subtitle, fontSize = fontSize, color = colorResource(id = R.color.white))
     }
 }
 
@@ -404,8 +477,8 @@ fun DreamTokenGenerateButton(
             painter = rememberAsyncImagePainter(R.drawable.dream_token),
             contentDescription = "DreamToken",
             modifier = Modifier
-                .padding(8.dp)
-                .size(56.dp)
+                .padding(4.dp)
+                .size(64.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(

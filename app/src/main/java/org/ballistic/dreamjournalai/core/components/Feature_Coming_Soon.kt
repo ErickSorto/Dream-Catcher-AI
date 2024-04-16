@@ -32,7 +32,8 @@ fun FeatureComingSoonScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .navigationBarsPadding(),
+            .navigationBarsPadding()
+            .padding(bottom = 64.dp),
         contentAlignment = Alignment.Center
     ) {
         Box(

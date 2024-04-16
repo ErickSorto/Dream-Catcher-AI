@@ -3,11 +3,13 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_s
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.Save
@@ -22,15 +24,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.AlertSave
@@ -38,17 +43,19 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun AddEditDreamScreen(
     dreamImage: Int,
+    dreamTitleState: TextFieldState,
+    dreamContentState: TextFieldState,
     addEditDreamState: AddEditDreamState,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},
     onNavigateToDreamJournalScreen: () -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    val focusManager = LocalFocusManager.current
     listOf(
         MainScreenEvent.SetBottomBarState(false),
         MainScreenEvent.SetFloatingActionButtonState(false),
@@ -61,8 +68,10 @@ fun AddEditDreamScreen(
         AddEditDreamEvent.LoadWords
     ).forEach(onAddEditDreamEvent)
 
-    BackHandler(enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading.value) {
-        addEditDreamState.dialogState.value = true
+    val scope = rememberCoroutineScope()
+
+    BackHandler(enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading) {
+        onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(true))
     }
 
     val dreamBackgroundImage = remember {
@@ -71,11 +80,13 @@ fun AddEditDreamScreen(
                 // dreamImage is a valid index within the list range
                 dreamImage
             }
+
             addEditDreamState.dreamInfo.dreamBackgroundImage >= 0 &&
                     addEditDreamState.dreamInfo.dreamBackgroundImage < Dream.dreamBackgroundImages.size -> {
                 // Fallback to the stored dream background image index if within the valid range
                 addEditDreamState.dreamInfo.dreamBackgroundImage
             }
+
             else -> {
                 Dream.dreamBackgroundImages.indices.random()
             }
@@ -83,31 +94,42 @@ fun AddEditDreamScreen(
         mutableIntStateOf(initialIndex)
     }
 
-    Crossfade(targetState = dreamBackgroundImage.intValue, label = "Background Image Crossfade") { index ->
+    Crossfade(
+        targetState = dreamBackgroundImage.intValue,
+        label = "Background Image Crossfade"
+    ) { index ->
         Image(
             painter = painterResource(id = Dream.dreamBackgroundImages[index]),
             contentDescription = "Dream Background",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize().blur(5.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(5.dp)
         )
     }
 
 
-    if (addEditDreamState.dialogState.value) {
+    if (addEditDreamState.dialogState) {
+        focusManager.clearFocus()
+        keyboardController?.hide()
         AlertSave(
             onDismiss = {
-                onNavigateToDreamJournalScreen()
-                addEditDreamState.dialogState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(false))
+
+                scope.launch {
+                    onNavigateToDreamJournalScreen()
+                }
             },
             onConfirm = {
-                addEditDreamState.dialogState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(false))
+
                 onAddEditDreamEvent(AddEditDreamEvent.SaveDream(onSaveSuccess = {
                     onMainEvent(MainScreenEvent.ShowSnackBar("Dream Saved Successfully :)"))
                     onNavigateToDreamJournalScreen()
                 }))
             },
             onClickOutside = {
-                addEditDreamState.dialogState.value = false
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(false))
             }
         )
     }
@@ -123,14 +145,14 @@ fun AddEditDreamScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { addEditDreamState.dialogState.value = true },
-                        enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading.value
+                        onClick = { onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(true)) },
+                        enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading
                     ) {
                         Icon(
                             modifier = Modifier.rotate(180f),
                             imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
                             contentDescription = "Back",
-                            tint = if (!addEditDreamState.dreamIsSavingLoading.value && !addEditDreamState.isDreamExitOff
+                            tint = if (!addEditDreamState.dreamIsSavingLoading && !addEditDreamState.isDreamExitOff
                             ) colorResource(id = R.color.white)
                             else Color.Gray.copy(alpha = 0.1f)
                         )
@@ -139,18 +161,17 @@ fun AddEditDreamScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            keyboardController?.hide()
                             onAddEditDreamEvent(AddEditDreamEvent.SaveDream(onSaveSuccess = {
                                 onMainEvent(MainScreenEvent.ShowSnackBar("Dream Saved Successfully :)"))
                                 onNavigateToDreamJournalScreen()
                             }))
                         },
-                        enabled = !addEditDreamState.dreamIsSavingLoading.value && !addEditDreamState.isDreamExitOff
+                        enabled = !addEditDreamState.dreamIsSavingLoading && !addEditDreamState.isDreamExitOff
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Save,
                             contentDescription = "Save Dream",
-                            tint = if (!addEditDreamState.dreamIsSavingLoading.value && !addEditDreamState.isDreamExitOff
+                            tint = if (!addEditDreamState.dreamIsSavingLoading && !addEditDreamState.isDreamExitOff
                             ) colorResource(
                                 id = R.color.white
                             )
@@ -178,8 +199,11 @@ fun AddEditDreamScreen(
         ) {
             TabLayout(
                 dreamBackgroundImage,
+                dreamTitleState = dreamTitleState,
+                dreamContentState = dreamContentState,
                 addEditDreamState = addEditDreamState,
-                onAddEditDreamEvent = onAddEditDreamEvent
+                onAddEditDreamEvent = onAddEditDreamEvent,
+                keyboardController = keyboardController
             )
         }
     }

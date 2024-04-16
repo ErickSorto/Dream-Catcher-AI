@@ -2,11 +2,11 @@ package org.ballistic.dreamjournalai.dream_dictionary.presentation
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -17,17 +17,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_dictionary.presentation.components.BuyDictionaryWordDrawer
@@ -54,19 +55,22 @@ import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.Dict
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DictionaryScreen(
     dictionaryScreenState: DictionaryScreenState,
     mainScreenViewModelState: MainScreenViewModelState,
+    searchTextFieldState: TextFieldState,
     onEvent: (DictionaryEvent) -> Unit = {},
     onMainEvent: (MainScreenEvent) -> Unit = {},
 ) {
     val alphabet = remember { ('A'..'Z').toList() }
     var selectedHeader by remember { mutableStateOf('A') }
-    val screenWidth = remember { mutableStateOf(0) } // to store screen width
+    val screenWidth = remember { mutableIntStateOf(0) } // to store screen width
     val context = LocalContext.current
     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     val scope = rememberCoroutineScope()
+    val tokens = dictionaryScreenState.dreamTokens.collectAsStateWithLifecycle().value
 
     // create vibrator effect with the constant EFFECT_CLICK
     val vibrationEffect1: VibrationEffect =
@@ -89,6 +93,7 @@ fun DictionaryScreen(
             DictionaryScreenTopBar(
                 mainScreenViewModelState = mainScreenViewModelState,
                 dictionaryScreenState = dictionaryScreenState,
+                searchedTextFieldState = searchTextFieldState,
                 onDictionaryEvent = onEvent
             )
         },
@@ -123,7 +128,7 @@ fun DictionaryScreen(
                 onClickOutside = {
                     dictionaryScreenState.bottomSheetState.value = false
                 },
-                token = dictionaryScreenState.dreamTokens.value,
+                token = tokens,
                 amount = dictionaryScreenState.clickedWord.cost
             )
         } else if (dictionaryScreenState.isClickedWordUnlocked && dictionaryScreenState.bottomSheetState.value) {
@@ -167,12 +172,12 @@ fun DictionaryScreen(
                         .fillMaxWidth()
                         .background(color = colorResource(id = R.color.dark_blue).copy(alpha = 0.5f))
                         .onGloballyPositioned { layoutCoordinates ->
-                            screenWidth.value = layoutCoordinates.size.width // Store the width
+                            screenWidth.intValue = layoutCoordinates.size.width // Store the width
                         }
                         .pointerInput(Unit) {
                             detectHorizontalDragGestures { change, _ ->
                                 val positionX = change.position.x
-                                val letterWidth = screenWidth.value / alphabet.size.toFloat()
+                                val letterWidth = screenWidth.intValue / alphabet.size.toFloat()
                                 val index =
                                     (positionX / letterWidth).coerceIn(
                                         0f,

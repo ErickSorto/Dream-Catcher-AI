@@ -19,15 +19,16 @@ import org.ballistic.dreamjournalai.R
 
 @Composable
 fun DreamTokenLayout(
-    totalDreamTokens: Int
+    totalDreamTokens: Int,
+    modifier: Modifier = Modifier,
 ) {
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(
-                colorResource(id = R.color.white).copy(alpha = 0.3f)
+                colorResource(id = R.color.black).copy(alpha = 0.3f)
             ),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
     ) {
@@ -35,8 +36,8 @@ fun DreamTokenLayout(
             painter = rememberAsyncImagePainter(R.drawable.dream_token),
             contentDescription = "DreamToken",
             modifier = Modifier
-                .size(35.dp)
-                .padding(8.dp, 4.dp, 0.dp, 4.dp),
+                .size(40.dp)
+                .padding(4.dp, 4.dp, 0.dp, 4.dp),
         )
         AnimatedContent(targetState = totalDreamTokens, label = "") { totalDreamTokens ->
             TypewriterText(
