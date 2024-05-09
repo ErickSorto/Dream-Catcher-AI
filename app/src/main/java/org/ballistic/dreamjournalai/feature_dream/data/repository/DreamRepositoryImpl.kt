@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.feature_dream.data.repository
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -62,7 +63,7 @@ class DreamRepositoryImpl(
                                 vividnessRating = (data["vividnessRating"] as Long?)?.toInt() ?: 1,
                                 timeOfDay = data["timeOfDay"] as String? ?: "",
                                 backgroundImage = (data["backgroundImage"] as Long?)?.toInt() ?: 0,
-                                generatedImage = data["generatedImage"] as String?,
+                                generatedImage = data["generatedImage"] as String? ?: "",
                                 generatedDetails = data["generatedDetails"] as String? ?: "",
                                 dreamQuestion = data["dreamQuestion"] as String? ?: "",
                                 dreamAIStory = data["dreamAIStory"] as String? ?: "",
@@ -107,7 +108,7 @@ class DreamRepositoryImpl(
                         vividnessRating = (data["vividnessRating"] as Long?)?.toInt() ?: 1,
                         timeOfDay = data["timeOfDay"] as String? ?: "",
                         backgroundImage = (data["backgroundImage"] as Long?)?.toInt() ?: 0,
-                        generatedImage = data["generatedImage"] as String?,
+                        generatedImage = data["generatedImage"] as String? ?: "",
                         generatedDetails = data["generatedDetails"] as String? ?: "",
                         dreamQuestion = data["dreamQuestion"] as String? ?: "",
                         dreamAIStory = data["dreamAIStory"] as String? ?: "",
@@ -130,12 +131,14 @@ class DreamRepositoryImpl(
     }
 
     override suspend fun insertDream(dream: Dream): Resource<Unit> {
+        Log.d("DreamInsert", "Attempting to insert/update dream with ID: ${dream.id}")
         return try {
             val existingDream = getDream(dream.id ?: "")
             var newDream = dream.copy(uid = userID(), id = "")
 
-            suspend fun uploadImageIfNeeded(dream: Dream, oldImageUrl: String? = null): Dream {
-                if (dream.generatedImage != null && !dream.generatedImage.startsWith("https://firebasestorage.googleapis.com/")) {
+            suspend fun uploadImageIfNeeded(dream: Dream, oldImageUrl: String = ""): Dream {
+                if (dream.generatedImage.isNotBlank() && !dream.generatedImage.startsWith("https://firebasestorage.googleapis.com/")) {
+                    Log.d("DreamInsert", "Uploading new image for dream")
                     return withContext(Dispatchers.IO) {
                         val storageRef = FirebaseStorage.getInstance().reference.child("${userID()}/images/${UUID.randomUUID()}.jpg")
 
@@ -146,11 +149,12 @@ class DreamRepositoryImpl(
                         val downloadUrl = storageRef.downloadUrl.await()
 
                         // Delete the old image if it exists
-                        if (oldImageUrl != null) {
+                        if (oldImageUrl.isNotBlank()) {
                             val oldImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(oldImageUrl)
                             oldImageRef.delete().await()
                         }
 
+                        Log.d("DreamInsert", "Image uploaded and old image deleted")
                         dream.copy(generatedImage = downloadUrl.toString())
                     }
                 }
@@ -158,7 +162,7 @@ class DreamRepositoryImpl(
             }
 
             if (existingDream is Resource.Success && existingDream.data != null) {
-                // Dream already exists, update it
+                Log.d("DreamInsert", "Dream exists, updating")
                 val updatedDream = existingDream.data.copy(
                     title = dream.title,
                     content = dream.content,
@@ -188,21 +192,25 @@ class DreamRepositoryImpl(
                 val updatedDreamWithImage = uploadImageIfNeeded(updatedDream, existingDream.data.generatedImage)
                 dreamsCollection?.document(updatedDreamWithImage.id ?: "")?.set(updatedDreamWithImage)?.await()
             } else {
+                Log.d("DreamInsert", "Creating new dream")
                 val newDreamRef = getCollectionReferenceForDreams()?.document()
                 newDream = newDream.copy(id = newDreamRef?.id)
                 val newDreamWithImage = uploadImageIfNeeded(newDream)
                 newDreamRef?.set(newDreamWithImage)?.await()
             }
+            Log.d("DreamInsert", "Dream successfully inserted/updated")
             Resource.Success(Unit)
         } catch (e: Exception) {
+            Log.e("DreamInsert", "Error inserting dream: ${e.message}", e)
             Resource.Error("Error inserting dream: ${e.message}")
         }
     }
 
+
     override suspend fun deleteDream(id: String): Resource<Unit> {
         return try {
             val dream = getDream(id)
-            if (dream is Resource.Success && dream.data != null && dream.data.generatedImage != null) {
+            if (dream is Resource.Success && dream.data != null && dream.data.generatedImage != "") {
                 // Dream has a generated image, delete it from Firebase Storage
                 val storageRef = storage.reference
 

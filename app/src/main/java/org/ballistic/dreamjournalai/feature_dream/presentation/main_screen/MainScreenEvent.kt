@@ -3,7 +3,8 @@ package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen
 import androidx.compose.material3.DrawerValue
 
 sealed class MainScreenEvent {
-    data class SetBottomBarState(val state: Boolean) : MainScreenEvent()
+    data class SetBottomBarVisibilityState(val state: Boolean) : MainScreenEvent()
+    data class SetBottomBarEnabledState(val state: Boolean) : MainScreenEvent()
     data class SetSearchingState(val state: Boolean) : MainScreenEvent()
     data class SetTopBarState(val state: Boolean) : MainScreenEvent()
     data class SetDrawerState(val state: Boolean) : MainScreenEvent()

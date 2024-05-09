@@ -11,149 +11,160 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
-import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
-import com.patrykandpatrick.vico.compose.chart.Chart
-import com.patrykandpatrick.vico.compose.chart.column.columnChart
-import com.patrykandpatrick.vico.compose.style.currentChartStyle
-import com.patrykandpatrick.vico.core.axis.Axis
-import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
-import com.patrykandpatrick.vico.core.axis.AxisPosition
-import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
-import com.patrykandpatrick.vico.core.chart.values.AxisValuesOverrider
-import com.patrykandpatrick.vico.core.component.marker.MarkerComponent
-import com.patrykandpatrick.vico.core.component.shape.LineComponent
-import com.patrykandpatrick.vico.core.component.text.TextComponent
-import com.patrykandpatrick.vico.core.entry.ChartEntryModel
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.entry.entryOf
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLabelComponent
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottomAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStartAxis
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.core.cartesian.axis.AxisItemPlacer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.core.common.data.ExtraStore
+import com.patrykandpatrick.vico.core.common.shape.Shape
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenState
 import kotlin.math.ceil
 
 @Composable
-fun DreamChartBarChart(
-    dreamStatisticScreenState: DreamStatisticScreenState,
-) {
+fun DreamChartBarChart(dreamStatisticScreenState: DreamStatisticScreenState) {
     if (dreamStatisticScreenState.dreams.isEmpty()) {
         return
     }
+
     val dreamTypeLabels =
         listOf("Lucid", "Normal", "Nightmare", "Favorite", "Recurring", "False Awakening")
-    val barColors =
-        listOf(
-            colorResource(R.color.white).copy(alpha = .8f).toArgb(),
-        )
+    val labelListKey = ExtraStore.Key<List<String>>()
 
+    // Map data to the dream type labels
+    val data = listOf(
+        dreamStatisticScreenState.totalLucidDreams,
+        dreamStatisticScreenState.totalNormalDreams,
+        dreamStatisticScreenState.totalNightmares,
+        dreamStatisticScreenState.totalFavoriteDreams,
+        dreamStatisticScreenState.totalRecurringDreams,
+        dreamStatisticScreenState.totalFalseAwakenings
+    )
 
-    val maxY = mutableIntStateOf(0)
-    if (dreamStatisticScreenState.dreams.isNotEmpty()) {
-        val entries = listOf(
-            entryOf(0, dreamStatisticScreenState.totalLucidDreams),
-            entryOf(1, dreamStatisticScreenState.totalNormalDreams),
-            entryOf(2, dreamStatisticScreenState.totalNightmares),
-            entryOf(3, dreamStatisticScreenState.totalFavoriteDreams),
-            entryOf(4, dreamStatisticScreenState.totalRecurringDreams),
-            entryOf(5, dreamStatisticScreenState.totalFalseAwakenings),
-        )
-        val maxValue = entries.maxOf { it.y }
-
-        // Determine the suitable interval based on the maximum value
-        val interval = when {
-            maxValue <= 6 -> 1   // Interval of 1 for small numbers
-            else -> ceil(maxValue / 4).toInt() // Aim for about 4 intervals, adjust as needed
+    val modelProducer = remember { CartesianChartModelProducer.build() }
+    LaunchedEffect(data) {
+        modelProducer.tryRunTransaction {
+            columnSeries {
+                // Generate a single series with all data points
+                series(
+                    x = data.indices.map { it.toFloat() }, // Generate x values as indices converted to Float
+                    y = data.map { it.toFloat() }           // Convert data points to Float for the y values
+                )
+            }
+            updateExtras {
+                it[labelListKey] = dreamTypeLabels
+            } // Updating labels for use in the axis
         }
+    }
 
+    // Compute the maximum Y value dynamically
+    val maxY = remember { mutableIntStateOf(0) }
+    val maxValue = data.maxOrNull() ?: 0
+    val interval = when {
+        maxValue <= 6 -> 1
+        else -> ceil(maxValue / 4.0).toInt()
+    }
+    maxY.intValue = (interval * ceil(maxValue.toDouble() / interval).toInt())
 
-        maxY.value = interval * ceil(maxValue / interval).toInt()
+    // Determine the number of ticks on the Y-axis
+    val yTicks = maxY.intValue / interval + 1
 
+    // Set up the bottom axis with custom labels from extras
+    val bottomAxis = rememberBottomAxis(
+        label = rememberAxisLabelComponent(
+            color = Color.White,
+        ),
+        valueFormatter = { x, chartValues, _ ->
+            chartValues.model.extraStore[labelListKey][x.toInt()]
+        },
+        labelRotationDegrees = 90f
+    )
 
-        val yTicks = maxY.value / interval + 1  // +1 to include the tick at 0
+    // Remember start axis with custom item placer
+    val startAxis = rememberStartAxis(
+        itemPlacer = AxisItemPlacer.Vertical.count(
+            count = { _ -> yTicks },  // Provide a lambda that returns the number of ticks based on the calculated maxY and interval
+            shiftTopLines = true  // Assuming you want to shift the top lines to better align with your chart's visual layout
+        ),
+        label = rememberTextComponent(
+            color = Color.White,
+        )
+    )
 
-
-        val horizontalAxisValueFormatter =
-            AxisValueFormatter<AxisPosition.Horizontal.Bottom> { value, _ ->
-                dreamTypeLabels.getOrNull(value.toInt()) ?: ""
-            }
-
-        val listColumn =
-            currentChartStyle.columnChart.columns.mapIndexed { index, originalComponent ->
-                LineComponent(
-                    color = barColors[index % barColors.size],
-                    thicknessDp = 8f,
-                    shape = originalComponent.shape,
-                    dynamicShader = originalComponent.dynamicShader,
-                    margins = originalComponent.margins,
-                    strokeWidthDp = originalComponent.strokeWidthDp,
-                    strokeColor = originalComponent.strokeColor
-                )
-            }
-
-        Box(
-            modifier = Modifier
-                .padding(start = 12.dp, end = 12.dp, bottom = 40.dp)
-                .imePadding()
-                .clip(RoundedCornerShape(8.dp))
-                .background(
-                    colorResource(id = R.color.light_black).copy(alpha = 0.8f)
-                )
-                .fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .padding(start = 12.dp, end = 12.dp, bottom = 40.dp)
+            .imePadding()
+            .clip(RoundedCornerShape(8.dp))
+            .background(
+                colorResource(id = R.color.light_black).copy(alpha = 0.8f)
+            )
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Dream Types",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = colorResource(id = R.color.white)
-                    ).copy(fontWeight = FontWeight.Normal),
-                )
-                Chart(
-                    chart = columnChart(
-                        columns = listColumn,
-                        axisValuesOverrider = remember {
-                            object : AxisValuesOverrider<ChartEntryModel> {
-                                override fun getMaxY(model: ChartEntryModel) =
-                                    maxY.value.toFloat()
-                            }
-                        }
+            Text(
+                text = "Dream Types",
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = colorResource(id = R.color.white)
+                ).copy(fontWeight = FontWeight.Normal),
+            )
+            CartesianChartHost(
+                chart = rememberCartesianChart(
+                    rememberColumnCartesianLayer(
+                        ColumnCartesianLayer.ColumnProvider.series(
+                            rememberLineComponent(
+                                color = Color(0xFFFFFFFF),
+                                thickness = 15.dp,
+                                shape = remember { Shape.rounded(allPercent = 40) },
+                            ),
+                        ),
                     ),
-                    chartModelProducer = ChartEntryModelProducer(remember {
-                        entries
-                    }),
-                    //max 6 y axis labels
-                    startAxis = rememberStartAxis(itemPlacer = remember {
-                        AxisItemPlacer.Vertical.default(
-                            maxItemCount = yTicks
-                        )
-                    }),
-                    bottomAxis = rememberBottomAxis(
-                        valueFormatter = horizontalAxisValueFormatter,
-                        labelRotationDegrees = 90f,
-                        sizeConstraint = Axis.SizeConstraint.TextWidth("False Awakening.")
+                    startAxis = startAxis,
+                    bottomAxis = bottomAxis
+                ),
+                modelProducer = modelProducer.apply {
+                    colorResource(id = R.color.white)
+                },
+                marker = rememberDefaultCartesianMarker(
+                    label = rememberTextComponent(
+                        color = Color.White,
                     ),
-                    marker = MarkerComponent(
-                        guideline = null,
-                        indicator = null,
-                        label = TextComponent.Builder().build(),
+                    indicatorSize = 8.dp,
+                    setIndicatorColor = { Color.White },
+
                     ),
-                    modifier = Modifier
-                        .padding(16.dp, 0.dp, 16.dp, 16.dp)
-                        .height(350.dp),
-                    isZoomEnabled = false,
-                )
-            }
+                modifier = Modifier
+                    .padding(16.dp)
+                    .height(450.dp)
+                    .fillMaxWidth()
+                    .background(
+                        Color.Transparent
+                    )
+            )
         }
     }
 }
+

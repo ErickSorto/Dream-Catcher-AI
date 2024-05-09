@@ -20,6 +20,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
 
@@ -74,5 +75,6 @@ fun DreamNightmareScreenTopBar(
             titleContentColor = Color.Black,
             actionIconContentColor = Color.Black
         ),
+        modifier = Modifier.dynamicBottomNavigationPadding()
     )
 }

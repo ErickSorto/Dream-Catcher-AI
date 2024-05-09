@@ -65,12 +65,14 @@ class MainScreenViewModel @Inject constructor(
 
     fun onEvent (event: MainScreenEvent) = viewModelScope.launch {
         when (event) {
-            is MainScreenEvent.SetBottomBarState -> {
-                _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
-                    scaffoldState = _mainScreenViewModelState.value.scaffoldState.copy(
-                        bottomBarState = event.state
+            is MainScreenEvent.SetBottomBarVisibilityState -> {
+                viewModelScope.launch {
+                    _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
+                        scaffoldState = _mainScreenViewModelState.value.scaffoldState.copy(
+                            bottomBarState = event.state
+                        )
                     )
-                )
+                }
             }
             is MainScreenEvent.SetSearchingState -> {
                 _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
@@ -137,6 +139,12 @@ class MainScreenViewModel @Inject constructor(
             is MainScreenEvent.GetAuthState -> {
                 repo.getAuthState(viewModelScope)
             }
+
+            is MainScreenEvent.SetBottomBarEnabledState -> {
+                _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
+                    isBottomBarEnabledState = event.state
+                )
+            }
         }
     }
 }
@@ -145,6 +153,7 @@ class MainScreenViewModel @Inject constructor(
 data class MainScreenViewModelState(
     val scaffoldState: ScaffoldState = ScaffoldState(),
     val isDrawerEnabled : Boolean = true,
+    val isBottomBarEnabledState : Boolean = true,
     val drawerMain: DrawerState = DrawerState(DrawerValue.Closed),
     val authRepo: AuthRepository,
     val searchedText: MutableStateFlow<String> = MutableStateFlow(""),

@@ -9,9 +9,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.ballistic.dreamjournalai.core.NetworkHelper
+import org.ballistic.dreamjournalai.dream_tools.data.MassInterpretationRepositoryImpl
+import org.ballistic.dreamjournalai.dream_tools.domain.MassInterpretationRepository
 import org.ballistic.dreamjournalai.feature_dream.data.repository.DreamRepositoryImpl
 import org.ballistic.dreamjournalai.feature_dream.domain.repository.DreamRepository
-import org.ballistic.dreamjournalai.feature_dream.domain.use_case.*
+import org.ballistic.dreamjournalai.feature_dream.domain.use_case.AddDream
+import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DeleteDream
+import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
+import org.ballistic.dreamjournalai.feature_dream.domain.use_case.GetDream
+import org.ballistic.dreamjournalai.feature_dream.domain.use_case.GetDreams
 import org.ballistic.dreamjournalai.onboarding.presentation.data.DataStoreRepository
 import javax.inject.Singleton
 
@@ -20,6 +26,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    @Provides
+    @Singleton
+    fun provideMassInterpretationRepository(
+        db: FirebaseFirestore
+    ): MassInterpretationRepository {
+        return MassInterpretationRepositoryImpl(
+            db = db
+        )
+    }
 
     @Provides
     @Singleton

@@ -159,7 +159,6 @@ class AuthRepositoryImpl @Inject constructor(
                 val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
                 val snapshot = userDocRef?.get()?.await()
                 val unlockedWords = snapshot?.get("unlockedWords") as? ArrayList<String>
-                Log.d("UnlockWords", "unlockedWords: $unlockedWords")
                 if (unlockedWords != null) {
                     emit(Resource.Success(unlockedWords))
                 } else {
@@ -217,30 +216,6 @@ class AuthRepositoryImpl @Inject constructor(
             }
         }
     }
-
-
-//    override suspend fun oneTapSignInWithGoogle(): Flow<Resource<BeginSignInResult>> = flow {
-//        anonymousUserId = if (auth.currentUser?.isAnonymous == true) {
-//            auth.currentUser?.uid
-//        } else {
-//            null
-//        }
-//        emit(Resource.Loading())
-//        try {
-//            val signInResult = oneTapClient.beginSignIn(signInRequest).await()
-//            // Assuming signInResult needs to be transformed or directly used
-//            emit(Resource.Success(signInResult))
-//        } catch (e: Exception) {
-//
-//
-//            Log.e("AuthDebug", "One-tap sign-in failed: ${e.message}")
-//            emit(Resource.Error(e.message ?: "Unknown error"))
-//        }
-//    }
-
-
-
-
 
     override suspend fun anonymousSignIn(): Flow<Resource<AuthResult>> {
         return flow {
@@ -341,7 +316,7 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 val currentUser = auth.currentUser
 
-                if (currentUser != null && anonymousUserId != null) {
+                if (currentUser != null && anonymousUserId != null && anonymousUserId != "") {
                     val result = auth.signInWithEmailAndPassword(email, password).await()
 
                     result.user?.let {

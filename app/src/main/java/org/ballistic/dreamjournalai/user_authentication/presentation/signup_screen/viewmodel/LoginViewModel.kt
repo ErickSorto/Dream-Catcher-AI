@@ -129,7 +129,7 @@ class LoginViewModel @Inject constructor(
                 viewModelScope.launch {
                     try{
                         Log.d("SignInWithGoogle", "Sign-in with Google successful")
-                        if (it.second != null){
+                        if (it.second != null && it.second != ""){
                             repo.transferDreamsFromAnonymousToPermanent(
                                 it.first.user?.uid ?: "", it.second ?: ""
                             )

@@ -17,17 +17,14 @@ import org.ballistic.dreamjournalai.ui.theme.DreamCatcherAITheme
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-
     var keepSplashOpened = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         installSplashScreen().setKeepOnScreenCondition {
             keepSplashOpened
         }
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             DreamCatcherAITheme {

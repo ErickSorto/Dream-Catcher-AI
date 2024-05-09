@@ -13,7 +13,7 @@ sealed class Screens(
     data object DreamJournalScreen : Screens(
         route = "dreams_screen",
         title = "Dream Journal",
-        icon = Icons.Filled.Book, // Assuming filled version exists
+        icon = Icons.Filled.Book,
     )
 
     data object AddEditDreamScreen : Screens(
@@ -59,6 +59,12 @@ sealed class Screens(
         icon = Icons.Default.Casino
     )
 
+    data object AnalyzeMultipleDreamsDetails : Screens(
+        route = "analyze_multiple_dream_details",
+        title = "Analyze Multiple Dreams Details",
+        icon = Icons.Default.Analytics
+    )
+
     data object AnalyzeMultipleDreams : Screens(
         route = "analyze_multiple_dream",
         title = "Analyze Multiple Dreams",
@@ -83,9 +89,9 @@ sealed class Screens(
         icon = Icons.Default.ErrorOutline
     )
 
-    data object Dictionary : Screens(
-        route = "dictionary",
-        title = "Dictionary",
+    data object Symbol : Screens(
+        route = "symbol",
+        title = "Symbols",
         icon = Icons.AutoMirrored.Filled.List
     )
 
@@ -93,6 +99,12 @@ sealed class Screens(
         "dream_settings",
         "Dream Settings",
         Icons.Default.Bedtime
+    )
+
+    data object DreamToolGraphScreen : Screens(
+        "dream_tool_graph_screen",
+        "Tools",
+        Icons.Default.Build
     )
 
     data object OnboardingScreen : Screens(route = "welcome_screen", title = "Welcome", icon = null)

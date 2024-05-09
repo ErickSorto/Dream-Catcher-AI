@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.dream_dictionary.presentation.viewmodel.DictionaryWord
+import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
 import org.ballistic.dreamjournalai.dream_statistics.StatisticEvent
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases

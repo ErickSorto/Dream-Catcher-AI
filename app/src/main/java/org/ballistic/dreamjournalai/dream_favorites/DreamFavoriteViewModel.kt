@@ -47,9 +47,25 @@ class DreamFavoriteScreenViewModel @Inject constructor(
             is FavoriteEvent.RestoreDream -> {
                 viewModelScope.launch {
                     val dreamToRestore =
-                        recentlyDeletedDream?.copy(generatedImage = null) ?: return@launch
+                        recentlyDeletedDream?.copy(generatedImage = "") ?: return@launch
                     dreamUseCases.addDream(dreamToRestore)
                     recentlyDeletedDream = null
+                }
+            }
+
+            is FavoriteEvent.DreamToDelete -> {
+                viewModelScope.launch {
+                    _dreamFavoriteScreenState.value = dreamFavoriteScreenState.value.copy(
+                        dreamToDelete = event.dream
+                    )
+                }
+            }
+
+            is FavoriteEvent.ToggleBottomDeleteCancelSheetState ->  {
+                viewModelScope.launch {
+                    _dreamFavoriteScreenState.value = dreamFavoriteScreenState.value.copy(
+                        bottomDeleteCancelSheetState = event.bottomDeleteCancelSheetState
+                    )
                 }
             }
         }
@@ -87,5 +103,8 @@ class DreamFavoriteScreenViewModel @Inject constructor(
 data class DreamFavoriteScreenState(
     val dreams: List<Dream> = emptyList(),
     val dreamFavoriteList: List<Dream> = emptyList(),
+    val bottomDeleteCancelSheetState: Boolean = false,
+    val dreamToDelete: Dream? = null,
+    val isDreamDeleted: Boolean = false,
     val recentlyDeletedDream: Dream? = null,
 )

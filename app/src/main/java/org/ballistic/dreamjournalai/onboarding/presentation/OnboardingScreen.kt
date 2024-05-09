@@ -1,9 +1,6 @@
 package org.ballistic.dreamjournalai.onboarding.presentation
 
-import android.credentials.GetCredentialException
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.updateTransition
@@ -62,7 +59,6 @@ import java.security.MessageDigest
 import java.util.UUID
 
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @ExperimentalAnimationApi
 @Composable
 fun OnboardingScreen(
@@ -120,9 +116,6 @@ fun OnboardingScreen(
                         )
                     )
                 )
-            } catch (e: GetCredentialException) {
-                // General exception from getCredential
-                Log.d("AccountSettingsScreen", "GetCredentialException: ${e.message}")
             } catch (e: GoogleIdTokenParsingException) {
                 // Specific exception from parsing the Google ID token
                 Log.d("AccountSettingsScreen", "GoogleIdTokenParsingException: ${e.message}")

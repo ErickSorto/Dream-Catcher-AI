@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_nightmares.presentation
 
+import android.os.Vibrator
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,15 +27,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
+import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
+import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DateHeader
+import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DreamItem
 import org.ballistic.dreamjournalai.dream_nightmares.NightmareEvent
 import org.ballistic.dreamjournalai.dream_nightmares.presentation.components.DreamNightmareScreenTopBar
-import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.components.DateHeader
-import org.ballistic.dreamjournalai.feature_dream.presentation.dream_list_screen.components.DreamItem
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.navigation.Screens
 import java.time.LocalDate
@@ -48,10 +50,12 @@ import java.util.Locale
 fun DreamNightmareScreen(
     dreamNightmareScreenState: DreamNightmareScreenState,
     mainScreenViewModelState: MainScreenViewModelState,
+    bottomPaddingValue: Dp,
     navController: NavController,
     onEvent: (NightmareEvent) -> Unit
 ) {
     val context = LocalContext.current
+    val vibrator = context.getSystemService(Vibrator::class.java)
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit) {
@@ -71,7 +75,7 @@ fun DreamNightmareScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .navigationBarsPadding(),
+                    .dynamicBottomNavigationPadding(),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
@@ -95,8 +99,8 @@ fun DreamNightmareScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .navigationBarsPadding(),
+                .padding(top = paddingValues.calculateTopPadding(), bottom = bottomPaddingValue)
+                .dynamicBottomNavigationPadding(),
             contentPadding = PaddingValues(bottom = 40.dp),
         ) {
 
@@ -126,6 +130,7 @@ fun DreamNightmareScreen(
                     items(dreamsForDate) { dream ->
                         DreamItem(
                             dream = dream,
+                            vibrator = vibrator,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 10.dp)
@@ -138,6 +143,7 @@ fun DreamNightmareScreen(
                                             }"
                                 )
                             },
+                            scope = scope,
                             onDeleteClick = {
                                 onEvent(
                                     NightmareEvent.DeleteDream(

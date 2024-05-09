@@ -1,60 +1,78 @@
 package org.ballistic.dreamjournalai.dream_tools.presentation.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DreamToolItem(
     title: String,
     icon: Int,
     description: String,
+    enabled: Boolean = true,
+    modifier: Modifier,
     onClick: () -> Unit
 ) {
-    Button(
+    Card(
         onClick = onClick,
         modifier = Modifier
-            .padding(5.dp)
+            .padding(8.dp)
             .fillMaxWidth()
-            .aspectRatio(1f),
-        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.8f)),
+            .aspectRatio(16f / 13f),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors().copy(
+            containerColor = colorResource(id = R.color.light_black).copy(
+                alpha = 0.8f
+            )
+        ),
+        enabled = enabled
     ) {
-        Column(
+        val alphaIfDisabled = if (enabled) 1f else 0.4f
+        val textColorIfDisabled = if (enabled) Color.White else Color.Gray
+        val titleIfDisabled = if (enabled) title else "Coming soon.."
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = description,
+            modifier = modifier
+                .alpha(alphaIfDisabled)
+                .aspectRatio(16 / 9f)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp, 8.dp, 0.dp, 0.dp)),
+            contentScale = ContentScale.Crop,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            titleIfDisabled,
             modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = description,
-                modifier = Modifier.size(48.dp),
-                colorFilter = ColorFilter.tint(Color.White)
-            )
-            Text(
-                title,
-                modifier = Modifier.padding(top = 8.dp),
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-        }
+                .fillMaxWidth()
+                .basicMarquee()
+                .padding(),
+            style = typography.labelMedium,
+            color = textColorIfDisabled,
+            textAlign = TextAlign.Center,
+            maxLines = 1
+        )
+        Spacer(modifier = Modifier.weight(1f))
     }
 }

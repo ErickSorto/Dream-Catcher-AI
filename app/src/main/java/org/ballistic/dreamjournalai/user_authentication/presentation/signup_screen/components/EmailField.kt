@@ -17,13 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.Constants.EMAIL_LABEL
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.onKeyboardDismiss
+import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.onKeyboardDismiss
 
 @Composable
 fun EmailField(

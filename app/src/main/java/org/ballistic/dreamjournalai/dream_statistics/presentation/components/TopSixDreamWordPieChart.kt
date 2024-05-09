@@ -66,7 +66,6 @@ fun TopSixDreamWordPieChart(
             Color(0xFF66BB6A)  // Light Green
         )
 
-
         val donutChartData = PieChartData(
             slices = dreamStatisticScreenState.topSixWordsInDreams.entries
                 .distinctBy { it.key } // Ensure unique entries based on the key
@@ -151,6 +150,7 @@ fun LegendItem(slice: PieChartData.Slice, color: Color, modifier: Modifier = Mod
         Text(
             text = slice.label,
             style = MaterialTheme.typography.labelLarge,
+            color = Color.White
         )
     }
 }

@@ -1,8 +1,15 @@
 package org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen
 
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aallam.openai.api.chat.ChatCompletionRequest
+import com.aallam.openai.api.chat.ChatMessage
+import com.aallam.openai.api.chat.ChatRole
+import com.aallam.openai.api.model.ModelId
+import com.aallam.openai.client.OpenAI
+import com.google.android.gms.ads.rewarded.RewardItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,77 +18,165 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.BuildConfig
+import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
+import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
+import org.ballistic.dreamjournalai.dream_tools.domain.MassInterpretationRepository
+import org.ballistic.dreamjournalai.dream_tools.domain.model.MassInterpretation
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
 import org.ballistic.dreamjournalai.feature_dream.domain.util.OrderType
+import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class InterpretDreamsViewModel @Inject constructor(
-    private val dreamUseCases: DreamUseCases
+    private val dreamUseCases: DreamUseCases,
+    private val authRepository: AuthRepository,
+    private val massInterpretationRepository: MassInterpretationRepository,
+    private val adManagerRepository: AdManagerRepository
 ) : ViewModel() {
-    private val _interpretDreamsScreenState = MutableStateFlow(InterpretDreamsScreenState())
+    private val _interpretDreamsScreenState = MutableStateFlow(InterpretDreamsScreenState(
+        authRepository = authRepository
+    ))
     val interpretDreamsScreenState: StateFlow<InterpretDreamsScreenState> =
         _interpretDreamsScreenState.asStateFlow()
+
+
 
     private var getDreamJob: Job? = null
     fun onEvent(event: InterpretDreamsToolEvent) {
         when (event) {
+
             is InterpretDreamsToolEvent.GetDreams -> {
                 viewModelScope.launch {
                     getDreams()
                 }
             }
-            is InterpretDreamsToolEvent.AddDreamToInterpretationList -> {
+
+            is InterpretDreamsToolEvent.ToggleDreamToInterpretationList -> {
                 viewModelScope.launch {
-                    addDreamToInterpretationList(event.dream)
+                    toggleDreamToInterpretationList(event.dream)
                 }
             }
-            is InterpretDreamsToolEvent.RemoveDreamFromInterpretationList -> {
+
+            is InterpretDreamsToolEvent.DeleteMassInterpretation -> {
                 viewModelScope.launch {
-                    removeDreamFromInterpretationList(event.dream)
+                    massInterpretationRepository.removeInterpretation(event.massInterpretation)
+                }
+            }
+
+            is InterpretDreamsToolEvent.InterpretDreams -> {
+
+                // Logging the start of the function
+                Log.d("InterpretDreams", "Starting to interpret dreams")
+
+                // Getting the current list of dreams
+                val currentDreams = interpretDreamsScreenState.value.chosenDreams
+
+                viewModelScope.launch {
+                    getAIResponse(
+                        command = "Find common themes, symbols, and meanings in the following dreams:\n" +
+                                currentDreams.joinToString("\n") { it.content },
+                        cost = event.cost,
+                        isAd = event.isAd,
+                        updateLoadingState = { isLoading ->
+                            _interpretDreamsScreenState.update {
+                                it.copy(isLoading = isLoading)
+                            }
+                        },
+                        activity = event.activity,
+                        updateResponseState = { response ->
+                            _interpretDreamsScreenState.update {
+                                it.copy(response = response)
+                            }
+                            event.isFinishedEvent(true)
+                        },
+                        handleError = {
+                            _interpretDreamsScreenState.update {
+                                it.copy(response = it.response)
+                            }
+                            event.isFinishedEvent(true)
+                        }
+                    )
+                }
+            }
+
+            InterpretDreamsToolEvent.GetMassInterpretations -> {
+                viewModelScope.launch {
+                    massInterpretationRepository.getInterpretations()
+                        .onEach { interpretations ->
+                            _interpretDreamsScreenState.value =
+                                interpretDreamsScreenState.value.copy(
+                                    massMassInterpretations = interpretations
+                                )
+                        }
+                        .catch { exception ->
+                            Log.e(
+                                "GetMassInterpretations",
+                                "Error fetching mass interpretations",
+                                exception
+                            )
+                        }
+                        .launchIn(viewModelScope)
+                }
+            }
+
+            is InterpretDreamsToolEvent.ToggleBottomMassInterpretationSheetState -> {
+                _interpretDreamsScreenState.update {
+                    it.copy(bottomMassInterpretationSheetState = event.state)
+                }
+            }
+            is InterpretDreamsToolEvent.UpdateModel -> {
+                _interpretDreamsScreenState.update {
+                    it.copy(modelChosen = event.model)
+                }
+            }
+
+            is InterpretDreamsToolEvent.ChooseMassInterpretation -> {
+                _interpretDreamsScreenState.update {
+                    it.copy(chosenMassInterpretation = event.massInterpretation)
+                }
+            }
+
+            is InterpretDreamsToolEvent.ToggleBottomDeleteCancelSheetState -> {
+                _interpretDreamsScreenState.update {
+                    it.copy(bottomDeleteCancelSheetState = event.state)
                 }
             }
         }
     }
 
-    private fun addDreamToInterpretationList(dream: Dream) {
+    //add or remove dream from interpretation list
+    private fun toggleDreamToInterpretationList(dream: Dream) {
         // Logging the start of the function
-        Log.d("addDreamToInterpretationList", "Starting to add dream to interpretation list")
+        Log.d("toggleDreamToInterpretationList", "Attempting to modify dream list")
 
         // Getting the current list of dreams
         val currentDreams = interpretDreamsScreenState.value.chosenDreams.toMutableList()
 
-        // Adding the dream to the list
-        currentDreams.add(dream)
+        if (currentDreams.contains(dream)) {
+            // Removing the dream from the list
+            currentDreams.remove(dream)
+            Log.d("toggleDreamToInterpretationList", "Removed dream from list: ${dream.id}")
+        } else {
+            // Ensure we can add a new dream only if we haven't reached the limit
+            if (currentDreams.size < 15) {
+                currentDreams.add(dream)
+                Log.d("toggleDreamToInterpretationList", "Added dream to list: ${dream.id}")
+            } else {
+                Log.d("toggleDreamToInterpretationList", "Dream list is full. Cannot add more dreams.")
+                return // Prevent adding more dreams if the list is full
+            }
+        }
 
-        // Updating the screen state
+        // Update the state with the modified list of dreams
         _interpretDreamsScreenState.value = interpretDreamsScreenState.value.copy(
             chosenDreams = currentDreams
         )
-
-        // Logging the event trigger
-        Log.d("addDreamToInterpretationList", "AddDreamToInterpretationList event triggered")
-    }
-
-    private fun removeDreamFromInterpretationList(dream: Dream) {
-        // Logging the start of the function
-        Log.d("removeDreamFromInterpretationList", "Starting to remove dream from interpretation list")
-
-        // Getting the current list of dreams
-        val currentDreams = interpretDreamsScreenState.value.chosenDreams.toMutableList()
-
-        // Removing the dream from the list
-        currentDreams.remove(dream)
-
-        // Updating the screen state
-        _interpretDreamsScreenState.value = interpretDreamsScreenState.value.copy(
-            chosenDreams = currentDreams
-        )
-
-        // Logging the event trigger
-        Log.d("removeDreamFromInterpretationList", "RemoveDreamFromInterpretationList event triggered")
     }
 
 
@@ -111,9 +206,138 @@ class InterpretDreamsViewModel @Inject constructor(
         // Logging the event trigger
         Log.d("getDreams", "LoadStatistics event triggered")
     }
+
+    private fun getAIResponse(
+        command: String,
+        isAd: Boolean,
+        cost: Int,
+        activity: Activity,
+        updateLoadingState: (Boolean) -> Unit,
+        updateResponseState: (String) -> Unit,
+        handleError: (String) -> Unit
+    ) {
+
+        viewModelScope.launch {
+            updateLoadingState(true)
+
+            if (isAd) {
+                runAd(activity, onRewardedAd = {
+                    viewModelScope.launch {
+                        makeAIRequest(command, 0, updateLoadingState, updateResponseState,
+                            handleError = {
+                                handleError(it)
+                            }
+                            )
+                    }
+                }, onAdFailed = {
+                    viewModelScope.launch {
+
+                    }
+                })
+            } else {
+                makeAIRequest(command, cost, updateLoadingState, updateResponseState,
+                    handleError = {
+                        handleError(it)
+                    }
+                )
+            }
+        }
+    }
+
+    private suspend fun makeAIRequest(
+        command: String,
+        cost: Int,
+        updateLoadingState: (Boolean) -> Unit,
+        updateResponseState: (String) -> Unit,
+        handleError: (String) -> Unit
+    ) {
+        try {
+            updateLoadingState(true)
+            val openAI = OpenAI(BuildConfig.API_KEY)
+            val currentLocale = Locale.getDefault().language
+
+            val modelId = interpretDreamsScreenState.value.modelChosen
+            val chatCompletionRequest = ChatCompletionRequest(
+                model = ModelId(modelId), messages = listOf(
+                    ChatMessage(
+                        role = ChatRole.User,
+                        content = "$command.\n Respond in this language: $currentLocale"
+                    )
+                ), maxTokens = 500
+            )
+
+            val completion = openAI.chatCompletion(chatCompletionRequest)
+            updateResponseState(completion.choices.firstOrNull()?.message?.content ?: "")
+
+            if (cost > 0) authRepository.consumeDreamTokens(cost)
+            val massInterpretation = MassInterpretation(
+                interpretation = completion.choices.firstOrNull()?.message?.content ?: "",
+                listOfDreamIDs = interpretDreamsScreenState.value.chosenDreams.map { it.id },
+                date = System.currentTimeMillis(),
+                model = if (modelId == "gpt-4") "Advanced" else "Standard",
+                id = null
+            )
+            massInterpretationRepository.addInterpretation(
+                massInterpretation
+            )
+            _interpretDreamsScreenState.value =
+                interpretDreamsScreenState.value.copy(
+                    chosenMassInterpretation = massInterpretation
+                )
+            updateLoadingState(false)
+        } catch (e: Exception) {
+            Log.d("AddEditDreamViewModel", "Error: ${e.message}")
+            updateLoadingState(false)
+            handleError(e.message ?: "An error occurred")
+        }
+    }
+    private fun runAd(
+        activity: Activity, onRewardedAd: () -> Unit, onAdFailed: () -> Unit
+    ) {
+        activity.runOnUiThread {
+            adManagerRepository.loadRewardedAd(activity) {
+                //show ad
+                adManagerRepository.showRewardedAd(activity, object : AdCallback {
+                    override fun onAdClosed() {
+                        //to be added later
+                    }
+
+                    override fun onAdRewarded(reward: RewardItem) {
+                        onRewardedAd()
+                    }
+
+                    override fun onAdLeftApplication() {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onAdLoaded() {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onAdFailedToLoad(errorCode: Int) {
+                        onAdFailed()
+                    }
+
+                    override fun onAdOpened() {
+                        TODO("Not yet implemented")
+                    }
+                })
+            }
+        }
+    }
 }
 
 data class InterpretDreamsScreenState(
     val dreams: List<Dream> = emptyList(),
+    val modelChosen: String = "gpt-3.5-turbo",
+    val authRepository: AuthRepository,
+    val massMassInterpretations: List<MassInterpretation> = emptyList(),
+    val chosenMassInterpretation: MassInterpretation = MassInterpretation(),
     val chosenDreams: List<Dream> = emptyList(),
+    val isLoading: Boolean = false,
+    val response: String = "",
+    val bottomMassInterpretationSheetState: Boolean = false,
+    val bottomDeleteCancelSheetState: Boolean = false,
+    val dreamTokens: StateFlow<Int> = authRepository.dreamTokens
 )
+

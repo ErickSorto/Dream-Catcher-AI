@@ -44,7 +44,7 @@ class DreamNightmareScreenViewModel @Inject constructor(
             }
             is NightmareEvent.RestoreDream -> {
                 viewModelScope.launch {
-                    val dreamToRestore = recentlyDeletedDream?.copy(generatedImage = null) ?: return@launch
+                    val dreamToRestore = recentlyDeletedDream?.copy(generatedImage = "") ?: return@launch
                     dreamUseCases.addDream(dreamToRestore)
                     recentlyDeletedDream = null
                 }

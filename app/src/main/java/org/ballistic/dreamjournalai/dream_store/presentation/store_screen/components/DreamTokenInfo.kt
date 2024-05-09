@@ -32,7 +32,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModelState
 
@@ -44,32 +43,26 @@ fun CustomButtonLayout(
     buy100IsClicked: () -> Unit
 ) {
     val lastClickTime = remember { mutableLongStateOf(0L) }
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp, 8.dp, 8.dp, 8.dp),
-    ) {
-        val (monthly, annual, tag) = createRefs()
-
-        DreamToken500ButtonBuy(
-            storeScreenViewModelState = storeScreenViewModelState,
-            modifier = Modifier.constrainAs(annual) {
-                bottom.linkTo(monthly.top)
-            },
-            buy500IsClicked = singleClick(lastClickTime) { buy500IsClicked() }
-        )
-
+    Column(modifier = Modifier.padding(8.dp)) {
+        Box {
+            DreamToken500ButtonBuy(
+                storeScreenViewModelState = storeScreenViewModelState,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                buy500IsClicked = singleClick(lastClickTime) { buy500IsClicked() }
+            )
+            MostPopularBanner(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .offset(y = (-13).dp)
+            )
+        }
         DreamToken100ButtonBuy(
             storeScreenViewModelState = storeScreenViewModelState,
-            modifier = Modifier.constrainAs(monthly) {
-                bottom.linkTo(parent.bottom)
-            },
+            modifier = Modifier
+                .fillMaxWidth(),
             buy100IsClicked = singleClick(lastClickTime) { buy100IsClicked() }
         )
-
-        MostPopularBanner(modifier = Modifier
-            .constrainAs(tag) {}
-            .offset(y = (-10).dp))
     }
 }
 
@@ -85,7 +78,7 @@ fun DreamToken500ButtonBuy(
             .padding(8.dp, 0.dp, 8.dp, 8.dp)
             .fillMaxWidth()
             .height(80.dp),
-        shape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 8.dp),
+        shape = RoundedCornerShape(8.dp, 8.dp, 8.dp, 8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.8f),
             contentColor = Color.White

@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.Constants.PASSWORD_LABEL
-import org.ballistic.dreamjournalai.feature_dream.presentation.add_edit_dream_screen.components.onKeyboardDismiss
+import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.onKeyboardDismiss
 
 @Composable
 fun PasswordField(

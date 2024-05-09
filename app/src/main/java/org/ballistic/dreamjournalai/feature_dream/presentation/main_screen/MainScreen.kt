@@ -1,13 +1,13 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen
 
 
+import android.os.Vibrator
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,8 +43,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,11 +56,13 @@ import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.components.BottomNavigation
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.components.DrawerGroupHeading
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.navigation.ScreenGraph
 import org.ballistic.dreamjournalai.navigation.Screens
+
 
 @Composable
 fun MainScreenView(
@@ -67,6 +71,9 @@ fun MainScreenView(
     onNavigateToOnboardingScreen: () -> Unit = {},
     onDataLoaded: () -> Unit
 ) {
+
+    val context = LocalContext.current
+    val vibrator = context.getSystemService(Vibrator::class.java)
 
     LaunchedEffect(key1 = Unit) {
         delay(1500)
@@ -78,6 +85,8 @@ fun MainScreenView(
         onMainEvent(MainScreenEvent.UserInteracted)
     }
 
+
+
     val navController = rememberNavController()
     val drawerGroups = listOf(
         DrawerGroup(
@@ -87,9 +96,9 @@ fun MainScreenView(
                 Screens.StoreScreen,
                 Screens.Favorites,
                 Screens.Nightmares,
-                Screens.Tools,
+                Screens.DreamToolGraphScreen,
                 Screens.Statistics,
-                Screens.Dictionary,
+                Screens.Symbol,
             )
         ),
         DrawerGroup(
@@ -125,7 +134,7 @@ fun MainScreenView(
 
     Image(
         painter = rememberAsyncImagePainter(model = mainScreenViewModelState.backgroundResource),
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().blur(15.dp),
         contentDescription = "Lighthouse",
         contentScale = ContentScale.Crop
     )
@@ -159,6 +168,7 @@ fun MainScreenView(
                                 label = { Text(item.title ?: "") },
                                 selected = item == selectedItem.value,
                                 onClick = {
+                                    triggerVibration(vibrator)
                                     scope.launch {
                                         mainScreenViewModelState.drawerMain.close()
                                     }
@@ -179,7 +189,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.1.9",
+                        text = "Version: 1.2.1",
                         color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)
@@ -197,34 +207,40 @@ fun MainScreenView(
                 bottomBar = {
                     AnimatedVisibility(
                         visible = mainScreenViewModelState.scaffoldState.bottomBarState,
-                        enter = slideInVertically(initialOffsetY = { it }),
-                        exit = slideOutVertically(targetOffsetY = { it })
+                        enter = slideInVertically(initialOffsetY = { it + 100}),
+                        exit = slideOutVertically(targetOffsetY = { it + 100 })
                     )
                     {
                         BottomNavigation(
                             navController = navController,
-                            modifier = Modifier.navigationBarsPadding()
+                            modifier = Modifier.navigationBarsPadding(),
+                            vibrator = vibrator,
+                            isNavigationEnabled = mainScreenViewModelState.isBottomBarEnabledState
                         )
                         Box(
                             modifier = Modifier
                                 .navigationBarsPadding()
-                                .offset(y = 4.dp)
+                                .offset(y = (-24).dp)
                                 .fillMaxWidth()
                         ) {
                             FloatingActionButton(
                                 onClick = {
-                                    navController.navigate(Screens.AddEditDreamScreen.route)
+                                    if (mainScreenViewModelState.isBottomBarEnabledState ){
+                                        triggerVibration(vibrator)
+                                        navController.navigate(Screens.AddEditDreamScreen.route)
+                                    }
                                 },
                                 containerColor = colorResource(id = R.color.Yellow),
                                 elevation = FloatingActionButtonDefaults.elevation(3.dp, 4.dp),
                                 shape = CircleShape,
                                 modifier = Modifier
-                                    .size(68.dp)
+                                    .size(60.dp)
                                     .align(Alignment.Center)
 
                             ) {
                                 Icon(
                                     Icons.Filled.Add,
+                                    tint = Color.White,
                                     contentDescription = "Add dream",
                                     modifier = Modifier.size(32.dp)
                                 )
@@ -233,21 +249,16 @@ fun MainScreenView(
                     }
                 },
                 containerColor = Color.Transparent,
-
                 ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .background(
-                            Color.Transparent
-                        )
-                ) {}
+
+                val paddingValues = remember { innerPadding.calculateBottomPadding() }
 
 
                 AnimatedVisibility(visible = true, enter = fadeIn(), exit = fadeOut()) {
                     ScreenGraph(
                         navController = navController,
                         mainScreenViewModelState = mainScreenViewModelState,
+                        bottomPaddingValue = paddingValues,
                         onMainEvent = { onMainEvent(it) },
                     ) { onNavigateToOnboardingScreen() }
                 }

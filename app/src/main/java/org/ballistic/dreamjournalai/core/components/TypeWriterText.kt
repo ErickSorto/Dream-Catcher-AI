@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -23,12 +24,20 @@ fun TypewriterText(
     style: TextStyle = MaterialTheme.typography.bodyLarge,
     color: Color = Color.White,
     animationDuration: Int = 3000,
-    onAnimationComplete: () -> Unit = {}
+    onAnimationComplete: () -> Unit = {},
+    delay: Int = 0
 ) {
     val typedText = remember { mutableStateOf(AnnotatedString("")) }
     val animatedIndex = remember { Animatable(0f) }
+    val hasDelayed = remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(text) {
+        if (!hasDelayed.value) {
+            delay(delay.toLong())
+            hasDelayed.value = true
+        }
         animatedIndex.snapTo(0f)
         typedText.value = AnnotatedString("")
         animatedIndex.animateTo(
