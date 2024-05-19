@@ -53,7 +53,7 @@ fun DateHeader(dateString: String) {
 
     Box(
         modifier = Modifier
-            .padding(12.dp, 16.dp, 8.dp, 10.dp)
+            .padding(12.dp, 8.dp, 8.dp, 8.dp)
             .background(
                 colorResource(id = R.color.light_black).copy(alpha = 0.8f),
                 shape = RoundedCornerShape(8.dp)
@@ -63,7 +63,7 @@ fun DateHeader(dateString: String) {
             text = displayString,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
-                .padding(8.dp)
+                .padding(6.dp)
                 .padding(horizontal = 8.dp),
             color = colorResource(id = R.color.white),
             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight

@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "433518106186-9t474t481ld3vv6kk2geu75riadv2olk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.ballistic.dreamjournalai",
+            "certificate_hash": "330837b0052404f7f1814e4d6428ab204230bd4c"
+          }
+        },
+        {
           "client_id": "433518106186-davrut82hm8a4ba33t0qkukradd3qs0c.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -60,12 +68,13 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "433518106186-fas918qt78ffo3t0rl2eg86ta05sic89.apps.googleusercontent.com",
+              "client_id": "433518106186-6r8gpgpn1fffinii7p8su2ualcejfim8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-8710979310678386~8561440088"
     }
   ],
   "configuration_version": "1"

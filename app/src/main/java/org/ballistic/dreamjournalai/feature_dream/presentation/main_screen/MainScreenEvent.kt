@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.DrawerValue
 
 sealed class MainScreenEvent {
@@ -12,6 +13,8 @@ sealed class MainScreenEvent {
     data class SearchDreams(val query: String) : MainScreenEvent()
     data class ConsumeDreamTokens(val tokensToConsume: Int) : MainScreenEvent()
     data class ShowSnackBar(val message: String) : MainScreenEvent()
+
+    data class UpdatePaddingValues(val paddingValues: PaddingValues) : MainScreenEvent()
 
     data class ToggleDrawerState(val drawerValue: DrawerValue) : MainScreenEvent()
     data object UserInteracted : MainScreenEvent()

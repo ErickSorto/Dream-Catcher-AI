@@ -164,11 +164,11 @@ fun StandardAIPageLayout(
                     textFieldState = textFieldState,
                     onAddEditEvent = onAddEditEvent,
                     snackBarState = snackBarState,
-                    size = 120.dp,  // Adjusted size
+                    size = 160.dp,  // Adjusted size
                     fontSize = 24.sp,  // Adjusted font size
                     modifier = Modifier.fillMaxSize(),
                     vibrator = vibrator,
-                    hasText = false
+                    hasText = true
                 )
             }
         }
@@ -273,13 +273,13 @@ fun AIPainterPage(
             UniversalButton(
                 textFieldState = textFieldState,
                 buttonType = org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType.PAINTER.buttonType,
-                size = 120.dp,
+                size = 160.dp,
                 fontSize = 24.sp,
                 onAddEditEvent = onAddEditEvent,
                 snackBarState = snackBarState,
                 vibrator = vibrator,
                 modifier = Modifier.fillMaxSize(),
-                hasText = false
+                hasText = true
             )
         }
     }
@@ -358,14 +358,14 @@ fun AIQuestionPage(
         if (questionState.response == "" && !questionState.isLoading) {
             UniversalButton(
                 textFieldState = textFieldState,
-                size = 120.dp,
+                size = 160.dp,
                 fontSize = 24.sp,
                 onAddEditEvent = onAddEditEvent,
                 snackBarState = snackBarState,
                 modifier = Modifier.fillMaxSize(),
                 buttonType = org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType.QUESTION.buttonType,
                 vibrator = vibrator,
-                hasText = false
+                hasText = true
             )
         }
     }

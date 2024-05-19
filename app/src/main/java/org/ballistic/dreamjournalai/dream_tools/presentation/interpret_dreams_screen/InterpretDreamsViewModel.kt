@@ -274,7 +274,7 @@ class InterpretDreamsViewModel @Inject constructor(
                 interpretation = completion.choices.firstOrNull()?.message?.content ?: "",
                 listOfDreamIDs = interpretDreamsScreenState.value.chosenDreams.map { it.id },
                 date = System.currentTimeMillis(),
-                model = if (modelId == "gpt-4") "Advanced" else "Standard",
+                model = if (modelId == "gpt-4" || modelId == "gpt-4o") "Advanced" else "Standard",
                 id = null
             )
             massInterpretationRepository.addInterpretation(

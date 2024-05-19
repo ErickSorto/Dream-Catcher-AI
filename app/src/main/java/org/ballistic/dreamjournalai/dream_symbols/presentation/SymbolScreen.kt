@@ -155,7 +155,7 @@ fun SymbolScreen(
             if (symbolScreenState.isSearching) {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(bottom = 32.dp)
+                    contentPadding = PaddingValues(bottom = 32.dp, top = 8.dp)
                 ) {
                     items(symbolScreenState.filteredSearchedWords) { wordItem ->
                         DictionaryWordItem(
@@ -217,7 +217,7 @@ fun SymbolScreen(
                 }
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(bottom = 32.dp)
+                    contentPadding = PaddingValues(bottom = 32.dp, top = 8.dp)
                 ) {
                     items(processedWords) { wordItem ->
                         DictionaryWordItem(

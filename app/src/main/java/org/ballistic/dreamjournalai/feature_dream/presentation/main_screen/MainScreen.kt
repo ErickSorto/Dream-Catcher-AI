@@ -86,7 +86,6 @@ fun MainScreenView(
     }
 
 
-
     val navController = rememberNavController()
     val drawerGroups = listOf(
         DrawerGroup(
@@ -134,7 +133,9 @@ fun MainScreenView(
 
     Image(
         painter = rememberAsyncImagePainter(model = mainScreenViewModelState.backgroundResource),
-        modifier = Modifier.fillMaxSize().blur(15.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .blur(15.dp),
         contentDescription = "Lighthouse",
         contentScale = ContentScale.Crop
     )
@@ -189,7 +190,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.2.1",
+                        text = "Version: 1.2.2",
                         color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)
@@ -207,7 +208,7 @@ fun MainScreenView(
                 bottomBar = {
                     AnimatedVisibility(
                         visible = mainScreenViewModelState.scaffoldState.bottomBarState,
-                        enter = slideInVertically(initialOffsetY = { it + 100}),
+                        enter = slideInVertically(initialOffsetY = { it + 100 }),
                         exit = slideOutVertically(targetOffsetY = { it + 100 })
                     )
                     {
@@ -225,7 +226,7 @@ fun MainScreenView(
                         ) {
                             FloatingActionButton(
                                 onClick = {
-                                    if (mainScreenViewModelState.isBottomBarEnabledState ){
+                                    if (mainScreenViewModelState.isBottomBarEnabledState) {
                                         triggerVibration(vibrator)
                                         navController.navigate(Screens.AddEditDreamScreen.route)
                                     }
@@ -249,16 +250,15 @@ fun MainScreenView(
                     }
                 },
                 containerColor = Color.Transparent,
-                ) { innerPadding ->
+            ) { innerPadding ->
 
-                val paddingValues = remember { innerPadding.calculateBottomPadding() }
-
+                onMainEvent(MainScreenEvent.UpdatePaddingValues(innerPadding))
 
                 AnimatedVisibility(visible = true, enter = fadeIn(), exit = fadeOut()) {
                     ScreenGraph(
                         navController = navController,
                         mainScreenViewModelState = mainScreenViewModelState,
-                        bottomPaddingValue = paddingValues,
+                        bottomPaddingValue = mainScreenViewModelState.paddingValues.calculateBottomPadding(),
                         onMainEvent = { onMainEvent(it) },
                     ) { onNavigateToOnboardingScreen() }
                 }

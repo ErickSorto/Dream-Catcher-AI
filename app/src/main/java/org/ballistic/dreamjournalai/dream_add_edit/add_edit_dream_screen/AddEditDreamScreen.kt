@@ -88,6 +88,7 @@ fun AddEditDreamScreen(
     ).forEach(onAddEditDreamEvent)
 
     val scope = rememberCoroutineScope()
+
     BackHandler(
         enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading
                 && !addEditDreamState.dreamAIImage.isLoading && !addEditDreamState.dreamAIExplanation.isLoading
@@ -96,7 +97,6 @@ fun AddEditDreamScreen(
     ) {
         onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(true))
     }
-
 
     val dreamBackgroundImage = remember {
         val initialIndex = when {
@@ -131,7 +131,6 @@ fun AddEditDreamScreen(
                 .blur(15.dp)
         )
     }
-
 
     if (addEditDreamState.dialogState) {
         focusManager.clearFocus()

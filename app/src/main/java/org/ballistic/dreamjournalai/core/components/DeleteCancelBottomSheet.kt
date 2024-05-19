@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -70,18 +71,20 @@ fun DeleteCancelBottomSheet(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.RedOrange)
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         text = "Delete",
-                        style = typography.titleMedium,
+                        style = typography.headlineLarge,
                         color = colorResource(id = R.color.white)
                     )
                 }
             }
         },
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        containerColor = colorResource(id = R.color.light_black)
 
     )
 }

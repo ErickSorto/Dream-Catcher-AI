@@ -803,7 +803,7 @@ class AddEditDreamViewModel @Inject constructor(
             val openAI = OpenAI(BuildConfig.API_KEY)
             val currentLocale = Locale.getDefault().language
 
-            val modelId = if (cost <= 1) "gpt-3.5-turbo" else "gpt-4"
+            val modelId = if (cost <= 0) "gpt-3.5-turbo" else "gpt-4o"
             val chatCompletionRequest = ChatCompletionRequest(
                 model = ModelId(modelId), messages = listOf(
                     ChatMessage(
@@ -866,7 +866,7 @@ class AddEditDreamViewModel @Inject constructor(
             val openAI = OpenAI(BuildConfig.API_KEY)
 
             val chatCompletionRequest = ChatCompletionRequest(
-                model = ModelId("gpt-4"),
+                model = ModelId("gpt-4o"),
                 messages = listOf(
                     ChatMessage(
                         role = ChatRole.User,
@@ -918,12 +918,12 @@ class AddEditDreamViewModel @Inject constructor(
             val imageCreation = ImageCreation(
                 prompt = addEditDreamState.value.dreamGeneratedDetails.response,
                 model = ModelId(
-                    if (cost <= 2) {
+                    if (cost <= 1) {
                         "dall-e-2"
                     } else "dall-e-3"
                 ), // Adjust the model as per your requirement
                 n = 1,
-                size = if (cost <= 2) ImageSize.is1024x1024 else ImageSize.is1024x1024,
+                size = if (cost <= 1) ImageSize.is512x512 else ImageSize.is1024x1024
             )
 
             val images =

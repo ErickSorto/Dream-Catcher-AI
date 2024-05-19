@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.CoroutineScope
@@ -181,6 +182,7 @@ fun DreamItem(
                 Text(
                     text = dream.title,
                     style = typography.titleSmall,
+                    fontSize = 16.sp,
                     color = colorResource(id = R.color.brighter_white),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

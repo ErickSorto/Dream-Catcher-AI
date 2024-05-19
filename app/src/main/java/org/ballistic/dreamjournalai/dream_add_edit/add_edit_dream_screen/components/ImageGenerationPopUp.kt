@@ -91,8 +91,11 @@ fun ImageGenerationPopUp(
                             contentDescription = "Localized Description"
                         }
                     )
-
-                    Text(text = "Standard AI", color = colorResource(id = R.color.white))
+                    Text(
+                        text = "Advanced AI",
+                        color = colorResource(id = R.color.white),
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -100,20 +103,17 @@ fun ImageGenerationPopUp(
                         selected = !state,
                         onClick = {
                             state = false
-                            amount = 5
+                            amount = 1
                         },
                         modifier = Modifier.semantics {
                             contentDescription = "Localized Description"
                         }
                     )
-                    Text(
-                        text = "Advanced AI",
-                        color = colorResource(id = R.color.white),
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
+
+                    Text(text = "Standard AI", color = colorResource(id = R.color.white))
                 }
                 AdTokenLayout(
-                    isAdButtonVisible = amount <= 2,
+                    isAdButtonVisible = amount <= 1,
                     onAdClick = { amount ->
                         onAdClick(amount)
                     },

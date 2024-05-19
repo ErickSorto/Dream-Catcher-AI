@@ -12,7 +12,7 @@ sealed class Screens(
 ) {
     data object DreamJournalScreen : Screens(
         route = "dreams_screen",
-        title = "Dream Journal",
+        title = "My Dreams",
         icon = Icons.Filled.Book,
     )
 

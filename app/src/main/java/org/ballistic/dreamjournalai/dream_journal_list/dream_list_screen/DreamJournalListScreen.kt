@@ -108,7 +108,7 @@ fun DreamJournalListScreen(
                 .fillMaxSize()
                 .dynamicBottomNavigationPadding()
                 .padding(top = topPadding, bottom = bottomPaddingValue),
-            contentPadding = PaddingValues(),
+            contentPadding = PaddingValues(bottom = 16.dp),
         ) {
             val dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
 

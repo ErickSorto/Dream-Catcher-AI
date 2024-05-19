@@ -1,11 +1,13 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +47,7 @@ class MainScreenViewModel @Inject constructor(
             R.drawable.blue_lighthouse
 
         } else {
-            R.drawable.background_during_day
+            R.drawable.sunrise_lighthouse
         }
     }
 
@@ -145,10 +147,14 @@ class MainScreenViewModel @Inject constructor(
                     isBottomBarEnabledState = event.state
                 )
             }
+            is MainScreenEvent.UpdatePaddingValues -> {
+                _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
+                    paddingValues = event.paddingValues
+                )
+            }
         }
     }
 }
-
 
 data class MainScreenViewModelState(
     val scaffoldState: ScaffoldState = ScaffoldState(),
@@ -159,6 +165,7 @@ data class MainScreenViewModelState(
     val searchedText: MutableStateFlow<String> = MutableStateFlow(""),
     val dreamTokens: StateFlow<Int> = authRepo.dreamTokens,
     val backgroundResource: Int = R.drawable.background_during_day,
+    val paddingValues: PaddingValues = PaddingValues(0.dp),
 )
 data class ScaffoldState (
     val bottomBarState: Boolean = true,

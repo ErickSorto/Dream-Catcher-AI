@@ -51,7 +51,7 @@ fun QuestionAIGenerationBottomSheet(
     modifier: Modifier = Modifier
 ) {
     var state by remember { mutableStateOf(true) }
-    var amount by remember { mutableIntStateOf(1) }
+    var amount by remember { mutableIntStateOf(0) }
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     ModalBottomSheet(
         onDismissRequest = onClickOutside,
@@ -111,7 +111,7 @@ fun QuestionAIGenerationBottomSheet(
                         selected = state,
                         onClick = {
                             state = true
-                            amount = 1
+                            amount = 0
                         },
                         modifier = Modifier.semantics { contentDescription = "Localized Description" }
                     )
@@ -127,7 +127,7 @@ fun QuestionAIGenerationBottomSheet(
                         selected = !state,
                         onClick = {
                             state = false
-                            amount = 2
+                            amount = 1
                         },
                         modifier = Modifier.semantics { contentDescription = "Localized Description" }
                     )
@@ -140,7 +140,7 @@ fun QuestionAIGenerationBottomSheet(
                 }
                 // AdTokenLayout for managing Ads and Tokens
                 AdTokenLayout(
-                    isAdButtonVisible = amount <= 1,
+                    isAdButtonVisible = amount == 1,
                     onAdClick = { amount ->
                         onAdClick(amount)
                     },

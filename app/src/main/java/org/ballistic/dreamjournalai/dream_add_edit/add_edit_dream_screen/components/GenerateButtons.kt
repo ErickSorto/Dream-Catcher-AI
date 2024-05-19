@@ -5,6 +5,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +19,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -112,7 +117,10 @@ fun UniversalButton(
 
     Column(
         modifier = modifier
-            .clickable {
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(color = Color.White),
+            ) {
                 triggerVibration(vibrator)
                 if (textFieldState.text.isNotBlank() && textFieldState.text.length >= 20) {
                     keyBoardController?.hide()
@@ -129,6 +137,15 @@ fun UniversalButton(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        if (hasText) {
+            Text(
+                text = "Tap",
+                fontSize = fontSize,
+                color = Color.Transparent
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         Icon(
             painter = rememberAsyncImagePainter(buttonType.drawableId),
             contentDescription = buttonType.title,
@@ -138,10 +155,11 @@ fun UniversalButton(
             tint = textColor
         )
         if (hasText) {
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = buttonType.description,
+                text = "Tap to ${buttonType.title}",
                 fontSize = fontSize,
-                color = textColor
+                color = Color.White.copy(alpha = 0.5f)
             )
         }
     }
@@ -162,11 +180,12 @@ fun AdTokenLayout(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (isAdButtonVisible) {
-            WatchAdButton(onClick = { onAdClick(amount) })
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        Spacer(modifier = Modifier.height(8.dp))
         DreamTokenGenerateButton(onClick = { onDreamTokenClick(amount) }, amount = amount)
+        if (isAdButtonVisible) {
+            Spacer(modifier = Modifier.height(16.dp))
+            WatchAdButton(onClick = { onAdClick(amount) })
+        }
     }
 }
 
@@ -197,6 +216,7 @@ fun WatchAdButton(
                 .padding(4.dp),
             color = Color.White,
             style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
         Spacer(modifier = Modifier.size(36.dp))
@@ -208,6 +228,7 @@ fun DreamTokenGenerateButton(
     onClick: () -> Unit,
     amount: Int
 ) {
+    val amountText = if (amount == 0) "" else amount.toString()
     Button(
         onClick = onClick,
         modifier = Modifier
@@ -221,7 +242,7 @@ fun DreamTokenGenerateButton(
                 .size(40.dp)
         )
         Text(
-            text = "$amount",
+            text = amountText,
             modifier = Modifier
                 .padding(4.dp),
             color = Color.White,
@@ -229,13 +250,27 @@ fun DreamTokenGenerateButton(
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "Dream Token",
+            text = if (amount == 0) "Free" else "Dream Token",
             modifier = Modifier
                 .padding(4.dp),
             color = Color.White,
             style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
-        Spacer(modifier = Modifier.width(48.dp))
+        Icon(
+            painter = rememberAsyncImagePainter(R.drawable.dream_token),
+            contentDescription = "DreamToken",
+            modifier = Modifier
+                .size(40.dp),
+            tint = Color.Transparent
+        )
+        Text(
+            text = amountText,
+            modifier = Modifier
+                .padding(4.dp),
+            color = Color.Transparent,
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
 }

@@ -44,7 +44,7 @@ fun DreamInterpretationPopUp(
     windowInsets: WindowInsets = WindowInsets.displayCutout,
 ) {
     var state by remember { mutableStateOf(true) }
-    var amount by remember { mutableIntStateOf(1) }
+    var amount by remember { mutableIntStateOf(0) }
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     ModalBottomSheet(
         windowInsets = windowInsets,
@@ -82,7 +82,7 @@ fun DreamInterpretationPopUp(
                             selected = state,
                             onClick = {
                                 state = true
-                                amount = 1
+                                amount = 0
                                       },
                             modifier = Modifier.semantics { contentDescription = "Localized Description" }
                         )
@@ -96,7 +96,7 @@ fun DreamInterpretationPopUp(
                             selected = !state,
                             onClick = {
                                 state = false
-                                amount = 2
+                                amount = 1
                                       },
                             modifier = Modifier.semantics { contentDescription = "Localized Description" }
                         )
@@ -108,7 +108,7 @@ fun DreamInterpretationPopUp(
                         )
                     }
                     AdTokenLayout(
-                        isAdButtonVisible = amount <= 1,
+                        isAdButtonVisible = amount <= 1 && amount != 0,
                         onAdClick = { amount ->
                             onAdClick(amount) // Use the lambda correctly
                         },

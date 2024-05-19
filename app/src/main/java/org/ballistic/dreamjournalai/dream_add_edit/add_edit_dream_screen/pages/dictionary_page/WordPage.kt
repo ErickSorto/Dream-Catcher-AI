@@ -73,7 +73,7 @@ fun WordPage(
                     ),
             ) {
                 TypewriterText(
-                    text = "No words found in your dream from the dictionary. " +
+                    text = "No words found in your dream from the symbol list. " +
                             "Try adding more words to your dream!",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,

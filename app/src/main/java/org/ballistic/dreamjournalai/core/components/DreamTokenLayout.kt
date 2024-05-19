@@ -42,7 +42,7 @@ fun DreamTokenLayout(
             TypewriterText(
                 modifier = Modifier.padding(4.dp, 4.dp, 8.dp, 4.dp),
                 text = totalDreamTokens.toString(),
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
+                style = MaterialTheme.typography.titleMedium,
                 animationDuration = 250,
             )
         }

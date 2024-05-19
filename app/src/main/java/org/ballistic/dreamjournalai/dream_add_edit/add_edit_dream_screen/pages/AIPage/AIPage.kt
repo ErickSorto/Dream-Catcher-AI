@@ -12,6 +12,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -144,9 +145,9 @@ fun AIPage(
     if (addEditDreamState.dreamImageGenerationPopUpState) {
         ImageGenerationPopUp(
             addEditDreamState = addEditDreamState,
-            onDreamTokenClick = {
+            onDreamTokenClick = { amount ->
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamImageGenerationPopUpState(false))
-                if (dreamTokens < 2) {
+                if (dreamTokens < amount) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -161,7 +162,7 @@ fun AIPage(
                                 detailState,
                                 activity,
                                 false,
-                                it
+                                amount
                             )
                         )
                     }
@@ -205,7 +206,7 @@ fun AIPage(
             },
             onDreamTokenClick = { amount ->
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamInterpretationPopUpState(false))
-                if (dreamTokens <= 0) {
+                if (dreamTokens < amount) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -252,7 +253,7 @@ fun AIPage(
             },
             onDreamTokenClick = { amount ->
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamAdvicePopUpState(false))
-                if (dreamTokens <= 0) {
+                if (dreamTokens < amount) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -287,7 +288,7 @@ fun AIPage(
             onAddEditDreamEvent = onAddEditDreamEvent,
             onDreamTokenClick = { amount ->
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamQuestionPopUpState(false))
-                if (dreamTokens <= 0) {
+                if (dreamTokens < amount) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -333,7 +334,7 @@ fun AIPage(
             dreamTokens = dreamTokens,
             onDreamTokenClick = { amount ->
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamStoryPopUpState(false))
-                if (dreamTokens <= 0) {
+                if (dreamTokens < amount) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -392,7 +393,7 @@ fun AIPage(
             },
             onDreamTokenClick = { amount ->
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamMoodPopUpState(false))
-                if (dreamTokens <= 0) {
+                if (dreamTokens < amount) {
                     scope.launch {
                         addEditDreamState.snackBarHostState.value.showSnackbar(
                             message = "Not enough dream tokens",
@@ -434,29 +435,40 @@ fun AIPage(
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+
+            HorizontalPager(
+                state = pagerState2,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                Spacer(
-                    modifier = Modifier
-                        .weight(1f)
+                    .aspectRatio(1f)
+                    .background(
+                        color = colorResource(id = R.color.light_black).copy(alpha = 0.8f)
+                    )
+            ) { page ->
 
+                // Get the AI page type corresponding to the current page index
+                val aiPageType =
+                    org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType.entries[page]
+
+                // Render the universal AI page for the current type
+                UniversalAIPage(
+                    contentType = aiPageType,
+                    addEditDreamState = addEditDreamState,
+                    textFieldState = textFieldState,
+                    onAddEditEvent = onAddEditDreamEvent,
+                    vibrator = vibrator,
+                    snackBarState = {
+                        scope.launch {
+                            addEditDreamState.snackBarHostState.value.showSnackbar(
+                                message = "Dream is too short",
+                                actionLabel = "Dismiss",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    },
+                    infiniteTransition = infiniteTransition
                 )
-                Text(
-                    text = "Tokens",
-                    style = typography.titleMedium.copy(color = colorResource(id = R.color.brighter_white)),
-                    fontWeight = FontWeight.Light,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                DreamTokenLayout(
-                    totalDreamTokens = dreamTokens,
-                )
-                Spacer(modifier = Modifier.weight(1f))
             }
-
             SecondaryTabRow(
                 modifier = Modifier,
                 selectedTabIndex = pagerState2.currentPage,
@@ -468,7 +480,7 @@ fun AIPage(
                 },
                 divider = {},
                 contentColor = colorResource(id = R.color.white),
-                containerColor = Color.Transparent,
+                containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.5f),
             ) {
                 pages.forEachIndexed { index, page ->
                     val isSelected = pagerState2.currentPage == index
@@ -528,46 +540,32 @@ fun AIPage(
                     )
                 }
             }
-
-
-            HorizontalPager(
-                state = pagerState2,
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(
-                        color = colorResource(id = R.color.light_black).copy(alpha = 0.8f)
-                    )
-            ) { page ->
+            ) {
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
 
-                // Get the AI page type corresponding to the current page index
-                val aiPageType = org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType.entries[page]
-
-                // Render the universal AI page for the current type
-                UniversalAIPage(
-                    contentType = aiPageType,
-                    addEditDreamState = addEditDreamState,
-                    textFieldState = textFieldState,
-                    onAddEditEvent = onAddEditDreamEvent,
-                    vibrator = vibrator,
-                    snackBarState = {
-                        scope.launch {
-                            addEditDreamState.snackBarHostState.value.showSnackbar(
-                                message = "Dream is too short",
-                                actionLabel = "Dismiss",
-                                duration = SnackbarDuration.Short
-                            )
-                        }
-                    },
-                    infiniteTransition = infiniteTransition
                 )
+                Text(
+                    text = "Tokens",
+                    style = typography.titleMedium.copy(color = colorResource(id = R.color.brighter_white)),
+                    fontWeight = FontWeight.Light,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                DreamTokenLayout(
+                    totalDreamTokens = dreamTokens,
+                )
+                Spacer(modifier = Modifier.weight(1f))
             }
-
-            Spacer(modifier = Modifier.weight(1f))
             when (pagerState2.currentPage) {
                 0 -> {
                     AIButton(
-                        text = "Generate Image",
+                        text = "Paint Dream",
                         color = R.color.sky_blue,
                         onClick = {
                             if (textFieldState.text.length >= 20) {
@@ -585,7 +583,7 @@ fun AIPage(
                                     )
                                 }
                             }
-                        }
+                        },
                     )
                 }
 
@@ -609,7 +607,7 @@ fun AIPage(
                                     )
                                 }
                             }
-                        }
+                        },
                     )
                 }
 
@@ -633,7 +631,7 @@ fun AIPage(
                                     )
                                 }
                             }
-                        }
+                        },
                     )
                 }
 
@@ -657,7 +655,7 @@ fun AIPage(
                                     )
                                 }
                             }
-                        }
+                        },
                     )
                 }
 
@@ -681,7 +679,7 @@ fun AIPage(
                                     )
                                 }
                             }
-                        }
+                        },
                     )
                 }
 
@@ -705,11 +703,10 @@ fun AIPage(
                                     )
                                 }
                             }
-                        }
+                        },
                     )
                 }
             }
-            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
@@ -718,8 +715,7 @@ fun AIPage(
 fun AIButton(
     text: String,
     color: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
     val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
@@ -728,22 +724,31 @@ fun AIButton(
             triggerVibration(vibrator)
             onClick()
         },
-        shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(color)
-        ),
-        elevation = ButtonDefaults.buttonElevation(5.dp),
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .shadow(4.dp, RoundedCornerShape(10.dp)), // Add shadow with rounded corners,
+            .border(
+                width = 4.dp,
+                color = colorResource(R.color.light_black).copy(alpha = 0.3f),
+                shape = RoundedCornerShape(9.dp)
+            ),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorResource(color),
+            contentColor = Color.White,
+        ),
+
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 5.dp,
+            pressedElevation = 10.dp,
+        ),
     ) {
         Text(
             text = text,
             style = typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             color = Color.White,
             textAlign = TextAlign.Center,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
         )

@@ -98,7 +98,7 @@ fun BottomModalSheetMassInterpretation(
                     RadioButton(
                         selected = !state,
                         onClick = {
-                            onEvent(InterpretDreamsToolEvent.UpdateModel("gpt-4"))
+                            onEvent(InterpretDreamsToolEvent.UpdateModel("gpt-4o"))
                             state = false
                             amount = interpretDreamsScreenState.chosenDreams.size * 2
                         },
