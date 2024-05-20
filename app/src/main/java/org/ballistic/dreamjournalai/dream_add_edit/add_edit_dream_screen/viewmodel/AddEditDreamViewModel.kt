@@ -837,13 +837,13 @@ class AddEditDreamViewModel @Inject constructor(
             )
         )
 
-        val randomStyle =  "A photograph of the scene, 4k, detailed, with vivid colors" + if (eventCost <= 2) {
+        val randomStyle =  "A photograph of the scene, 4k, detailed, with vivid colors" + if (eventCost <= 1) {
             " and a very simple beautiful scene"
         } else {
             ""
         }
 
-        val imagePrompt = if (eventCost <= 2) {
+        val imagePrompt = if (eventCost <= 1) {
             "You are a dream environment builder: In third person and one short sentence 8 to 20 words build the visual elements, such as characters, scene, objects that stand out, or setting of the dream that follows. Make it short and straightforward: \n\n${
                 contentTextFieldState.value.text
             } \n\nUse vivid imagery and a palette of rich, beautiful colors to highlight key objects or characters. Keep the description straightforward and focused on visuals only"
@@ -854,7 +854,7 @@ class AddEditDreamViewModel @Inject constructor(
         }
 
 
-        val creativity = if (eventCost <= 2) {
+        val creativity = if (eventCost <= 1) {
             .4
         } else {
             1.2
@@ -878,7 +878,7 @@ class AddEditDreamViewModel @Inject constructor(
             )
 
             val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-
+            Log.d("AddEditDreamViewModel", "Response: ${completion.choices.firstOrNull()?.message?.content}")
             // Update state with success
             _addEditDreamState.update { state ->
                 state.copy(
@@ -923,7 +923,7 @@ class AddEditDreamViewModel @Inject constructor(
                     } else "dall-e-3"
                 ), // Adjust the model as per your requirement
                 n = 1,
-                size = if (cost <= 1) ImageSize.is512x512 else ImageSize.is1024x1024
+                size = if (cost <= 1) ImageSize.is512x512 else ImageSize.is1024x1024,
             )
 
             val images =
