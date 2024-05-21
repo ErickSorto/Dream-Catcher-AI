@@ -42,6 +42,7 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -71,6 +72,7 @@ fun OnboardingScreen(
 ) {
     val isUserAnonymous = loginViewModelState.isUserAnonymous
     val showLoginLayout = remember { mutableStateOf(false) }
+    val isSplashScreenClosed = remember { mutableStateOf(false) }
     val titleText = remember { mutableStateOf("Welcome Dreamer!") }
     val visible = remember { mutableStateOf(true) }
     val transition = updateTransition(visible.value, label = "")
@@ -138,9 +140,10 @@ fun OnboardingScreen(
         onLoginEvent(LoginEvent.UserAccountStatus)
     }
 
-    LaunchedEffect(key1 = Unit) {
-        delay(1500)
+    LaunchedEffect(Unit) {
+        delay(1000)
         onDataLoaded()
+        isSplashScreenClosed.value = true
     }
 
     ObserveLoginState(
@@ -196,31 +199,35 @@ fun OnboardingScreen(
                     ),
                     textAlign = TextAlign.Center
                 )
-                TypewriterText(
-                    text = if (visible.value) titleText.value else "Dream Journal AI",
-                    modifier = Modifier.padding(16.dp),
-                    style = TextStyle(
-                        color = transition.animateColor(label = "") { if (it) Color.White else Color.Transparent }.value,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    textAlign = TextAlign.Center,
-                    animationDuration = 5000,
-                    onAnimationComplete = {
-                        scope.launch {
-                            if (!showLoginLayout.value) {
-                                loginViewModelState.isLoginLayout.value = true
-                            }
-                            showLoginLayout.value = true
-                            delay(1000)  // Delay for 1 second
-                            visible.value = !visible.value
-                            if (visible.value) {
-                                titleText.value = "Dream Journal AI"
-                                showSubheader.value = true
+
+                if (isSplashScreenClosed.value){
+                    TypewriterText(
+                        text = if (visible.value) titleText.value else "Dream Journal AI",
+                        modifier = Modifier.padding(16.dp),
+                        style = TextStyle(
+                            color = transition.animateColor(label = "") { if (it) Color.White else Color.Transparent }.value,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        textAlign = TextAlign.Center,
+                        animationDuration = 5000,
+                        onAnimationComplete = {
+                            scope.launch {
+                                if (!showLoginLayout.value) {
+                                    loginViewModelState.isLoginLayout.value = true
+                                }
+                                showLoginLayout.value = true
+                                delay(1000)  // Delay for 1 second
+                                visible.value = !visible.value
+                                if (visible.value) {
+                                    titleText.value = "Dream Journal AI"
+                                    showSubheader.value = true
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
+
             }
             Spacer(modifier = Modifier.weight(1f))
             if (showLoginLayout.value) {

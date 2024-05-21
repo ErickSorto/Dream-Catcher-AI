@@ -63,7 +63,7 @@ fun MainGraph(
                 onNavigateToOnboardingScreen = {
                     navController.popBackStack()
                     navController.navigate(Screens.OnboardingScreen.route)
-                }
+                },
             )
         }
     }

@@ -33,7 +33,7 @@ enum class ButtonType(
                 it
             )
         }),
-    ADVICE("Get Advice",
+    ADVICE("get Advice",
         "Dream Advice",
         R.drawable.baseline_lightbulb_24,
         2,
@@ -44,7 +44,7 @@ enum class ButtonType(
                 it
             )
         }),
-    QUESTION("Ask a Question",
+    QUESTION("ask a Question",
         "Ask a Question",
         R.drawable.baseline_question_answer_24,
         3,

@@ -40,6 +40,7 @@ fun ScreenGraph(
     bottomPaddingValue: Dp,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onNavigateToOnboardingScreen: () -> Unit = {},
+    onDataLoaded: () -> Unit,
 ) {
 
     NavHost(
@@ -61,6 +62,7 @@ fun ScreenGraph(
                 bottomPaddingValue = bottomPaddingValue,
                 onMainEvent = { onMainEvent(it) },
                 onDreamListEvent = { dreamJournalListViewModel.onEvent(it) },
+                onDataLoaded = { onDataLoaded() }
             )
         }
 
@@ -165,7 +167,7 @@ fun ScreenGraph(
                 mainScreenViewModelState = mainScreenViewModelState,
                 bottomPaddingValue = bottomPaddingValue,
                 onMainEvent = onMainEvent,
-                onNavigate = {route ->
+                onNavigate = { route ->
                     navController.navigate(route)
                 },
             )

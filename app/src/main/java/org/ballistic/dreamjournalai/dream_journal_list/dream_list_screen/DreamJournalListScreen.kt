@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +50,7 @@ fun DreamJournalListScreen(
     bottomPaddingValue: Dp,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onDreamListEvent: (DreamListEvent) -> Unit = {},
+    onDataLoaded: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -57,6 +59,9 @@ fun DreamJournalListScreen(
     onMainEvent(MainScreenEvent.SetFloatingActionButtonState(true))
     onMainEvent(MainScreenEvent.SetDrawerState(true))
 
+    LaunchedEffect(Unit) {
+        onDataLoaded()
+    }
     if (dreamJournalListState.bottomDeleteCancelSheetState) {
         DeleteCancelBottomSheet(
             title = "Delete this Dream?",
