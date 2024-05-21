@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,6 +47,7 @@ fun ImageGenerationPopUp(
 ) {
     var state by remember { mutableStateOf(true) }
     var amount by remember { mutableIntStateOf(2) }
+
     ModalBottomSheet(
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         onDismissRequest = {
@@ -58,7 +60,8 @@ fun ImageGenerationPopUp(
                     .fillMaxWidth()
                     .background(Color.Transparent)
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp, 0.dp, 16.dp, 64.dp),
+                    .padding(16.dp, 0.dp, 16.dp, 64.dp)
+                    .animateContentSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -92,7 +95,7 @@ fun ImageGenerationPopUp(
                         }
                     )
                     Text(
-                        text = "Advanced AI",
+                        text = "High Quality",
                         color = colorResource(id = R.color.white),
                         modifier = Modifier.padding(end = 8.dp)
                     )
@@ -110,7 +113,7 @@ fun ImageGenerationPopUp(
                         }
                     )
 
-                    Text(text = "Standard AI", color = colorResource(id = R.color.white))
+                    Text(text = "Low Quality", color = colorResource(id = R.color.white))
                 }
                 AdTokenLayout(
                     isAdButtonVisible = amount <= 1,

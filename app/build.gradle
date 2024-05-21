@@ -17,7 +17,7 @@ android {
         applicationId "org.ballistic.dreamjournalai"
         minSdk 26
         targetSdk 34
-        versionCode 61
+        versionCode 62
         versionName "1.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

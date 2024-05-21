@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +49,7 @@ fun DreamInterpretationPopUp(
     var amount by remember { mutableIntStateOf(0) }
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     ModalBottomSheet(
+        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         windowInsets = windowInsets,
         onDismissRequest = {
             onClickOutside()
@@ -57,7 +60,8 @@ fun DreamInterpretationPopUp(
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
                         .padding(bottom = bottomPadding)
-                        .padding(16.dp, 0.dp, 16.dp, 16.dp),
+                        .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                        .animateContentSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(

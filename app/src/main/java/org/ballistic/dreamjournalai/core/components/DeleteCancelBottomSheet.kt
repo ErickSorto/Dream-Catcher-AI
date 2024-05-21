@@ -38,8 +38,11 @@ fun DeleteCancelBottomSheet(
     onClickOutside: () -> Unit,
     windowInsets: WindowInsets = WindowInsets.displayCutout,
 ) {
+
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
     ModalBottomSheet(
+        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         onDismissRequest = onClickOutside,
         windowInsets = windowInsets,
         content = {
@@ -48,7 +51,7 @@ fun DeleteCancelBottomSheet(
                     .fillMaxWidth()
                     .background(Color.Transparent)
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp, 8.dp, 16.dp, bottomPadding)
+                    .padding(16.dp, 0.dp, 16.dp, bottomPadding)
                     .padding(bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
