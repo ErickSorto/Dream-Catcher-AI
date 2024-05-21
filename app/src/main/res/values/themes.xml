@@ -4,8 +4,8 @@
     <style name="Theme.DreamJournalAI" parent="android:Theme.Material.NoActionBar" />
 
     <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#190F37</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/attempt_6</item>
+        <item name="windowSplashScreenBackground">#141A31</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/dream_journal_app_icon</item>
         <item name="windowSplashScreenAnimationDuration">600</item>
         <item name="postSplashScreenTheme">@style/Theme.DreamJournalAI</item>
     </style>
