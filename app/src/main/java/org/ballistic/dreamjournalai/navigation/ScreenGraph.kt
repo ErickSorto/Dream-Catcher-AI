@@ -21,6 +21,8 @@ import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.DreamJo
 import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.viewmodel.DreamJournalListViewModel
 import org.ballistic.dreamjournalai.dream_nightmares.presentation.DreamNightmareScreen
 import org.ballistic.dreamjournalai.dream_nightmares.presentation.DreamNightmareScreenViewModel
+import org.ballistic.dreamjournalai.dream_notifications.presentation.DreamNotificationSettingScreen
+import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationScreenViewModel
 import org.ballistic.dreamjournalai.dream_statistics.presentation.DreamStatisticScreen
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenViewModel
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreen
@@ -189,11 +191,17 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.NotificationSettings.route) {
-            FeatureComingSoonScreen(
-                onNavigateToAboutMeScreen = {
-                    navController.popBackStack()
-                    navController.navigate(Screens.AboutMe.route)
-                })
+            val dreamNotificationScreenViewModel: NotificationScreenViewModel = hiltViewModel()
+            val dreamNotificationScreenState =
+                dreamNotificationScreenViewModel.notificationScreenState
+                    .collectAsStateWithLifecycle()
+
+            DreamNotificationSettingScreen(
+                mainScreenViewModelState = mainScreenViewModelState,
+                notificationScreenState = dreamNotificationScreenState.value,
+            ) {
+                dreamNotificationScreenViewModel.onEvent(it)
+            }
         }
 
         composable(route = Screens.Nightmares.route) {
