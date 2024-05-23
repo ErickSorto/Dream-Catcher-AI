@@ -5,12 +5,12 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.foundation.text2.input.forEachTextValue
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,11 +37,11 @@ import org.ballistic.dreamjournalai.BuildConfig
 import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
 import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.core.Resource
+import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.model.InvalidDreamException
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
 import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
 import java.io.IOException
 import java.time.LocalDate
@@ -80,11 +80,15 @@ class AddEditDreamViewModel @Inject constructor(
     val contentTextFieldState: StateFlow<TextFieldState> = _contentTextFieldState.asStateFlow()
 
     private suspend fun listenForContentChanges() {
-        contentTextFieldState.value.forEachTextValue {
-            _addEditDreamState.update { state ->
-                state.copy(
-                    dreamContentChanged = true
-                )
+        snapshotFlow {
+            contentTextFieldState.value.text
+        }.collect { text ->
+            if (text.isNotEmpty()) {
+                _addEditDreamState.update { state ->
+                    state.copy(
+                        dreamContentChanged = true
+                    )
+                }
             }
         }
     }
@@ -844,11 +848,11 @@ class AddEditDreamViewModel @Inject constructor(
         }
 
         val imagePrompt = if (eventCost <= 1) {
-            "You are a dream environment builder: In third person and one short sentence 8 to 20 words build the visual elements, such as characters, scene, objects that stand out, or setting of the dream that follows. Make it short and straightforward: \n\n${
+            "You are a dream environment builder: In the following dream, in third person and one short sentence 8 to 20 words build the visual elements, such as characters, scene, objects that stand out, or setting of the dream that follows. Make it short and straightforward: \n\n${
                 contentTextFieldState.value.text
             } \n\nUse vivid imagery and a palette of rich, beautiful colors to highlight key objects or characters. Keep the description straightforward and focused on visuals only"
         } else {
-            "You are a dream environment builder: In third person and one short sentence build the visual elements, such as characters, scene, objects that stand out, or setting of the dream that follows. Make it short and straightforward: \n\n${
+            "You are a dream environment builder: In the following dream, in third person and one short sentence build the visual elements, such as characters, scene, objects that stand out, or setting of the dream that follows. Make it short and straightforward: \n\n${
                 contentTextFieldState.value.text
             } \n\nUse vivid imagery and a palette of rich, beautiful colors to highlight key objects or characters."
         }
@@ -857,7 +861,7 @@ class AddEditDreamViewModel @Inject constructor(
         val creativity = if (eventCost <= 1) {
             .4
         } else {
-            1.2
+            1.1
         }
 
 

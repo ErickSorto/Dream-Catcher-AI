@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -44,7 +44,6 @@ import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmod
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UniversalAIPage(
     contentType: org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType,
@@ -178,7 +177,6 @@ fun StandardAIPageLayout(
 
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AIPainterPage(
     addEditDreamState: AddEditDreamState,

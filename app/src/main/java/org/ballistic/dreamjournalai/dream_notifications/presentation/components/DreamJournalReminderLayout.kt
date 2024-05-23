@@ -1,8 +1,12 @@
 package org.ballistic.dreamjournalai.dream_notifications.presentation.components
 
 
+import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +29,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
@@ -32,21 +40,18 @@ import org.ballistic.dreamjournalai.dream_notifications.presentation.Notificatio
 import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationScreenState
 import java.time.Clock
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun DreamJournalReminderLayout(
     modifier: Modifier,
     notificationScreenState: NotificationScreenState,
     onEvent: (NotificationEvent) -> Unit
 ) {
-
-    val formatter = DateTimeFormatter.ofPattern("h:mm a")
-    val time =
-        LocalTime.parse(notificationScreenState.reminderTime.toString(), formatter).toString()
-
+    val postNotificationPermission =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
     ClockDialog(
         state = notificationScreenState.dreamJournalReminderTimePickerState,
         config = ClockConfig(
@@ -62,7 +67,7 @@ fun DreamJournalReminderLayout(
 
     Column(
         modifier = modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .background(
                 color = colorResource(id = R.color.light_black).copy(alpha = 0.8f),
                 shape = RoundedCornerShape(8.dp)
@@ -76,11 +81,11 @@ fun DreamJournalReminderLayout(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.white)
+                color = colorResource(id = R.color.brighter_white)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "This feature will remind you to write down your dreams every morning. You can set the time of the reminder below.",
+                text = "This feature will remind you to write down your dreams every day. You can set the time of the reminder below.",
                 modifier = Modifier.padding(horizontal = 16.dp),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colorResource(id = R.color.white)
@@ -90,17 +95,21 @@ fun DreamJournalReminderLayout(
             ) {
                 Text(
                     text = "Enable Reminder:",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = colorResource(id = R.color.white)
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    style = typography.bodyLarge,
+                    color = colorResource(id = R.color.brighter_white)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
                     checked = notificationScreenState.dreamJournalReminder,
                     onCheckedChange = {
-                        onEvent(NotificationEvent.ToggleDreamJournalReminder(it))
+                        if (postNotificationPermission.status.isGranted) {
+                            onEvent(NotificationEvent.ToggleDreamJournalReminder(it))
+                        } else {
+                            postNotificationPermission.launchPermissionRequest()
+                        }
                     },
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp)
                 )
             }
 
@@ -108,19 +117,31 @@ fun DreamJournalReminderLayout(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 16.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .padding(16.dp, 16.dp, 16.dp, 16.dp)
+                        .background(
+                            color = colorResource(id = R.color.brighter_white).copy(alpha = 0.05f),
+                            shape = RoundedCornerShape(8.dp, 8.dp, 8.dp, 8.dp)
+                        )
+                        .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Reminder Time",
+                        text = "Set Time",
                         modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = colorResource(id = R.color.white)
+                        style = typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(id = R.color.brighter_white)
                     )
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(
-                                color = colorResource(id = R.color.white).copy(alpha = 0.3f),
+                                color = colorResource(id = R.color.RedOrange),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = colorResource(id = R.color.brighter_white).copy(alpha = 0.1f),
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .clickable {
@@ -129,13 +150,13 @@ fun DreamJournalReminderLayout(
 
                     ) {
                         Text(
-                            text = time,
+                            text = notificationScreenState.reminderTime,
                             modifier = Modifier.padding(
-                                horizontal = 16.dp, vertical = 8.dp
+                                horizontal = 32.dp, vertical = 8.dp
                             ),
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = typography.bodyLarge,
                             fontWeight = FontWeight.ExtraBold,
-                            color = colorResource(id = R.color.white),
+                            color = colorResource(id = R.color.brighter_white),
                         )
                     }
                 }

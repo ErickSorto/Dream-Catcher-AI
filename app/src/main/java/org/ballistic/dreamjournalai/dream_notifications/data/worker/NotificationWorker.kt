@@ -3,6 +3,7 @@ package org.ballistic.dreamjournalai.dream_notifications.data.worker
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -17,6 +18,8 @@ class NotificationWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
+        Log.d("NotificationWorker", "Executing NotificationWorker")
+
         val title = inputData.getString("title") ?: "Dream Journal"
         val message = inputData.getString("message") ?: "Don't forget to log your dreams!"
 
@@ -25,7 +28,7 @@ class NotificationWorker(
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Permission is not granted, return failure
+            Log.d("NotificationWorker", "Permission not granted")
             return Result.failure()
         }
 
@@ -39,6 +42,7 @@ class NotificationWorker(
             notify(System.currentTimeMillis().toInt(), builder.build())
         }
 
+        Log.d("NotificationWorker", "Notification displayed")
         return Result.success()
     }
 }

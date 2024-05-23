@@ -71,7 +71,9 @@ fun MainScreenView(
     onNavigateToOnboardingScreen: () -> Unit = {},
     onDataLoaded: () -> Unit
 ) {
-
+    LaunchedEffect(Unit) {
+        onDataLoaded()
+    }
     val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
 
@@ -255,7 +257,6 @@ fun MainScreenView(
                         mainScreenViewModelState = mainScreenViewModelState,
                         bottomPaddingValue = mainScreenViewModelState.paddingValues.calculateBottomPadding(),
                         onMainEvent = { onMainEvent(it) },
-                        onDataLoaded = { onDataLoaded() },
                         onNavigateToOnboardingScreen = { onNavigateToOnboardingScreen() }
                     )
                 }

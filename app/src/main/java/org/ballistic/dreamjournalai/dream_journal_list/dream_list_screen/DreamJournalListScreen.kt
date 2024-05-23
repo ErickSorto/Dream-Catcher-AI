@@ -11,12 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,7 +49,6 @@ fun DreamJournalListScreen(
     bottomPaddingValue: Dp,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onDreamListEvent: (DreamListEvent) -> Unit = {},
-    onDataLoaded: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -59,11 +57,9 @@ fun DreamJournalListScreen(
     onMainEvent(MainScreenEvent.SetFloatingActionButtonState(true))
     onMainEvent(MainScreenEvent.SetDrawerState(true))
 
-    LaunchedEffect(Unit) {
-        onDataLoaded()
-    }
     if (dreamJournalListState.bottomDeleteCancelSheetState) {
         DeleteCancelBottomSheet(
+            modifier = Modifier.padding(),
             title = "Delete this Dream?",
             message = "Are you sure you want to delete this dream?",
             onDelete = {
@@ -88,8 +84,7 @@ fun DreamJournalListScreen(
             },
             onClickOutside = {
                 onDreamListEvent(DreamListEvent.ToggleBottomDeleteCancelSheetState(false))
-            },
-            modifier = Modifier.padding()
+            }
         )
     }
 

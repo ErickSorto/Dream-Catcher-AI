@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.dream_notifications.data.repository
 
 import android.content.Context
+import android.util.Log
 import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationRepository
 import androidx.work.*
 import org.ballistic.dreamjournalai.dream_notifications.data.worker.NotificationWorker
@@ -17,12 +18,36 @@ class NotificationRepositoryImpl @Inject constructor(
             .putString("message", "Time to log your dreams!")
             .build()
 
-        val notificationWork = OneTimeWorkRequestBuilder<NotificationWorker>()
+        val initialDelay = calculateInitialDelay(timeInMillis)
+
+        val notificationWork = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.DAYS)
             .setInputData(data)
-            .setInitialDelay(timeInMillis - System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+            .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
             .build()
 
-        WorkManager.getInstance(context).enqueue(notificationWork)
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "DailyDreamJournalReminder",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            notificationWork
+        )
+
+        Log.d("NotificationRepositoryImpl", "Scheduled daily reminder with initial delay: $initialDelay ms")
+    }
+
+    private fun calculateInitialDelay(timeInMillis: Long): Long {
+        val currentTimeInMillis = System.currentTimeMillis()
+        var delay = timeInMillis - currentTimeInMillis
+
+        Log.d("NotificationRepositoryImpl", "Current time: $currentTimeInMillis")
+        Log.d("NotificationRepositoryImpl", "Scheduled time: $timeInMillis")
+        Log.d("NotificationRepositoryImpl", "Initial delay (ms): $delay")
+
+        if (delay <= 0) {
+            delay += TimeUnit.DAYS.toMillis(1)
+            Log.d("NotificationRepositoryImpl", "Adjusted delay for next day (ms): $delay")
+        }
+
+        return delay
     }
 
     override fun scheduleLucidityNotification(frequency: Int, intervalInMillis: Long) {
@@ -37,8 +62,10 @@ class NotificationRepositoryImpl @Inject constructor(
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "Lucidity Notification",
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             notificationWork
         )
+
+        Log.d("NotificationRepositoryImpl", "Scheduled lucidity notification with interval: $intervalInMillis ms")
     }
 }

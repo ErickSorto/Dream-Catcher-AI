@@ -5,12 +5,12 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.foundation.text2.input.textAsFlow
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.ads.rewarded.RewardItem
@@ -246,9 +246,10 @@ class DictionaryScreenViewModel @Inject constructor(
         return words
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     private suspend fun filterBySearchedWord() {
-        _searchTextFieldState.value.textAsFlow().collect { text ->
+        snapshotFlow {
+            searchTextFieldState.value.text
+        }.collect { text ->
             val searchedText = text.trim()
             val filteredWords = _symbolScreenState.value.dictionaryWordList.filter {
                 it.doesMatchSearchQuery(searchedText.toString())
@@ -300,7 +301,6 @@ class DictionaryScreenViewModel @Inject constructor(
         }
     }
 }
-
 
 @Stable
 data class SymbolScreenState(

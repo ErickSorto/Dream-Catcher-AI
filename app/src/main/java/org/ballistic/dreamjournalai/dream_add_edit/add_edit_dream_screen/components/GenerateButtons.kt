@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,15 +15,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,7 +45,6 @@ import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.ButtonType
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GenerateButtonsLayout(
     onAddEditEvent: (AddEditDreamEvent) -> Unit,
@@ -69,7 +66,7 @@ fun GenerateButtonsLayout(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ButtonType.values().forEach { item ->
+            ButtonType.entries.forEach { item ->
                 UniversalButton(
                     buttonType = item,
                     textFieldState = textFieldState,
@@ -119,7 +116,7 @@ fun UniversalButton(
         modifier = modifier
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(color = Color.White),
+                indication = ripple(bounded = false),
             ) {
                 triggerVibration(vibrator)
                 if (textFieldState.text.isNotBlank() && textFieldState.text.length >= 20) {

@@ -35,6 +35,7 @@ fun MassInterpretationHistoryPage(
 
     if (interpretDreamsScreenState.bottomDeleteCancelSheetState) {
         DeleteCancelBottomSheet(
+            modifier = Modifier.fillMaxWidth(),
             title = "Delete this Interpretation?",
             message = "Are you sure you want to delete this interpretation?",
             onDelete = {
@@ -51,8 +52,7 @@ fun MassInterpretationHistoryPage(
             },
             onClickOutside = {
                 onEvent(InterpretDreamsToolEvent.ToggleBottomDeleteCancelSheetState(false))
-            },
-            modifier = Modifier.fillMaxWidth()
+            }
         )
     }
     LazyColumn(

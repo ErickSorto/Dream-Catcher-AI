@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -36,22 +35,18 @@ fun DeleteCancelBottomSheet(
     message: String,
     onDelete: () -> Unit,
     onClickOutside: () -> Unit,
-    windowInsets: WindowInsets = WindowInsets.displayCutout,
 ) {
-
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     ModalBottomSheet(
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         onDismissRequest = onClickOutside,
-        windowInsets = windowInsets,
         content = {
             Column(
                 modifier = modifier
                     .fillMaxWidth()
                     .background(Color.Transparent)
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp, 0.dp, 16.dp, bottomPadding)
+                    .padding(16.dp, 0.dp, 16.dp)
                     .padding(bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

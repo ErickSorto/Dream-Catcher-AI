@@ -1,8 +1,8 @@
 package org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.viewmodel
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.foundation.text2.input.textAsFlow
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,10 +29,8 @@ class DreamJournalListViewModel @Inject constructor(
     private val _dreamJournalListState = MutableStateFlow(DreamJournalListState())
     val dreamJournalListState: StateFlow<DreamJournalListState> = _dreamJournalListState.asStateFlow()
 
-    @OptIn(ExperimentalFoundationApi::class)
     private val _searchTextFieldState = MutableStateFlow(TextFieldState())
 
-    @OptIn(ExperimentalFoundationApi::class)
     val searchTextFieldState: StateFlow<TextFieldState> = _searchTextFieldState.asStateFlow()
 
     private var recentlyDeletedDream: Dream? = null
@@ -92,7 +90,9 @@ class DreamJournalListViewModel @Inject constructor(
     private fun getDreams(orderType: OrderType) {
         getDreamJob?.cancel()
         getDreamJob = dreamUseCases.getDreams(orderType)
-            .combine(searchTextFieldState.value.textAsFlow()) { dreams, searchText ->
+            .combine(
+                snapshotFlow { searchTextFieldState.value.text }
+            ) { dreams, searchText ->
                 if (searchText.isBlank()) {
                     dreams
                 } else {

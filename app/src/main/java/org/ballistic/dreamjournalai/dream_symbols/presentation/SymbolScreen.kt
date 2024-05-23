@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -55,7 +55,6 @@ import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.SymbolS
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SymbolScreen(
     symbolScreenState: SymbolScreenState,

@@ -33,18 +33,14 @@ fun DictionaryWordDrawer(
     definition: String,
     onClickOutside: () -> Unit,
     modifier: Modifier = Modifier,
-    windowInsets: WindowInsets = WindowInsets.displayCutout,
 ) {
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     ModalBottomSheet(
         onDismissRequest = onClickOutside,
-        windowInsets = windowInsets,
         content = {
             Card(
                 modifier = modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = bottomPadding)
                     .padding(16.dp, 0.dp, 16.dp, 16.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(

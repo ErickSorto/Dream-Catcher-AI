@@ -8,4 +8,6 @@ sealed class NotificationEvent {
     data class ChangeLucidityFrequency(val lucidityFrequency: Int) : NotificationEvent()
     data class SetReminderTime(val javaTime: LocalTime) : NotificationEvent()
     data class ToggleTimePickerForJournalReminder(val showTimePicker: Boolean) : NotificationEvent()
+    data class SetTimeRange(val range: ClosedFloatingPointRange<Float>) : NotificationEvent()
+    object TestNotification : NotificationEvent()
 }

@@ -4,11 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
@@ -43,14 +39,11 @@ fun DreamInterpretationPopUp(
     onDreamTokenClick: (amount: Int) -> Unit,
     onClickOutside: () -> Unit,
     modifier: Modifier = Modifier,
-    windowInsets: WindowInsets = WindowInsets.displayCutout,
 ) {
     var state by remember { mutableStateOf(true) }
     var amount by remember { mutableIntStateOf(0) }
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     ModalBottomSheet(
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-        windowInsets = windowInsets,
         onDismissRequest = {
             onClickOutside()
         },
@@ -59,7 +52,6 @@ fun DreamInterpretationPopUp(
                     modifier = modifier
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
-                        .padding(bottom = bottomPadding)
                         .padding(16.dp, 0.dp, 16.dp, 16.dp)
                         .animateContentSize(),
                     horizontalAlignment = Alignment.CenterHorizontally

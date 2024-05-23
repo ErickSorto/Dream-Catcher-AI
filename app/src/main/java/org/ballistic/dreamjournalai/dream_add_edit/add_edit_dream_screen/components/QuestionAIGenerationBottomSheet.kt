@@ -5,11 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
@@ -49,23 +45,19 @@ fun QuestionAIGenerationBottomSheet(
     onDreamTokenClick: (amount: Int) -> Unit,
     onAdClick: (amount: Int) -> Unit,
     onClickOutside: () -> Unit,
-    windowInsets: WindowInsets = WindowInsets.displayCutout,
     modifier: Modifier = Modifier
 ) {
     var state by remember { mutableStateOf(true) }
     var amount by remember { mutableIntStateOf(0) }
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     ModalBottomSheet(
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         onDismissRequest = onClickOutside,
-        windowInsets = windowInsets,
         content = {
             Column(
                 modifier = modifier
                     .fillMaxWidth()
                     .background(Color.Transparent)
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = bottomPadding)
                     .padding(16.dp, 0.dp, 16.dp, 16.dp)
                     .animateContentSize(),
                 horizontalAlignment = Alignment.CenterHorizontally

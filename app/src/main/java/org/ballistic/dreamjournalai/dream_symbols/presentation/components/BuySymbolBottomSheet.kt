@@ -32,12 +32,9 @@ fun BuySymbolBottomSheet(
     onDreamTokenClick: () -> Unit,
     onClickOutside: () -> Unit,
     modifier: Modifier = Modifier,
-    windowInsets: WindowInsets = WindowInsets.displayCutout,
     amount: Int
 ) {
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     ModalBottomSheet(
-        windowInsets = windowInsets,
         onDismissRequest = {
             onClickOutside()
         },
@@ -46,7 +43,6 @@ fun BuySymbolBottomSheet(
                 modifier = modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = bottomPadding)
                     .padding(8.dp, 0.dp, 8.dp, 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
