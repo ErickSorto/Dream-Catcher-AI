@@ -17,7 +17,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -70,7 +69,8 @@ class NotificationScreenViewModel @Inject constructor(
                     if (event.lucidityNotification) {
                         scheduleLucidityNotificationUseCase(
                             _notificationScreenState.value.lucidityFrequency,
-                            TimeUnit.HOURS.toMillis(_notificationScreenState.value.lucidityFrequency.toLong())
+                            _notificationScreenState.value.startTime,
+                            _notificationScreenState.value.endTime
                         )
                     } else {
                         WorkManager.getInstance().cancelUniqueWork("Reality Check Reminder")
@@ -87,7 +87,8 @@ class NotificationScreenViewModel @Inject constructor(
                     if (_notificationScreenState.value.realityCheckReminder) {
                         scheduleLucidityNotificationUseCase(
                             _notificationScreenState.value.lucidityFrequency,
-                            TimeUnit.HOURS.toMillis(_notificationScreenState.value.lucidityFrequency.toLong())
+                            _notificationScreenState.value.startTime,
+                            _notificationScreenState.value.endTime
                         )
                     }
                 }
@@ -158,7 +159,6 @@ class NotificationScreenViewModel @Inject constructor(
         notificationHandler.showSimpleNotification()
     }
 }
-
 
 data class NotificationScreenState(
     val realityCheckReminder: Boolean = false,

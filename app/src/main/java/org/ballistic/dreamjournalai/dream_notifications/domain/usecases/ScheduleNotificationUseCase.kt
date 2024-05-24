@@ -6,7 +6,7 @@ import javax.inject.Inject
 class ScheduleLucidityNotificationUseCase @Inject constructor(
     private val repository: NotificationRepository
 ) {
-    operator fun invoke(frequency: Int, intervalInMillis: Long) {
-        repository.scheduleLucidityNotification(frequency, intervalInMillis)
+    operator fun invoke(frequency: Int, startTime: Float, endTime: Float) {
+        repository.scheduleLucidityNotification(frequency, startTime, endTime)
     }
 }

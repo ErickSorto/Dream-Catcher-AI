@@ -11,14 +11,16 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import org.ballistic.dreamjournalai.DreamJournalAiApp
 import org.ballistic.dreamjournalai.R
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
-class NotificationWorker(
+class DreamJournalNotificationWorker(
     context: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        Log.d("NotificationWorker", "Executing NotificationWorker")
+        Log.d("DreamJournalNotificationWorker", "Executing DreamJournalNotificationWorker")
 
         val title = inputData.getString("title") ?: "Dream Journal"
         val message = inputData.getString("message") ?: "Don't forget to log your dreams!"
@@ -28,21 +30,23 @@ class NotificationWorker(
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Log.d("NotificationWorker", "Permission not granted")
+            Log.d("DreamJournalNotificationWorker", "Permission not granted")
             return Result.failure()
         }
 
         val builder = NotificationCompat.Builder(applicationContext, DreamJournalAiApp.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ai_vector_icon)  // Update with your actual icon
+            .setSmallIcon(R.drawable.ai_vector_icon)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
 
         with(NotificationManagerCompat.from(applicationContext)) {
             notify(System.currentTimeMillis().toInt(), builder.build())
         }
 
-        Log.d("NotificationWorker", "Notification displayed")
+        Log.d("DreamJournalNotificationWorker", "Notification displayed at: ${LocalTime.now().format(
+            DateTimeFormatter.ofPattern("HH:mm:ss"))}")
         return Result.success()
     }
 }

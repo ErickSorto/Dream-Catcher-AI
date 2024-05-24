@@ -163,9 +163,9 @@ dependencies {
     implementation("org.parceler:parceler-api:1.1.13")
     kapt("org.parceler:parceler:1.1.13")
 
-    // Image Loadingl-kt:coil:2.6.0")
-    implementation("io.coil-kt:c\n"+
-            "    implementation(\"io.coioil-compose:2.6.0")
+    // Image Loading
+    implementation("io.coil-kt:coil:2.6.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Billing Client
     implementation("com.android.billingclient:billing:7.0.0")
