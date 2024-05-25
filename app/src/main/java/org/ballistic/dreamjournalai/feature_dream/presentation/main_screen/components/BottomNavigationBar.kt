@@ -139,9 +139,8 @@ fun BottomNavigation(
                 onClick = {
                     triggerVibration(vibrator)
                     if (currentRoute != item.route) {
-                        navController.popBackStack()
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) {
+                            popUpTo(Screens.DreamJournalScreen.route) {
                                 saveState = true
                             }
                             launchSingleTop = true
@@ -160,3 +159,4 @@ fun BottomNavigation(
         }
     }
 }
+

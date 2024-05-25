@@ -37,7 +37,7 @@ import org.ballistic.dreamjournalai.BuildConfig
 import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
 import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.model.InvalidDreamException

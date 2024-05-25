@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ballistic.dreamjournalai.R
@@ -30,7 +31,7 @@ fun DateAndTimeButtonsLayout(
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(Color.White.copy(alpha = 0.3f)),
+            .background(Color.White.copy(alpha = 0.2f)),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -78,12 +79,14 @@ fun DateButton(
         Text(
             text = "Date",
             style = typography.labelMedium,
+            fontWeight = FontWeight.Bold,
             color = colorResource(id = R.color.white),
             modifier = Modifier.padding(top = 16.dp)
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = addEditDreamState.dreamInfo.dreamDate,
-            fontSize = 10.sp,
+            style = typography.labelSmall,
             color = colorResource(id = R.color.white),
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -106,13 +109,15 @@ fun SleepTimeButton(
 
         Text(
             text = "Sleep Time",
-            style = typography.labelSmall,
+            style = typography.labelMedium,
+            fontWeight = FontWeight.Bold,
             color = colorResource(id = R.color.white),
             modifier = Modifier.padding(top = 16.dp)
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = addEditDreamState.dreamInfo.dreamSleepTime,
-            fontSize = 10.sp,
+            style = typography.labelSmall,
             color = colorResource(id = R.color.white),
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -135,13 +140,15 @@ fun WakeTimeButton(
     ) {
         Text(
             text = "Wake Time",
-            style = typography.labelSmall,
+            style = typography.labelMedium,
+            fontWeight = FontWeight.Bold,
             color = colorResource(id = R.color.white),
             modifier = Modifier.padding(top = 16.dp)
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = addEditDreamState.dreamInfo.dreamWakeTime,
-            fontSize = 10.sp,
+            style = typography.labelSmall,
             color = colorResource(id = R.color.white),
             modifier = Modifier.padding(bottom = 16.dp)
         )

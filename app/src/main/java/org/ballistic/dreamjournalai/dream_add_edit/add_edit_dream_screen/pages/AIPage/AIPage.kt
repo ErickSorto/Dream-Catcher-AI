@@ -62,8 +62,8 @@ import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.DreamInterpretationPopUp
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.ImageGenerationPopUp
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.QuestionAIGenerationBottomSheet
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AITool
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AITool
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.pages.AIPage.AISubPages.UniversalAIPage
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamState
 

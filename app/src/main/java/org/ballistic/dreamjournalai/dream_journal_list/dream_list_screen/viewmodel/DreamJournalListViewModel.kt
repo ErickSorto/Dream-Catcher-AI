@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.DreamListEvent
+import org.ballistic.dreamjournalai.dream_journal_list.domain.DreamListEvent
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
 import org.ballistic.dreamjournalai.feature_dream.domain.util.OrderType

@@ -1,17 +1,25 @@
 package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.rememberAsyncImagePainter
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamState
 
 @Composable
@@ -19,42 +27,73 @@ fun LucidFavoriteLayout(
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 8.dp, 0.dp, 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LucidCustomButton(
-            isLucid = addEditDreamState.dreamInfo.dreamIsLucid,
-            onAddEditDreamEvent = { onAddEditDreamEvent(it) }
-        )
-        FavoriteCustomButton(
-            isFavorite = addEditDreamState.dreamInfo.dreamIsFavorite,
-            onAddEditDreamEvent = { onAddEditDreamEvent(it) }
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+
+            LucidCustomButton(
+                isLucid = addEditDreamState.dreamInfo.dreamIsLucid,
+                onAddEditDreamEvent = onAddEditDreamEvent
+            )
+
+            RecurringCustomButton(
+                isRecurring = addEditDreamState.dreamInfo.dreamIsRecurring,
+                onAddEditDreamEvent = onAddEditDreamEvent
+            )
+            FalseAwakeningCustomButton(
+                    isFalseAwakening = addEditDreamState.dreamInfo.dreamIsFalseAwakening,
+            onAddEditDreamEvent = onAddEditDreamEvent
+            )
+
+            NightmareCustomButton(
+                isNightmare = addEditDreamState.dreamInfo.dreamIsNightmare,
+                onAddEditDreamEvent = onAddEditDreamEvent
+            )
+            FavoriteCustomButton(
+                isFavorite = addEditDreamState.dreamInfo.dreamIsFavorite,
+                onAddEditDreamEvent = onAddEditDreamEvent
+            )
+        }
     }
 }
+
 
 @Composable
 fun LucidCustomButton(
     isLucid: Boolean,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        IconButton(onClick = {
-            onAddEditDreamEvent(AddEditDreamEvent.ChangeIsLucid(!isLucid))
-        }
-
-        ) {
-            Icon(
-                painter = rememberAsyncImagePainter(R.drawable.lighthouse_vector),
-                contentDescription = "Lucid",
-                modifier = Modifier.size(40.dp),
-                tint = if (isLucid) colorResource(R.color.sky_blue) else colorResource(id = R.color.white).copy(alpha = 0.5f)
+    Column(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .size(68.dp)
+            .clickable {
+                onAddEditDreamEvent(AddEditDreamEvent.ChangeIsLucid(!isLucid))
+            },
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Icon(
+            painter = rememberAsyncImagePainter(R.drawable.lighthouse_vector),
+            contentDescription = "Lucid",
+            modifier = Modifier.size(36.dp),
+            tint = if (isLucid) colorResource(R.color.sky_blue) else colorResource(id = R.color.white).copy(
+                alpha = 0.5f
             )
+        )
 
-        }
-        Text(text = "Lucid", color = colorResource(id = R.color.white))
+        Text(
+            text = "Lucid",
+            color = colorResource(id = R.color.white),
+            style = typography.labelSmall
+        )
     }
 }
 
@@ -63,20 +102,120 @@ fun FavoriteCustomButton(
     isFavorite: Boolean,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        IconButton(
-            onClick = {
+    Column(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .size(68.dp)
+            .clickable {
                 onAddEditDreamEvent(AddEditDreamEvent.ChangeFavorite(!isFavorite))
             },
-            modifier = Modifier.size(40.dp),
-        ) {
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
             Icon(
                 painter = rememberAsyncImagePainter(R.drawable.baseline_star_24),
                 contentDescription = "Favorite",
-                modifier = Modifier.size(40.dp),
-                tint = if (isFavorite) colorResource(R.color.Yellow) else colorResource(id = R.color.white).copy(alpha = 0.5f)
+                modifier = Modifier.size(36.dp),
+                tint = if (isFavorite) colorResource(R.color.Yellow) else colorResource(id = R.color.white).copy(
+                    alpha = 0.5f
+                )
             )
-        }
-        Text(text = "Favorite", color = colorResource(id = R.color.white))
+        Text(
+            text = "Favorite", color = colorResource(id = R.color.white),
+            style = typography.labelSmall
+        )
+    }
+}
+
+@Composable
+fun NightmareCustomButton(
+    isNightmare: Boolean,
+    onAddEditDreamEvent: (AddEditDreamEvent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .size(68.dp)
+            .clickable {
+                onAddEditDreamEvent(AddEditDreamEvent.ChangeNightmare(!isNightmare))
+            },
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+            Icon(
+                painter = rememberAsyncImagePainter(R.drawable.nightmare_icon),
+                contentDescription = "Nightmare",
+                modifier = Modifier.size(36.dp),
+                tint = if (isNightmare) colorResource(R.color.RedOrange) else colorResource(id = R.color.white).copy(
+                    alpha = 0.5f
+                )
+            )
+        Text(
+            text = "Nightmare",
+            color = colorResource(id = R.color.white),
+            style = typography.labelSmall
+        )
+    }
+}
+
+@Composable
+fun FalseAwakeningCustomButton(
+    isFalseAwakening: Boolean,
+    onAddEditDreamEvent: (AddEditDreamEvent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .size(68.dp)
+            .clickable {
+                onAddEditDreamEvent(AddEditDreamEvent.ChangeFalseAwakening(!isFalseAwakening))
+            },
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+            Icon(
+                painter = rememberAsyncImagePainter(R.drawable.false_awakening_icon),
+                contentDescription = "False",
+                modifier = Modifier.size(36.dp),
+                tint = if (isFalseAwakening) colorResource(R.color.purple) else colorResource(id = R.color.white).copy(
+                    alpha = 0.5f
+                )
+            )
+        Text(
+            text = "False",
+            color = colorResource(id = R.color.white),
+            style = typography.labelSmall
+        )
+    }
+}
+
+@Composable
+fun RecurringCustomButton(
+    isRecurring: Boolean,
+    onAddEditDreamEvent: (AddEditDreamEvent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .size(68.dp)
+            .clickable {
+                onAddEditDreamEvent(AddEditDreamEvent.ChangeRecurrence(!isRecurring))
+            },
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+            Icon(
+                painter = rememberAsyncImagePainter(R.drawable.baseline_cached_24),
+                contentDescription = "Recurring",
+                modifier = Modifier.size(36.dp),
+                tint = if (isRecurring) colorResource(R.color.green) else colorResource(id = R.color.white).copy(
+                    alpha = 0.5f
+                )
+            )
+        Text(
+            text = "Recurring",
+            color = colorResource(id = R.color.white),
+            style = typography.labelSmall
+        )
     }
 }

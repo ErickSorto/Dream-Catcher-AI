@@ -22,10 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
+import org.ballistic.dreamjournalai.dream_journal_list.domain.DreamListEvent
 import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DateHeader
 import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DreamItem
 import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DreamListScreenTopBar
@@ -42,13 +42,13 @@ import java.util.Locale
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DreamJournalListScreen(
-    navController: NavController,
     mainScreenViewModelState: MainScreenViewModelState,
     searchTextFieldState: TextFieldState,
     dreamJournalListState: DreamJournalListState,
     bottomPaddingValue: Dp,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onDreamListEvent: (DreamListEvent) -> Unit = {},
+    onNavigateToDream: (String) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -143,7 +143,7 @@ fun DreamJournalListScreen(
                                 .padding(horizontal = 12.dp),
                             scope = scope,
                             onClick = {
-                                navController.navigate(
+                                onNavigateToDream(
                                     Screens.AddEditDreamScreen.route +
                                             "?dreamId=${dream.id}&dreamImageBackground=${
                                                 dream.backgroundImage

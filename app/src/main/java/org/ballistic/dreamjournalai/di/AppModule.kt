@@ -79,4 +79,10 @@ object AppModule {
     fun provideNetworkHelper(@ApplicationContext context: Context): NetworkHelper {
         return NetworkHelper(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideContext(@ApplicationContext context: Context): Context {
+        return context
+    }
 }

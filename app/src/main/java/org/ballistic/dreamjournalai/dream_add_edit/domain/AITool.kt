@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events
+package org.ballistic.dreamjournalai.dream_add_edit.domain
 
 import org.ballistic.dreamjournalai.R
 

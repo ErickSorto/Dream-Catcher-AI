@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen
+package org.ballistic.dreamjournalai.dream_journal_list.domain
 
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.util.OrderType

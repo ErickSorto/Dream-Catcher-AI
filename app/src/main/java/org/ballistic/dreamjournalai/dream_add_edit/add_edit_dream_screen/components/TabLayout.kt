@@ -43,8 +43,8 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AddEditPages
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AITool
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AITool
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.pages.AIPage.AIPage
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.pages.DreamPage
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.pages.InfoPage

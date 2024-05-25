@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.ShieldMoon
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -46,7 +47,7 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.DateAndTimeButtonsLayout
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.DreamImageSelectionRow
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.LucidFavoriteLayout
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamState
 import java.time.Clock
 import java.time.LocalTime
@@ -147,235 +148,74 @@ fun InfoPage(
                 )
                 DateAndTimeButtonsLayout(addEditDreamState = addEditDreamState)
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                )  {
-                    Text(
-                        text = "Lucid Dream",
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        style = typography.bodyLarge.copy(color = colorResource(id = R.color.white)),
-                    )
 
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Switch(
-                        checked = addEditDreamState.dreamInfo.dreamIsLucid,
-                        onCheckedChange = {
-                            onAddEditDreamEvent(AddEditDreamEvent.ChangeIsLucid(it))
-                        },
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.Red,
-                            uncheckedThumbColor = Color.White,
-                            checkedTrackColor = Color.Red.copy(alpha = 0.5f),
-                            uncheckedTrackColor = Color.White.copy(alpha = 0.3f),
-                        )
-                    )
-                }
-
-                //row for isNightmare
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                )  {
-                    Text(
-                        text = "Nightmare",
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Switch(
-                        checked = addEditDreamState.dreamInfo.dreamIsNightmare,
-                        onCheckedChange = {
-                            onAddEditDreamEvent(AddEditDreamEvent.ChangeNightmare(it))
-                        },
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.Red,
-                            uncheckedThumbColor = Color.White,
-                            checkedTrackColor = Color.Red.copy(alpha = 0.5f),
-                            uncheckedTrackColor = Color.White.copy(alpha = 0.3f),
-                        )
-                    )
-                }
-                //isRecurring
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                )  {
-                    Text(
-                        text = "Recurring Dream",
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Switch(
-                        checked = addEditDreamState.dreamInfo.dreamIsRecurring,
-                        onCheckedChange = {
-                            onAddEditDreamEvent(AddEditDreamEvent.ChangeRecurrence(it))
-                        },
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.Red,
-                            uncheckedThumbColor = Color.White,
-                            checkedTrackColor = Color.Red.copy(alpha = 0.5f),
-                            uncheckedTrackColor = Color.White.copy(alpha = 0.3f),
-                        )
-                    )
-                }
-
-                //row for false awakenings
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "False Awakening",
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Switch(
-                        checked = addEditDreamState.dreamInfo.dreamIsFalseAwakening,
-                        onCheckedChange = {
-                            onAddEditDreamEvent(AddEditDreamEvent.ChangeFalseAwakening(it))
-                        },
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.Red,
-                            uncheckedThumbColor = Color.White,
-                            checkedTrackColor = Color.Red.copy(alpha = 0.5f),
-                            uncheckedTrackColor = Color.White.copy(alpha = 0.3f),
-                        )
-                    )
-                }
-
-                //slider for lucidity
-                Text(
-                    text = "Lucidity: " + addEditDreamState.dreamInfo.dreamLucidity,
+                // Slider for lucidity
+                SliderWithLabel(
+                    label = "Lucidity",
+                    value = addEditDreamState.dreamInfo.dreamLucidity,
+                    onValueChange = { onAddEditDreamEvent(AddEditDreamEvent.ChangeLucidity(it)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(alignment = Alignment.CenterHorizontally)
-                        .padding(16.dp, 16.dp, 16.dp, 0.dp),
-                    style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
+                        .padding(horizontal = 16.dp)
                 )
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Slider(
-                    value = addEditDreamState.dreamInfo.dreamLucidity.toFloat(),
-                    onValueChange = {
-                        onAddEditDreamEvent(AddEditDreamEvent.ChangeLucidity(it.toInt()))
-                    },
-                    valueRange = 0f..10f,
-                    steps = 9,
+                // Slider for vividness
+                SliderWithLabel(
+                    label = "Vividness",
+                    value = addEditDreamState.dreamInfo.dreamVividness,
+                    onValueChange = { onAddEditDreamEvent(AddEditDreamEvent.ChangeVividness(it)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 0.dp, 16.dp, 8.dp),
-                    thumb = {
-                        Icon(
-                            imageVector = Icons.Filled.Favorite,
-                            contentDescription = null,
-                            modifier = Modifier.size(ButtonDefaults.IconSize),
-                            tint = Color.Red
-                        )
-                    },
-                    colors = SliderDefaults.colors(
-                        thumbColor = colorResource(id = R.color.white),
-                        activeTrackColor = Color.Red.copy(alpha = 0.5f),
-                        inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
-                    )
+                        .padding(horizontal = 16.dp)
                 )
+                Spacer(modifier = Modifier.height(20.dp))
 
-                //slider for vividness
-                Text(
-                    text = "Vividness: " + addEditDreamState.dreamInfo.dreamVividness,
+                // Slider for mood
+                SliderWithLabel(
+                    label = "Mood",
+                    value = addEditDreamState.dreamInfo.dreamEmotion,
+                    onValueChange = { onAddEditDreamEvent(AddEditDreamEvent.ChangeMood(it)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .padding(16.dp, 8.dp, 16.dp, 0.dp),
-                    style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
-                )
-
-                Slider(
-                    value = addEditDreamState.dreamInfo.dreamVividness.toFloat(),
-                    onValueChange = {
-                        onAddEditDreamEvent(AddEditDreamEvent.ChangeVividness(it.toInt()))
-                    },
-                    valueRange = 0f..10f,
-                    steps = 9,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp, 0.dp, 16.dp, 8.dp),
-                    thumb = {
-                        Icon(
-                            imageVector = Icons.Filled.ShieldMoon,
-                            contentDescription = null,
-                            modifier = Modifier.size(ButtonDefaults.IconSize),
-                            tint = Color.Red
-                        )
-                    },
-                    colors = SliderDefaults.colors(
-                        thumbColor = colorResource(id = R.color.white),
-                        activeTrackColor = Color.Red.copy(alpha = 0.5f),
-                        inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
-                    )
-                )
-
-                //slider for dreamMood
-                Text(
-                    text = "Mood: " + addEditDreamState.dreamInfo.dreamEmotion,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .padding(16.dp, 8.dp, 16.dp, 0.dp),
-                    style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
-                )
-
-                Slider(
-                    value = addEditDreamState.dreamInfo.dreamEmotion.toFloat(),
-                    onValueChange = {
-                        onAddEditDreamEvent(AddEditDreamEvent.ChangeMood(it.toInt()))
-                    },
-                    valueRange = 0f..10f,
-                    steps = 9,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp, 0.dp, 16.dp, 8.dp),
-                    thumb = {
-                        Icon(
-                            imageVector = Icons.Filled.Mood,
-                            contentDescription = null,
-                            modifier = Modifier.size(ButtonDefaults.IconSize),
-                            tint = Color.Red
-                        )
-                    },
-                    colors = SliderDefaults.colors(
-                        thumbColor = colorResource(id = R.color.white),
-                        activeTrackColor = Color.Red.copy(alpha = 0.5f),
-                        inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
-                    )
+                        .padding(horizontal = 16.dp)
                 )
             }
         }
+    }
+}
+
+@Composable
+fun SliderWithLabel(
+    label: String,
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "$label: $value",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
+        )
+        Slider(
+            value = value.toFloat(),
+            onValueChange = { onValueChange(it.toInt()) },
+            valueRange = 0f..10f,
+            steps = 9,
+            modifier = Modifier.fillMaxWidth(),
+            colors = SliderDefaults.colors(
+                thumbColor = colorResource(id = R.color.white),
+                activeTrackColor = colorResource(id = R.color.sky_blue),
+                inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
+            )
+        )
     }
 }

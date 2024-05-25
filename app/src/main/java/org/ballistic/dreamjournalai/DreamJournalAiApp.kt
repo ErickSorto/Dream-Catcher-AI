@@ -11,7 +11,6 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class DreamJournalAiApp : Application() {
-
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()

@@ -149,6 +149,7 @@ fun DreamFavoriteScreen(
                                 .padding(bottom = 10.dp)
                                 .padding(horizontal = 12.dp),
                             onClick = {
+                                navController.popBackStack()
                                 navController.navigate(
                                     Screens.AddEditDreamScreen.route +
                                             "?dreamId=${dream.id}&dreamImageBackground=${

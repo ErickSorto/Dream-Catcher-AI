@@ -27,7 +27,7 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.GenerateButtonsLayout
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.TransparentHintTextField
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.onKeyboardDismiss
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

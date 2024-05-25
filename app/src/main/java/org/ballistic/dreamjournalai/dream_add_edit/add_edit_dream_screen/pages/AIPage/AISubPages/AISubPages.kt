@@ -39,7 +39,7 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.ArcRotationAnimation
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.UniversalButton
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AIData
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamState
 

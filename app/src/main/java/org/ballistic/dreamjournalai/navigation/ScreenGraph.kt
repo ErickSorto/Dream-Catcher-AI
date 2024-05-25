@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.navigation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,8 +14,6 @@ import androidx.navigation.navArgument
 import org.ballistic.dreamjournalai.core.components.FeatureComingSoonScreen
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AddEditDreamScreen
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamViewModel
-import org.ballistic.dreamjournalai.dream_symbols.presentation.SymbolScreen
-import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryScreenViewModel
 import org.ballistic.dreamjournalai.dream_favorites.DreamFavoriteScreenViewModel
 import org.ballistic.dreamjournalai.dream_favorites.presentation.DreamFavoriteScreen
 import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.DreamJournalListScreen
@@ -27,6 +26,8 @@ import org.ballistic.dreamjournalai.dream_statistics.presentation.DreamStatistic
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenViewModel
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreen
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
+import org.ballistic.dreamjournalai.dream_symbols.presentation.SymbolScreen
+import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryScreenViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.about_me_screen.AboutMeScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.AccountSettingsScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
@@ -34,7 +35,7 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ScreenGraph(
     navController: NavHostController,
@@ -56,13 +57,16 @@ fun ScreenGraph(
             val dreamJournalListState =
                 dreamJournalListViewModel.dreamJournalListState.collectAsStateWithLifecycle().value
             DreamJournalListScreen(
-                navController = navController,
                 mainScreenViewModelState = mainScreenViewModelState,
                 searchTextFieldState = searchTextFieldState,
                 dreamJournalListState = dreamJournalListState,
                 bottomPaddingValue = bottomPaddingValue,
                 onMainEvent = { onMainEvent(it) },
                 onDreamListEvent = { dreamJournalListViewModel.onEvent(it) },
+                onNavigateToDream = {
+                    navController.popBackStack()
+                    navController.navigate(it)
+                }
             )
         }
 

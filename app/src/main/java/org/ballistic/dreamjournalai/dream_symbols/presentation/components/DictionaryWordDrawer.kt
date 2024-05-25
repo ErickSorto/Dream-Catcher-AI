@@ -35,6 +35,7 @@ fun DictionaryWordDrawer(
     modifier: Modifier = Modifier,
 ) {
     ModalBottomSheet(
+        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         onDismissRequest = onClickOutside,
         content = {
             Card(

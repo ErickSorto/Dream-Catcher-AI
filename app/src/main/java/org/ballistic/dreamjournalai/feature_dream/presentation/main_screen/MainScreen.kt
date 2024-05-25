@@ -1,7 +1,9 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen
 
 
+import android.os.Build
 import android.os.Vibrator
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -64,6 +66,7 @@ import org.ballistic.dreamjournalai.navigation.ScreenGraph
 import org.ballistic.dreamjournalai.navigation.Screens
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainScreenView(
     mainScreenViewModelState: MainScreenViewModelState,
@@ -81,7 +84,6 @@ fun MainScreenView(
         onMainEvent(MainScreenEvent.GetAuthState)
         onMainEvent(MainScreenEvent.UserInteracted)
     }
-
 
     val navController = rememberNavController()
     val drawerGroups = listOf(
@@ -114,7 +116,6 @@ fun MainScreenView(
     )
     val selectedItem = remember { mutableStateOf(drawerGroups.first().items.first()) }
 
-
     DisposableEffect(navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             val route = destination.route ?: return@OnDestinationChangedListener
@@ -136,7 +137,6 @@ fun MainScreenView(
         contentDescription = "Lighthouse",
         contentScale = ContentScale.Crop
     )
-
 
     val scope = rememberCoroutineScope()
 
@@ -172,10 +172,7 @@ fun MainScreenView(
                                     }
                                     selectedItem.value = item
                                     navController.navigate(item.route) {
-                                        if (item.route == Screens.DreamJournalScreen.route) {
-                                            navController.popBackStack()
-                                        }
-                                        popUpTo(navController.graph.startDestinationId) {
+                                        popUpTo(Screens.DreamJournalScreen.route) {
                                             saveState = true
                                         }
                                         launchSingleTop = true
@@ -207,8 +204,7 @@ fun MainScreenView(
                         visible = mainScreenViewModelState.scaffoldState.bottomBarState,
                         enter = slideInVertically(initialOffsetY = { it + 100 }),
                         exit = slideOutVertically(targetOffsetY = { it + 100 })
-                    )
-                    {
+                    ) {
                         BottomNavigation(
                             navController = navController,
                             modifier = Modifier.navigationBarsPadding(),
@@ -225,6 +221,7 @@ fun MainScreenView(
                                 onClick = {
                                     if (mainScreenViewModelState.isBottomBarEnabledState) {
                                         triggerVibration(vibrator)
+                                        navController.popBackStack()
                                         navController.navigate(Screens.AddEditDreamScreen.route)
                                     }
                                 },
@@ -248,7 +245,6 @@ fun MainScreenView(
                 },
                 containerColor = Color.Transparent,
             ) { innerPadding ->
-
                 onMainEvent(MainScreenEvent.UpdatePaddingValues(innerPadding))
 
                 AnimatedVisibility(visible = true, enter = fadeIn(), exit = fadeOut()) {
@@ -269,3 +265,4 @@ data class DrawerGroup(
     val title: String,
     val items: List<Screens>
 )
+

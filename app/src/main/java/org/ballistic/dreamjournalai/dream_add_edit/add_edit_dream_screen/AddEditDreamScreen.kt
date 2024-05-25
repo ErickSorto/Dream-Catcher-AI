@@ -53,7 +53,7 @@ import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPaddi
 import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.AlertSave
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.TabLayout
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.events.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent

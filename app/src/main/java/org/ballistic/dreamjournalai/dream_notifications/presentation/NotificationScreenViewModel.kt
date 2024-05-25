@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_notifications.presentation
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.maxkeppeker.sheets.core.models.base.SheetState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.dream_notifications.data.local.NotificationHandler
 import org.ballistic.dreamjournalai.dream_notifications.data.local.NotificationPreferences
@@ -18,13 +20,15 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-
+//leak context
+@Suppress("StaticFieldLeak")
 @HiltViewModel
 class NotificationScreenViewModel @Inject constructor(
     private val scheduleDailyReminderUseCase: ScheduleDailyReminderUseCase,
     private val scheduleLucidityNotificationUseCase: ScheduleLucidityNotificationUseCase,
     private val notificationPreferences: NotificationPreferences,
-    private val notificationHandler: NotificationHandler
+    private val notificationHandler: NotificationHandler,
+    private val context: Context
 ) : ViewModel() {
 
     private val _notificationScreenState = MutableStateFlow(NotificationScreenState())
@@ -73,7 +77,7 @@ class NotificationScreenViewModel @Inject constructor(
                             _notificationScreenState.value.endTime
                         )
                     } else {
-                        WorkManager.getInstance().cancelUniqueWork("Reality Check Reminder")
+                        WorkManager.getInstance(context).cancelUniqueWork("Reality Check Reminder")
                     }
                 }
             }
@@ -119,7 +123,7 @@ class NotificationScreenViewModel @Inject constructor(
                         ))
                         scheduleDailyReminderUseCase(reminderTimeInMillis)
                     } else {
-                        WorkManager.getInstance().cancelUniqueWork("Dream Journal Reminder")
+                        WorkManager.getInstance(context).cancelUniqueWork("Dream Journal Reminder")
                     }
                 }
             }
@@ -129,12 +133,22 @@ class NotificationScreenViewModel @Inject constructor(
             }
 
             is NotificationEvent.SetTimeRange -> {
-                _notificationScreenState.value = _notificationScreenState.value.copy(
-                    startTime = event.range.start,
-                    endTime = event.range.endInclusive
-                )
+                _notificationScreenState.update {
+                    it.copy(
+                        startTime = event.range.start,
+                        endTime = event.range.endInclusive
+                    )
+                }
+
                 viewModelScope.launch {
                     notificationPreferences.updateTimeRange(event.range.start, event.range.endInclusive)
+                    if (_notificationScreenState.value.realityCheckReminder) {
+                        scheduleLucidityNotificationUseCase(
+                            _notificationScreenState.value.lucidityFrequency,
+                            _notificationScreenState.value.startTime,
+                            _notificationScreenState.value.endTime
+                        )
+                    }
                 }
             }
 
