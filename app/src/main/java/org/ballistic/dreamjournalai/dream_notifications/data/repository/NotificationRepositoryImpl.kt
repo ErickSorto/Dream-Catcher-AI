@@ -30,40 +30,16 @@ class NotificationRepositoryImpl @Inject constructor(
         val notificationWork = PeriodicWorkRequestBuilder<DreamJournalNotificationWorker>(1, TimeUnit.DAYS)
             .setInputData(data)
             .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+            .addTag("DailyDreamJournalReminderTag")
             .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "DailyDreamJournalReminder",
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             notificationWork
         )
 
         Log.d("NotificationRepositoryImpl", "Scheduled daily reminder with initial delay: ${formatDuration(initialDelay)}")
-    }
-
-    override fun scheduleLucidityNotification(frequency: Int, startTime: Float, endTime: Float) {
-        val intervalMillis = if (frequency == 1) TimeUnit.MINUTES.toMillis(30) else TimeUnit.HOURS.toMillis(frequency.toLong())
-        val data = Data.Builder()
-            .putString("title", "Lucidity Reminder")
-            .putString("message", "Practice lucidity techniques")
-            .putLong("startTime", startTime.toLong())
-            .putLong("endTime", endTime.toLong())
-            .build()
-
-        val initialDelay = calculateInitialDelayForLucidity(startTime.toLong())
-
-        val notificationWork = PeriodicWorkRequestBuilder<RealityCheckNotificationWorker>(intervalMillis, TimeUnit.MILLISECONDS)
-            .setInputData(data)
-            .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
-            .build()
-
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "Lucidity Notification",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            notificationWork
-        )
-
-        Log.d("NotificationRepositoryImpl", "Scheduled lucidity notification with interval: ${formatDuration(intervalMillis)}, start time: ${formatTime(startTime)}, end time: ${formatTime(endTime)}")
     }
 
     private fun calculateInitialDelay(timeInMillis: Long): Long {
@@ -82,12 +58,37 @@ class NotificationRepositoryImpl @Inject constructor(
         return delay
     }
 
-    private fun calculateInitialDelayForLucidity(startMinutes: Long): Long {
+    override fun scheduleLucidityNotification(frequency: Int, startTime: Float, endTime: Float) {
+        val intervalMillis = if (frequency == 1) TimeUnit.MINUTES.toMillis(30) else TimeUnit.HOURS.toMillis(frequency.toLong())
+        val data = Data.Builder()
+            .putString("title", "Lucidity Reminder")
+            .putString("message", "Practice lucidity techniques")
+            .putLong("startTime", startTime.toLong())
+            .putLong("endTime", endTime.toLong())
+            .build()
+
+        val initialDelay = calculateInitialDelayForLucidity(startTime.toInt())
+
+        val notificationWork = PeriodicWorkRequestBuilder<RealityCheckNotificationWorker>(intervalMillis, TimeUnit.MILLISECONDS)
+            .setInputData(data)
+            .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+            .addTag("LucidityNotificationTag")
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "Lucidity Notification",
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            notificationWork
+        )
+
+        Log.d("NotificationRepositoryImpl", "Scheduled lucidity notification with interval: ${formatDuration(intervalMillis)}, start time: ${formatTime(startTime)}, end time: ${formatTime(endTime)}")
+    }
+
+    private fun calculateInitialDelayForLucidity(startMinutes: Int): Long {
         val now = LocalDateTime.now()
-        val startLocalTime = LocalTime.of((startMinutes / 60).toInt(), (startMinutes % 60).toInt())
+        val startLocalTime = if (startMinutes >= 1440) LocalTime.MIDNIGHT else LocalTime.of((startMinutes / 60), (startMinutes % 60))
 
         var nextNotificationTime = now.withHour(startLocalTime.hour).withMinute(startLocalTime.minute)
-
         if (now.isAfter(nextNotificationTime)) {
             nextNotificationTime = nextNotificationTime.plusDays(1)
         }
@@ -99,7 +100,7 @@ class NotificationRepositoryImpl @Inject constructor(
         val totalMinutes = minutes.toInt()
         val hours = totalMinutes / 60
         val mins = totalMinutes % 60
-        return String.format("%02d:%02d", hours, mins)
+        return if (hours == 24) "24:00" else String.format("%02d:%02d", hours % 24, mins)
     }
 
     private fun formatMillisToDateTime(millis: Long): String {
@@ -115,4 +116,3 @@ class NotificationRepositoryImpl @Inject constructor(
         return String.format("%02d hours %02d minutes and %02d seconds", hours, minutes, seconds)
     }
 }
-

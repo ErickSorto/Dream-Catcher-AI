@@ -201,6 +201,7 @@ fun ScreenGraph(
             DreamNotificationSettingScreen(
                 mainScreenViewModelState = mainScreenViewModelState,
                 notificationScreenState = dreamNotificationScreenState.value,
+                bottomPaddingValue = bottomPaddingValue,
             ) {
                 dreamNotificationScreenViewModel.onEvent(it)
             }

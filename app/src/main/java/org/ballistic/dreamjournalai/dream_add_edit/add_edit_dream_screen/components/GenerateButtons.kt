@@ -56,7 +56,7 @@ fun GenerateButtonsLayout(
     Box(
         modifier = Modifier
             .padding(bottom = 16.dp, start = 16.dp, end = 16.dp, top = 0.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(color = colorResource(id = R.color.white).copy(alpha = 0.1f))
     ) {
         Row(
@@ -89,7 +89,6 @@ fun GenerateButtonsLayout(
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UniversalButton(
     buttonType: ButtonType,

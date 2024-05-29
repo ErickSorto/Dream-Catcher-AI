@@ -16,5 +16,7 @@ sealed class MainScreenEvent {
     data class UpdatePaddingValues(val paddingValues: PaddingValues) : MainScreenEvent()
     data class ToggleDrawerState(val drawerValue: DrawerValue) : MainScreenEvent()
     data object UserInteracted : MainScreenEvent()
+
+    data object OnDreamSaved : MainScreenEvent()
     data object GetAuthState : MainScreenEvent()
 }

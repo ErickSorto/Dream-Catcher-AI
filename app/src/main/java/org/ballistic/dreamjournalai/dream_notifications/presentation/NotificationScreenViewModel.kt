@@ -2,11 +2,15 @@ package org.ballistic.dreamjournalai.dream_notifications.presentation
 
 import android.content.Context
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.await
 import com.maxkeppeker.sheets.core.models.base.SheetState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -20,7 +24,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-//leak context
+
 @Suppress("StaticFieldLeak")
 @HiltViewModel
 class NotificationScreenViewModel @Inject constructor(
@@ -37,22 +41,26 @@ class NotificationScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             notificationPreferences.realityCheckReminderFlow.collect { value ->
-                _notificationScreenState.value = _notificationScreenState.value.copy(realityCheckReminder = value)
+                _notificationScreenState.value =
+                    _notificationScreenState.value.copy(realityCheckReminder = value)
             }
         }
         viewModelScope.launch {
             notificationPreferences.dreamJournalReminderFlow.collect { value ->
-                _notificationScreenState.value = _notificationScreenState.value.copy(dreamJournalReminder = value)
+                _notificationScreenState.value =
+                    _notificationScreenState.value.copy(dreamJournalReminder = value)
             }
         }
         viewModelScope.launch {
             notificationPreferences.lucidityFrequencyFlow.collect { value ->
-                _notificationScreenState.value = _notificationScreenState.value.copy(lucidityFrequency = value)
+                _notificationScreenState.value =
+                    _notificationScreenState.value.copy(lucidityFrequency = value)
             }
         }
         viewModelScope.launch {
             notificationPreferences.reminderTimeFlow.collect { value ->
-                _notificationScreenState.value = _notificationScreenState.value.copy(reminderTime = value)
+                _notificationScreenState.value =
+                    _notificationScreenState.value.copy(reminderTime = value)
             }
         }
         viewModelScope.launch {
@@ -77,7 +85,7 @@ class NotificationScreenViewModel @Inject constructor(
                             _notificationScreenState.value.endTime
                         )
                     } else {
-                        WorkManager.getInstance(context).cancelUniqueWork("Reality Check Reminder")
+                        cancelWorkByTag("LucidityNotificationTag")
                     }
                 }
             }
@@ -123,7 +131,7 @@ class NotificationScreenViewModel @Inject constructor(
                         ))
                         scheduleDailyReminderUseCase(reminderTimeInMillis)
                     } else {
-                        WorkManager.getInstance(context).cancelUniqueWork("Dream Journal Reminder")
+                        cancelWorkByTag("DailyDreamJournalReminderTag")
                     }
                 }
             }
@@ -156,6 +164,15 @@ class NotificationScreenViewModel @Inject constructor(
                 showTestNotification()
             }
         }
+    }
+
+    private fun cancelWorkByTag(tag: String) {
+        val workManager = WorkManager.getInstance(context)
+        workManager.cancelAllWorkByTag(tag).result.addListener({
+            workManager.getWorkInfosByTag(tag).get().let { workInfos ->
+                Log.d("Notification", "Check if cancelled: $workInfos")
+            }
+        }, ContextCompat.getMainExecutor(context))
     }
 
     private fun calculateReminderTimeInMillis(localTime: LocalTime): Long {

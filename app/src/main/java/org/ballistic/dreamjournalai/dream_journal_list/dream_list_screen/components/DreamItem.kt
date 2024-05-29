@@ -216,6 +216,39 @@ fun DreamItem(
                     )
                 }
 
+                if (dream.isNightmare) {
+                    Image(
+                        painter = painterResource(id = R.drawable.nightmare_icon),
+                        contentDescription = "Nightmare",
+                        modifier = Modifier
+                            .size(26.dp)
+                            .padding(bottom = 4.dp),
+                        alignment = Alignment.Center
+                    )
+                }
+
+                if (dream.isRecurring) {
+                    Image(
+                        painter = painterResource(id = R.drawable.baseline_cached_24),
+                        contentDescription = "Recurring",
+                        modifier = Modifier
+                            .size(26.dp)
+                            .padding(bottom = 4.dp),
+                        alignment = Alignment.Center
+                    )
+                }
+
+                if (dream.falseAwakening) {
+                    Image(
+                        painter = painterResource(id = R.drawable.false_awakening_icon),
+                        contentDescription = "Day Dream",
+                        modifier = Modifier
+                            .size(26.dp)
+                            .padding(bottom = 4.dp),
+                        alignment = Alignment.Center
+                    )
+                }
+
                 if (dream.isLucid) {
                     Image(
                         painter = painterResource(id = R.drawable.lighthouse_vector),

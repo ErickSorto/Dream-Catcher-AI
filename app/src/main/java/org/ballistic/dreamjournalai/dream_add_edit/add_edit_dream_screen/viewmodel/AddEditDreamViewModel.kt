@@ -50,7 +50,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 
-@OptIn(ExperimentalFoundationApi::class)
 @HiltViewModel
 class AddEditDreamViewModel @Inject constructor(
     private val dreamUseCases: DreamUseCases,
@@ -67,16 +66,12 @@ class AddEditDreamViewModel @Inject constructor(
     )
     val addEditDreamState: StateFlow<AddEditDreamState> = _addEditDreamState.asStateFlow()
 
-    @OptIn(ExperimentalFoundationApi::class)
     private val _titleTextFieldState = MutableStateFlow(TextFieldState())
 
-    @OptIn(ExperimentalFoundationApi::class)
     val titleTextFieldState: StateFlow<TextFieldState> = _titleTextFieldState.asStateFlow()
 
-    @OptIn(ExperimentalFoundationApi::class)
     private val _contentTextFieldState = MutableStateFlow(TextFieldState())
 
-    @OptIn(ExperimentalFoundationApi::class)
     val contentTextFieldState: StateFlow<TextFieldState> = _contentTextFieldState.asStateFlow()
 
     private suspend fun listenForContentChanges() {

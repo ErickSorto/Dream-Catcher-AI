@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen
 
+import android.app.Activity
 import android.os.Vibrator
 import androidx.activity.compose.ReportDrawn
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,12 +17,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.google.android.play.core.review.ReviewException
+import com.google.android.play.core.review.model.ReviewErrorCode
+import com.google.android.play.core.review.testing.FakeReviewManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
@@ -52,10 +58,42 @@ fun DreamJournalListScreen(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val activity = Activity()
     val vibrator = context.getSystemService(Vibrator::class.java)
     onMainEvent(MainScreenEvent.SetBottomBarVisibilityState(true))
     onMainEvent(MainScreenEvent.SetFloatingActionButtonState(true))
     onMainEvent(MainScreenEvent.SetDrawerState(true))
+
+    val manager = FakeReviewManager(context)
+    LaunchedEffect(mainScreenViewModelState.isDreamRecentlySaved) {
+        if (mainScreenViewModelState.isDreamRecentlySaved) {
+            delay(1000)
+            val request = manager.requestReviewFlow()
+            request.addOnCompleteListener { task ->
+                if (dreamJournalListState.dreams.size >= 3 && task.isSuccessful) {
+                    // We got the ReviewInfo object
+                    val reviewInfo = task.result
+                    val flow = manager.launchReviewFlow(activity, reviewInfo)
+                    flow.addOnCompleteListener { _ ->
+                        // The flow has finished. The API does not indicate whether the user
+                        // reviewed or not, or even whether the review dialog was shown. Thus, no
+                        // matter the result, we continue our app flow.
+                    }
+                } else {
+                    // There was some problem, log or handle the error code.
+                    @ReviewErrorCode val reviewErrorCode = (task.getException() as ReviewException).errorCode
+                    scope.launch {
+                        mainScreenViewModelState.scaffoldState.snackBarHostState.value.showSnackbar(
+                            message = "Error: $reviewErrorCode",
+                            actionLabel = "Dismiss",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
+            }
+
+        }
+    }
 
     if (dreamJournalListState.bottomDeleteCancelSheetState) {
         DeleteCancelBottomSheet(

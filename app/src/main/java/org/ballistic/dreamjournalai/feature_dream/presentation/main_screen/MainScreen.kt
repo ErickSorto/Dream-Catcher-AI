@@ -1,6 +1,8 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen
 
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Vibrator
 import androidx.annotation.RequiresApi
@@ -55,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.google.android.play.core.review.testing.FakeReviewManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
@@ -110,7 +113,8 @@ fun MainScreenView(
         DrawerGroup(
             title = "Others",
             items = listOf(
-                Screens.AboutMe,
+                Screens.RateMyApp,
+                Screens.AboutMe
             )
         )
     )
@@ -171,12 +175,23 @@ fun MainScreenView(
                                         mainScreenViewModelState.drawerMain.close()
                                     }
                                     selectedItem.value = item
-                                    navController.navigate(item.route) {
-                                        popUpTo(Screens.DreamJournalScreen.route) {
-                                            saveState = true
+
+
+                                    if (item == Screens.RateMyApp) {
+                                        // Launch Play Store intent
+                                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                                            data = Uri.parse("https://play.google.com/store/apps/details?id=org.ballistic.dreamjournalai")
+                                            setPackage("com.android.vending")
                                         }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                        context.startActivity(intent)
+                                    } else {
+                                        navController.navigate(item.route) {
+                                            popUpTo(Screens.DreamJournalScreen.route) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
                                     }
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -184,7 +199,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.2.2",
+                        text = "Version: 1.2.3",
                         color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)

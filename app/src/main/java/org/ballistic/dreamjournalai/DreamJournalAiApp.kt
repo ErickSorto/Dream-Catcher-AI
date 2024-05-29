@@ -20,7 +20,7 @@ class DreamJournalAiApp : Application() {
     private fun createNotificationChannel() {
         val name = getString(R.string.app_name)
         val descriptionText = getString(R.string.app_name)
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val importance = NotificationManager.IMPORTANCE_HIGH
         val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
             description = descriptionText
         }

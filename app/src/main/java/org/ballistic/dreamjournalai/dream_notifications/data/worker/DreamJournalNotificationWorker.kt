@@ -38,8 +38,10 @@ class DreamJournalNotificationWorker(
             .setSmallIcon(R.drawable.ai_vector_icon)
             .setContentTitle(title)
             .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setAutoCancel(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         with(NotificationManagerCompat.from(applicationContext)) {
             notify(System.currentTimeMillis().toInt(), builder.build())

@@ -52,6 +52,7 @@ fun DreamJournalReminderLayout(
 ) {
     val postNotificationPermission =
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
     ClockDialog(
         state = notificationScreenState.dreamJournalReminderTimePickerState,
         config = ClockConfig(
@@ -87,7 +88,7 @@ fun DreamJournalReminderLayout(
             Text(
                 text = "This feature will remind you to write down your dreams every day. You can set the time of the reminder below.",
                 modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.bodyMedium,
+                style = typography.bodyMedium,
                 color = colorResource(id = R.color.white)
             )
             Row(

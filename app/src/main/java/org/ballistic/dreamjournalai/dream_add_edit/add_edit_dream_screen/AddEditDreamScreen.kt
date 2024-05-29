@@ -148,6 +148,7 @@ fun AddEditDreamScreen(
 
                 onAddEditDreamEvent(AddEditDreamEvent.SaveDream(onSaveSuccess = {
                     onMainEvent(MainScreenEvent.ShowSnackBar("Dream Saved Successfully :)"))
+                    onMainEvent(MainScreenEvent.OnDreamSaved)
                     onNavigateToDreamJournalScreen()
                 }))
             },

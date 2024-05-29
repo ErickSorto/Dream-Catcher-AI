@@ -13,6 +13,7 @@ import org.ballistic.dreamjournalai.DreamJournalAiApp
 import org.ballistic.dreamjournalai.R
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+
 class RealityCheckNotificationWorker(
     context: Context,
     workerParams: WorkerParameters
@@ -51,7 +52,9 @@ class RealityCheckNotificationWorker(
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setAutoCancel(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         with(NotificationManagerCompat.from(applicationContext)) {
             notify(System.currentTimeMillis().toInt(), builder.build())

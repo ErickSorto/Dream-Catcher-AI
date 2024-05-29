@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.pages
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -182,6 +184,8 @@ fun SliderWithLabel(
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val animatedValue by animateFloatAsState(targetValue = value.toFloat())
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -194,10 +198,9 @@ fun SliderWithLabel(
             style = typography.bodyLarge.copy(color = colorResource(id = R.color.white))
         )
         Slider(
-            value = value.toFloat(),
+            value = animatedValue,
             onValueChange = { onValueChange(it.toInt()) },
-            valueRange = 0f..10f,
-            steps = 9,
+            valueRange = 0f..5f,
             modifier = Modifier.fillMaxWidth(),
             colors = SliderDefaults.colors(
                 thumbColor = colorResource(id = R.color.white),

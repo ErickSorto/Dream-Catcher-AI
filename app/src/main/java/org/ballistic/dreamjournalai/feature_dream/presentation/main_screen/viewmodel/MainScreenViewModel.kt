@@ -47,7 +47,7 @@ class MainScreenViewModel @Inject constructor(
             R.drawable.blue_lighthouse
 
         } else {
-            R.drawable.sunrise_lighthouse
+            R.drawable.blue_lighthouse
         }
     }
 
@@ -152,6 +152,18 @@ class MainScreenViewModel @Inject constructor(
                     paddingValues = event.paddingValues
                 )
             }
+
+            MainScreenEvent.OnDreamSaved -> {
+                viewModelScope.launch {
+                    _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
+                        isDreamRecentlySaved = true
+                    )
+                }
+                delay(3000)
+                _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
+                    isDreamRecentlySaved = false
+                )
+            }
         }
     }
 }
@@ -166,6 +178,7 @@ data class MainScreenViewModelState(
     val dreamTokens: StateFlow<Int> = authRepo.dreamTokens,
     val backgroundResource: Int = R.drawable.background_during_day,
     val paddingValues: PaddingValues = PaddingValues(0.dp),
+    val isDreamRecentlySaved: Boolean = false
 )
 data class ScaffoldState (
     val bottomBarState: Boolean = true,

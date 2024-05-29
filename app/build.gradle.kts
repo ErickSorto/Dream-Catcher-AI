@@ -100,6 +100,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("com.google.accompanist:accompanist-permissions:0.35.1-alpha")
+    implementation("com.google.android.play:review:2.0.1")
 
     // Testing and Debugging
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

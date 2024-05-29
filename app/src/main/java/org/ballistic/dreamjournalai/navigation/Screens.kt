@@ -32,7 +32,7 @@ sealed class Screens(
     data object Favorites : Screens(
         route = "favorites",
         title = "Favorites",
-        icon = Icons.Default.Favorite
+        icon = Icons.Default.Star
     )
 
     data object AccountSettings : Screens(
@@ -105,6 +105,12 @@ sealed class Screens(
         "dream_tool_graph_screen",
         "Tools",
         Icons.Default.Build
+    )
+
+    data object RateMyApp : Screens(
+        "rate_my_app",
+        "Rate this app!",
+        Icons.Default.Favorite
     )
 
     data object OnboardingScreen : Screens(route = "welcome_screen", title = "Welcome", icon = null)

@@ -1,5 +1,8 @@
 package org.ballistic.dreamjournalai.dream_notifications.presentation.components
 
+import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,20 +26,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationEvent
 import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationScreenState
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RealityCheckReminderLayout(
     modifier: Modifier,
     dreamNotificationScreenState: NotificationScreenState,
     onEvent: (NotificationEvent) -> Unit
 ) {
-
+    val postNotificationPermission =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
     Column(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -74,7 +85,11 @@ fun RealityCheckReminderLayout(
             Switch(
                 checked = dreamNotificationScreenState.realityCheckReminder,
                 onCheckedChange = {
-                    onEvent(NotificationEvent.ToggleRealityCheckReminder(it))
+                    if (postNotificationPermission.status.isGranted) {
+                        onEvent(NotificationEvent.ToggleRealityCheckReminder(it))
+                    } else {
+                        postNotificationPermission.launchPermissionRequest()
+                    }
                 },
                 modifier = Modifier.padding(16.dp)
             )
@@ -143,7 +158,7 @@ fun FrequencySlider(
                 onValueChange(it)
             },
             valueRange = 1f..6f,
-            steps = 5, // 6 steps (0.5, 1, 2, 3, 4, 5, 6)
+            steps = 5,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -209,7 +224,11 @@ fun TimeRangeSlider(
             },
             valueRange = 0f..1440f, // 1440 minutes in a day (24*60)
             steps = 47, // 48 total steps for 30-minute intervals (1440/30 - 1)
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
+            colors = SliderDefaults.colors(
+                inactiveTickColor = Color.Transparent,
+                activeTickColor = Color.Transparent
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
     }

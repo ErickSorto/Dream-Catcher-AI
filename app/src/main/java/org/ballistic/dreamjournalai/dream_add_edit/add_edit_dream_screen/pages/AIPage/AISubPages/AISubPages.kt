@@ -37,6 +37,7 @@ import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
+import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.ArcRotationAnimation
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.UniversalButton
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
@@ -46,7 +47,7 @@ import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmod
 
 @Composable
 fun UniversalAIPage(
-    contentType: org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType,
+    contentType: AIPageType,
     addEditDreamState: AddEditDreamState,
     textFieldState: TextFieldState,
     vibrator: Vibrator,
@@ -56,8 +57,8 @@ fun UniversalAIPage(
 ) {
     val aiContent = contentType.getState(addEditDreamState)
 
-    when(contentType){
-        org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType.QUESTION -> {
+    when (contentType) {
+        AIPageType.QUESTION -> {
             AIQuestionPage(
                 addEditDreamState = addEditDreamState,
                 textFieldState = textFieldState,
@@ -67,7 +68,8 @@ fun UniversalAIPage(
                 infiniteTransition = infiniteTransition,
             )
         }
-        org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType.PAINTER -> {
+
+        AIPageType.PAINTER -> {
             AIPainterPage(
                 addEditDreamState = addEditDreamState,
                 textFieldState = textFieldState,
@@ -77,6 +79,7 @@ fun UniversalAIPage(
                 infiniteTransition = infiniteTransition,
             )
         }
+
         else -> {
             StandardAIPageLayout(
                 aiContent = aiContent,
@@ -97,84 +100,75 @@ fun UniversalAIPage(
 fun StandardAIPageLayout(
     aiContent: AIData,
     title: String,
-    contentType: org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType,
+    contentType: AIPageType,
     textFieldState: TextFieldState,
     vibrator: Vibrator,
     onAddEditEvent: (AddEditDreamEvent) -> Unit,
     snackBarState: () -> Unit,
     infiniteTransition: InfiniteTransition
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding()
-            .clip(RoundedCornerShape(10.dp)),
-        contentAlignment = Alignment.Center
-    ) {
-        if (aiContent.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .padding(16.dp, 0.dp, 16.dp, 16.dp)
-                    .clip(RoundedCornerShape(10.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                ArcRotationAnimation(
-                    infiniteTransition = infiniteTransition,
-                )
-            }
-        }
-        if (aiContent.response.isNotEmpty() && !aiContent.isLoading) {
-            Column(
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(
-                    text = title,
-                    color = colorResource(id = R.color.brighter_white),
-                    style = typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp)
-                )
-                TypewriterText(
-                    text = aiContent.response.trim(),
-                    textAlign = TextAlign.Start,
-                    style = typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 16.dp),
-                    color = colorResource(id = R.color.white),
-                )
-            }
-        }
 
-        if (aiContent.response.isEmpty() && !aiContent.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                // No content and not loading, show Universal Button
-                UniversalButton(
-                    buttonType = contentType.buttonType,
-                    textFieldState = textFieldState,
-                    onAddEditEvent = onAddEditEvent,
-                    snackBarState = snackBarState,
-                    size = 160.dp,  // Adjusted size
-                    fontSize = 24.sp,  // Adjusted font size
-                    modifier = Modifier.fillMaxSize(),
-                    vibrator = vibrator,
-                    hasText = true
-                )
-            }
+    if (aiContent.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            ArcRotationAnimation(
+                infiniteTransition = infiniteTransition,
+            )
+        }
+    }
+    if (aiContent.response.isNotEmpty() && !aiContent.isLoading) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                text = title,
+                color = colorResource(id = R.color.brighter_white),
+                style = typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp)
+            )
+            TypewriterText(
+                text = aiContent.response.trim(),
+                textAlign = TextAlign.Start,
+                style = typography.bodyMedium,
+                modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 16.dp),
+                color = colorResource(id = R.color.white),
+            )
+        }
+    }
+
+    if (aiContent.response.isEmpty() && !aiContent.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(16.dp)
+                .clip(RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            // No content and not loading, show Universal Button
+            UniversalButton(
+                buttonType = contentType.buttonType,
+                textFieldState = textFieldState,
+                onAddEditEvent = onAddEditEvent,
+                snackBarState = snackBarState,
+                size = 160.dp,  // Adjusted size
+                fontSize = 24.sp,  // Adjusted font size
+                modifier = Modifier.fillMaxSize(),
+                vibrator = vibrator,
+                hasText = true
+            )
         }
     }
 }
-
-
 
 
 @Composable
@@ -240,7 +234,7 @@ fun AIPainterPage(
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .padding(8.dp)
-                .clip(RoundedCornerShape(10.dp)),
+                .clip(RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -270,7 +264,7 @@ fun AIPainterPage(
         ) {
             UniversalButton(
                 textFieldState = textFieldState,
-                buttonType = org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType.PAINTER.buttonType,
+                buttonType = AIPageType.PAINTER.buttonType,
                 size = 160.dp,
                 fontSize = 24.sp,
                 onAddEditEvent = onAddEditEvent,
@@ -282,7 +276,6 @@ fun AIPainterPage(
         }
     }
 }
-
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -361,7 +354,7 @@ fun AIQuestionPage(
                 onAddEditEvent = onAddEditEvent,
                 snackBarState = snackBarState,
                 modifier = Modifier.fillMaxSize(),
-                buttonType = org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AIPageType.QUESTION.buttonType,
+                buttonType = AIPageType.QUESTION.buttonType,
                 vibrator = vibrator,
                 hasText = true
             )
