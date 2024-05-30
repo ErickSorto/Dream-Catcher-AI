@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.dream_notifications.data.worker
 
 import android.Manifest
+import android.app.Notification
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
@@ -31,9 +32,17 @@ class RealityCheckNotificationWorker(
         val startMinutes = startTime.toInt()
         val endMinutes = endTime.toInt()
 
-        Log.d("RealityCheckNotificationWorker", "Current time minutes: $currentTimeMinutes, start time minutes: $startMinutes, end time minutes: $endMinutes")
+        Log.d("RealityCheckNotificationWorker", "Current time: ${LocalTime.now()}, current time minutes: $currentTimeMinutes, start time: $startMinutes minutes, end time: $endMinutes minutes")
 
-        if (currentTimeMinutes < startMinutes || currentTimeMinutes > endMinutes) {
+        val isWithinTimeRange = if (startMinutes <= endMinutes) {
+            currentTimeMinutes in startMinutes..endMinutes
+        } else {
+            currentTimeMinutes in startMinutes..1439 || currentTimeMinutes in 0..endMinutes
+        }
+
+        Log.d("RealityCheckNotificationWorker", "Is within time range: $isWithinTimeRange")
+
+        if (!isWithinTimeRange) {
             Log.d("RealityCheckNotificationWorker", "Current time is outside the allowed range, skipping notification")
             return Result.success()
         }
@@ -54,9 +63,10 @@ class RealityCheckNotificationWorker(
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .setAutoCancel(true)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setDefaults(Notification.DEFAULT_ALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
 
         notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
 
@@ -64,4 +74,3 @@ class RealityCheckNotificationWorker(
         return Result.success()
     }
 }
-

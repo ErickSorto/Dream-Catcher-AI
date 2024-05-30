@@ -83,7 +83,7 @@ fun RealityCheckReminderLayout(
             )
             Spacer(modifier = Modifier.weight(1f))
             Switch(
-                checked = dreamNotificationScreenState.realityCheckReminder,
+                checked = dreamNotificationScreenState.realityCheckReminder && postNotificationPermission.status.isGranted,
                 onCheckedChange = {
                     if (postNotificationPermission.status.isGranted) {
                         onEvent(NotificationEvent.ToggleRealityCheckReminder(it))
@@ -94,13 +94,17 @@ fun RealityCheckReminderLayout(
                 modifier = Modifier.padding(16.dp)
             )
         }
-        if (dreamNotificationScreenState.realityCheckReminder) {
+        if (dreamNotificationScreenState.realityCheckReminder && postNotificationPermission.status.isGranted) {
             FrequencySlider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 frequency = dreamNotificationScreenState.lucidityFrequency.toFloat(),
                 onValueChange = {
                     onEvent(NotificationEvent.ChangeLucidityFrequency(it.toInt()))
+                },
+                onValueChangeFinished = {
+                    onEvent(NotificationEvent.ScheduleLucidityNotification)
                 }
+
             )
             Spacer(modifier = Modifier.height(16.dp))
             TimeRangeSlider(
@@ -109,6 +113,9 @@ fun RealityCheckReminderLayout(
                 endTime = dreamNotificationScreenState.endTime,
                 onValueChange = {
                     onEvent(NotificationEvent.SetTimeRange(it))
+                },
+                onValueChangeFinished = {
+                    onEvent(NotificationEvent.ScheduleLucidityNotification)
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -120,7 +127,8 @@ fun RealityCheckReminderLayout(
 fun FrequencySlider(
     modifier: Modifier,
     frequency: Float,
-    onValueChange: (Float) -> Unit
+    onValueChange: (Float) -> Unit,
+    onValueChangeFinished: () -> Unit
 ) {
     var sliderPosition by remember { mutableFloatStateOf(frequency) }
 
@@ -157,6 +165,9 @@ fun FrequencySlider(
                 sliderPosition = it
                 onValueChange(it)
             },
+            onValueChangeFinished = {
+                onValueChangeFinished()
+            },
             valueRange = 1f..6f,
             steps = 5,
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -176,7 +187,8 @@ fun TimeRangeSlider(
     modifier: Modifier,
     startTime: Float,
     endTime: Float,
-    onValueChange: (ClosedFloatingPointRange<Float>) -> Unit
+    onValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
+    onValueChangeFinished: () -> Unit
 ) {
     var sliderPosition by remember { mutableStateOf(startTime..endTime) }
 
@@ -225,6 +237,7 @@ fun TimeRangeSlider(
             valueRange = 0f..1440f, // 1440 minutes in a day (24*60)
             steps = 47, // 48 total steps for 30-minute intervals (1440/30 - 1)
             modifier = Modifier.padding(horizontal = 16.dp),
+            onValueChangeFinished = onValueChangeFinished,
             colors = SliderDefaults.colors(
                 inactiveTickColor = Color.Transparent,
                 activeTickColor = Color.Transparent

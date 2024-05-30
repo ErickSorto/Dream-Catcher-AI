@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.feature_dream.presentation.main_screen
 
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -64,9 +65,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
+import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.components.BottomNavigation
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.components.DrawerGroupHeading
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
@@ -74,6 +79,7 @@ import org.ballistic.dreamjournalai.navigation.ScreenGraph
 import org.ballistic.dreamjournalai.navigation.Screens
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainScreenView(
@@ -82,6 +88,14 @@ fun MainScreenView(
     onNavigateToOnboardingScreen: () -> Unit = {},
     onDataLoaded: () -> Unit
 ) {
+    val postNotificationPermission =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+    LaunchedEffect(Unit) {
+        if (!postNotificationPermission.status.isGranted) {
+            postNotificationPermission.launchPermissionRequest()
+        }
+    }
+
     LaunchedEffect(Unit) {
         onDataLoaded()
     }
@@ -203,7 +217,9 @@ fun MainScreenView(
                                         }
                                     }
                                 },
-                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding).fillMaxWidth()
+                                modifier = Modifier
+                                    .padding(NavigationDrawerItemDefaults.ItemPadding)
+                                    .fillMaxWidth()
                             )
                         }
                     }

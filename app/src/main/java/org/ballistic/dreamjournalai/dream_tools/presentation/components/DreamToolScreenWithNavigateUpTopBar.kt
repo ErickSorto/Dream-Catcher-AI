@@ -4,6 +4,7 @@ import android.os.Vibrator
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,14 +32,17 @@ import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DreamToolScreenWithNavigateUpTopBar(
-    modifier: Modifier = Modifier,
     title: String,
     vibrator: Vibrator,
     enabledBack: Boolean = true,
     navigateUp: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-
+    val topBarModifier = Modifier
+    val androidVersion = android.os.Build.VERSION.SDK_INT
+    if (androidVersion != 28) {
+        topBarModifier.height(72.dp)
+    }
     CenterAlignedTopAppBar(
         title = {
             Box(
@@ -90,6 +94,6 @@ fun DreamToolScreenWithNavigateUpTopBar(
             titleContentColor = Color.Black,
             actionIconContentColor = Color.Black
         ),
-        modifier = modifier.dynamicBottomNavigationPadding()
+        modifier = topBarModifier.dynamicBottomNavigationPadding()
     )
 }

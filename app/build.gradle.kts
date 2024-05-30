@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId = "org.ballistic.dreamjournalai"
-        minSdk = 26
+        minSdk = 27
         targetSdk = 34
         versionCode = 64
         versionName = "1.2.3"

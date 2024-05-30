@@ -53,4 +53,3 @@ class DreamJournalNotificationWorker(
         return Result.success()
     }
 }
-

@@ -49,6 +49,7 @@ fun BottomModalSheetMassInterpretation(
     var state by remember { mutableStateOf(true) }
     var amount by remember { mutableIntStateOf(interpretDreamsScreenState.chosenDreams.size) }
     ModalBottomSheet(
+        modifier = modifier.fillMaxWidth(),
         onDismissRequest = {
             onClickOutside()
         },

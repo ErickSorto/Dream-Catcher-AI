@@ -10,10 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -35,8 +34,14 @@ fun DreamNotificationSettingScreen(
     bottomPaddingValue: Dp,
     onEvent: (NotificationEvent) -> Unit,
 ) {
+
     val postNotificationPermission =
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+    LaunchedEffect(Unit) {
+        if (!postNotificationPermission.status.isGranted) {
+            postNotificationPermission.launchPermissionRequest()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -64,17 +69,6 @@ fun DreamNotificationSettingScreen(
                 dreamNotificationScreenState = notificationScreenState,
                 onEvent = onEvent
             )
-            Button(onClick = {
-                if (postNotificationPermission.status.isGranted) {
-                   onEvent(NotificationEvent.TestNotification)
-                } else {
-                    postNotificationPermission.launchPermissionRequest()
-                }
-                onEvent(NotificationEvent.TestNotification)
-            }
-            ) {
-                Text(text = "Test Notification")
-            }
         }
     }
 }

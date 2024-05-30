@@ -8,7 +8,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.ballistic.dreamjournalai.dream_notifications.data.local.NotificationHandler
 import org.ballistic.dreamjournalai.dream_notifications.data.local.NotificationPreferences
 import org.ballistic.dreamjournalai.dream_notifications.data.repository.NotificationRepositoryImpl
 import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationRepository

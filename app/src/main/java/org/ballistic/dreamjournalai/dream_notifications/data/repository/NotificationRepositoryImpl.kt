@@ -67,7 +67,7 @@ class NotificationRepositoryImpl @Inject constructor(
             .putLong("endTime", endTime.toLong())
             .build()
 
-        val initialDelay = calculateInitialDelayForLucidity(startTime.toInt())
+        val initialDelay = calculateInitialDelayForLucidity(startTime.toInt(), intervalMillis)
 
         val notificationWork = PeriodicWorkRequestBuilder<RealityCheckNotificationWorker>(intervalMillis, TimeUnit.MILLISECONDS)
             .setInputData(data)
@@ -76,7 +76,7 @@ class NotificationRepositoryImpl @Inject constructor(
             .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "Lucidity Notification",
+            "LucidityNotification",
             ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             notificationWork
         )
@@ -84,18 +84,23 @@ class NotificationRepositoryImpl @Inject constructor(
         Log.d("NotificationRepositoryImpl", "Scheduled lucidity notification with interval: ${formatDuration(intervalMillis)}, start time: ${formatTime(startTime)}, end time: ${formatTime(endTime)}")
     }
 
-    private fun calculateInitialDelayForLucidity(startMinutes: Int): Long {
+    private fun calculateInitialDelayForLucidity(startMinutes: Int, intervalMillis: Long): Long {
         val now = LocalDateTime.now()
-        val startLocalTime = if (startMinutes >= 1440) LocalTime.MIDNIGHT else LocalTime.of((startMinutes / 60), (startMinutes % 60))
+        val startLocalTime = LocalTime.of((startMinutes / 60), (startMinutes % 60))
 
+        // Calculate the next notification time
         var nextNotificationTime = now.withHour(startLocalTime.hour).withMinute(startLocalTime.minute)
         if (now.isAfter(nextNotificationTime)) {
-            nextNotificationTime = nextNotificationTime.plusDays(1)
+            nextNotificationTime = nextNotificationTime.plusMinutes(intervalMillis / 60000)
         }
 
-        return Duration.between(now, nextNotificationTime).toMillis()
-    }
+        // Ensure the delay does not exceed the frequency interval
+        val delayMillis = Duration.between(now, nextNotificationTime).toMillis()
+        val adjustedDelayMillis = delayMillis % intervalMillis
 
+        Log.d("NotificationRepositoryImpl", "Initial delay for lucidity notification: ${formatDuration(adjustedDelayMillis)}")
+        return adjustedDelayMillis
+    }
     private fun formatTime(minutes: Float): String {
         val totalMinutes = minutes.toInt()
         val hours = totalMinutes / 60

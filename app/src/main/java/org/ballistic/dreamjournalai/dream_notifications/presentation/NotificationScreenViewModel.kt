@@ -5,17 +5,13 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.await
 import com.maxkeppeker.sheets.core.models.base.SheetState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.dream_notifications.data.local.NotificationHandler
 import org.ballistic.dreamjournalai.dream_notifications.data.local.NotificationPreferences
 import org.ballistic.dreamjournalai.dream_notifications.domain.usecases.ScheduleDailyReminderUseCase
 import org.ballistic.dreamjournalai.dream_notifications.domain.usecases.ScheduleLucidityNotificationUseCase
@@ -96,13 +92,6 @@ class NotificationScreenViewModel @Inject constructor(
                 )
                 viewModelScope.launch {
                     notificationPreferences.updateLucidityFrequency(event.lucidityFrequency)
-                    if (_notificationScreenState.value.realityCheckReminder) {
-                        scheduleLucidityNotificationUseCase(
-                            _notificationScreenState.value.lucidityFrequency,
-                            _notificationScreenState.value.startTime,
-                            _notificationScreenState.value.endTime
-                        )
-                    }
                 }
             }
 
@@ -147,21 +136,20 @@ class NotificationScreenViewModel @Inject constructor(
                         endTime = event.range.endInclusive
                     )
                 }
-
-                viewModelScope.launch {
-                    notificationPreferences.updateTimeRange(event.range.start, event.range.endInclusive)
-                    if (_notificationScreenState.value.realityCheckReminder) {
-                        scheduleLucidityNotificationUseCase(
-                            _notificationScreenState.value.lucidityFrequency,
-                            _notificationScreenState.value.startTime,
-                            _notificationScreenState.value.endTime
-                        )
-                    }
-                }
             }
 
             is NotificationEvent.TestNotification -> {
                 showTestNotification()
+            }
+
+            NotificationEvent.ScheduleLucidityNotification -> {
+                viewModelScope.launch {
+                    scheduleLucidityNotificationUseCase(
+                        _notificationScreenState.value.lucidityFrequency,
+                        _notificationScreenState.value.startTime,
+                        _notificationScreenState.value.endTime
+                    )
+                }
             }
         }
     }

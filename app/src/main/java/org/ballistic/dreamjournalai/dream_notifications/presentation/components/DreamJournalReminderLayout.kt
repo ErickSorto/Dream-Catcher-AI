@@ -102,7 +102,7 @@ fun DreamJournalReminderLayout(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
-                    checked = notificationScreenState.dreamJournalReminder,
+                    checked = notificationScreenState.dreamJournalReminder && postNotificationPermission.status.isGranted,
                     onCheckedChange = {
                         if (postNotificationPermission.status.isGranted) {
                             onEvent(NotificationEvent.ToggleDreamJournalReminder(it))
@@ -114,7 +114,7 @@ fun DreamJournalReminderLayout(
                 )
             }
 
-            if (notificationScreenState.dreamJournalReminder) {
+            if (notificationScreenState.dreamJournalReminder && postNotificationPermission.status.isGranted) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,

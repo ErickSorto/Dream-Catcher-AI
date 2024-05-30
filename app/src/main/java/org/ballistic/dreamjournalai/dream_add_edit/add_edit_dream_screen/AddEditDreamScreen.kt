@@ -74,7 +74,11 @@ fun AddEditDreamScreen(
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
-
+    val androidVersion = android.os.Build.VERSION.SDK_INT
+    val topBarModifier = Modifier
+    if (androidVersion != 28) {
+        topBarModifier.height(72.dp)
+    }
     listOf(
         MainScreenEvent.SetBottomBarVisibilityState(false),
         MainScreenEvent.SetFloatingActionButtonState(false),
@@ -218,7 +222,7 @@ fun AddEditDreamScreen(
                     titleContentColor = Color.Black,
                     actionIconContentColor = Color.Black
                 ),
-                modifier = Modifier.dynamicBottomNavigationPadding().height(72.dp)
+                modifier = topBarModifier.dynamicBottomNavigationPadding()
             )
         },
         snackbarHost = {

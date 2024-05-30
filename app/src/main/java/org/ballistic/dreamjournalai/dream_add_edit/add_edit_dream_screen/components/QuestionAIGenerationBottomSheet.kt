@@ -50,6 +50,7 @@ fun QuestionAIGenerationBottomSheet(
     var state by remember { mutableStateOf(true) }
     var amount by remember { mutableIntStateOf(0) }
     ModalBottomSheet(
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         onDismissRequest = onClickOutside,
         content = {

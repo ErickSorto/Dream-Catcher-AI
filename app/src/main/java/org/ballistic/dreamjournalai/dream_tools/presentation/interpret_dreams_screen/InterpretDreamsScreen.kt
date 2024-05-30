@@ -68,7 +68,7 @@ import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_sc
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MassInterpretDreamToolScreen(
     interpretDreamsScreenState: InterpretDreamsScreenState,
@@ -104,7 +104,6 @@ fun MassInterpretDreamToolScreen(
                 navigateUp = navigateUp,
                 vibrator = vibrator,
                 enabledBack = !interpretDreamsScreenState.isLoading,
-                modifier = Modifier.height(72.dp)
             )
         },
         bottomBar = {

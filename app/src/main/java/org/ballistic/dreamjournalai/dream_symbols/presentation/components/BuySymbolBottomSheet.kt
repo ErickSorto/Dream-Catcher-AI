@@ -36,6 +36,7 @@ fun BuySymbolBottomSheet(
     amount: Int
 ) {
     ModalBottomSheet(
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         onDismissRequest = {
             onClickOutside()
