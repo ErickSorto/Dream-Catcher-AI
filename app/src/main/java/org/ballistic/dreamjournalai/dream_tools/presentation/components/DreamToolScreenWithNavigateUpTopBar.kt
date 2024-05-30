@@ -38,11 +38,9 @@ fun DreamToolScreenWithNavigateUpTopBar(
     navigateUp: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val topBarModifier = Modifier
     val androidVersion = android.os.Build.VERSION.SDK_INT
-    if (androidVersion != 28) {
-        topBarModifier.height(72.dp)
-    }
+    val topBarModifier = if (androidVersion != 28) Modifier.height(72.dp) else Modifier
+
     CenterAlignedTopAppBar(
         title = {
             Box(

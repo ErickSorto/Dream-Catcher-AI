@@ -11,7 +11,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import org.ballistic.dreamjournalai.core.components.FeatureComingSoonScreen
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AddEditDreamScreen
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamViewModel
 import org.ballistic.dreamjournalai.dream_favorites.DreamFavoriteScreenViewModel
@@ -28,7 +27,6 @@ import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreS
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
 import org.ballistic.dreamjournalai.dream_symbols.presentation.SymbolScreen
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryScreenViewModel
-import org.ballistic.dreamjournalai.feature_dream.presentation.about_me_screen.AboutMeScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.AccountSettingsScreen
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState

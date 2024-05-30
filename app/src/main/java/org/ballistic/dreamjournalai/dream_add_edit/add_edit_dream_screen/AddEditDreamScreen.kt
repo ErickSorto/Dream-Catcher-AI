@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
@@ -75,10 +76,8 @@ fun AddEditDreamScreen(
     val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
     val androidVersion = android.os.Build.VERSION.SDK_INT
-    val topBarModifier = Modifier
-    if (androidVersion != 28) {
-        topBarModifier.height(72.dp)
-    }
+    val topBarModifier = if (androidVersion != 28) Modifier.height(72.dp) else Modifier
+
     listOf(
         MainScreenEvent.SetBottomBarVisibilityState(false),
         MainScreenEvent.SetFloatingActionButtonState(false),

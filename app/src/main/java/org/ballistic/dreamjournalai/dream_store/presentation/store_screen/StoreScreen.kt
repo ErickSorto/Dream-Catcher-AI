@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -83,7 +84,11 @@ fun StoreScreen(
                     .padding(top = 56.dp, start = 16.dp, end = 16.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
-                        colorResource(id = R.color.light_black).copy(alpha = 0.7f)
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(Color(0xFFE90F2F), Color(0xFFF7AB5A)), // OrangeRed to Tomato gradient
+                            startX = 0f,
+                            endX = 1000f
+                        )
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -99,7 +104,7 @@ fun StoreScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.size(32.dp))
+            Spacer(modifier = Modifier.size(36.dp))
             CustomButtonLayout(
                 storeScreenViewModelState = storeScreenViewModelState,
                 buy100IsClicked = {
