@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.dream_notifications.data.worker
 
 import android.Manifest
+import android.app.Notification
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
@@ -22,8 +23,8 @@ class DreamJournalNotificationWorker(
     override suspend fun doWork(): Result {
         Log.d("DreamJournalNotificationWorker", "Executing DreamJournalNotificationWorker")
 
-        val title = inputData.getString("title") ?: "Dream Journal"
-        val message = inputData.getString("message") ?: "Don't forget to log your dreams!"
+        val title = inputData.getString("title") ?: "Reminder"
+        val message = inputData.getString("message") ?: "Log your dreams! 😊🌙"
 
         if (ActivityCompat.checkSelfPermission(
                 applicationContext,
@@ -34,21 +35,22 @@ class DreamJournalNotificationWorker(
             return Result.failure()
         }
 
+        val notificationManager = NotificationManagerCompat.from(applicationContext)
+
         val builder = NotificationCompat.Builder(applicationContext, DreamJournalAiApp.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ai_vector_icon)
+            .setSmallIcon(R.drawable.dream_journal_icon_vector)
             .setContentTitle(title)
             .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setDefaults(Notification.DEFAULT_ALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
 
-        with(NotificationManagerCompat.from(applicationContext)) {
-            notify(System.currentTimeMillis().toInt(), builder.build())
-        }
+        notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
 
-        Log.d("DreamJournalNotificationWorker", "Notification displayed at: ${LocalTime.now().format(
-            DateTimeFormatter.ofPattern("HH:mm:ss"))}")
+        Log.d("DreamJournalNotificationWorker", "Notification displayed at: ${LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))}")
         return Result.success()
     }
 }
+

@@ -7,6 +7,11 @@ import android.os.Build
 import android.os.Vibrator
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -29,6 +34,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -42,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,8 +64,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.google.android.play.core.review.testing.FakeReviewManager
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
@@ -107,14 +112,14 @@ fun MainScreenView(
             items = listOf(
                 Screens.AccountSettings,
                 Screens.NotificationSettings,
-                Screens.DreamSettings,
+            //    Screens.DreamSettings,
             )
         ),
         DrawerGroup(
             title = "Others",
             items = listOf(
                 Screens.RateMyApp,
-                Screens.AboutMe
+              //  Screens.AboutMe
             )
         )
     )
@@ -162,10 +167,14 @@ fun MainScreenView(
                         group.items.forEach { item ->
                             NavigationDrawerItem(
                                 icon = {
-                                    Icon(
-                                        item.icon ?: Icons.AutoMirrored.Filled.Help,
-                                        contentDescription = null
-                                    )
+                                    if (item == Screens.RateMyApp) {
+                                        AnimatedHeartIcon()
+                                    } else {
+                                        Icon(
+                                            item.icon ?: Icons.AutoMirrored.Filled.Help,
+                                            contentDescription = null
+                                        )
+                                    }
                                 },
                                 label = { Text(item.title ?: "") },
                                 selected = item == selectedItem.value,
@@ -176,11 +185,11 @@ fun MainScreenView(
                                     }
                                     selectedItem.value = item
 
-
                                     if (item == Screens.RateMyApp) {
                                         // Launch Play Store intent
                                         val intent = Intent(Intent.ACTION_VIEW).apply {
-                                            data = Uri.parse("https://play.google.com/store/apps/details?id=org.ballistic.dreamjournalai")
+                                            data =
+                                                Uri.parse("https://play.google.com/store/apps/details?id=org.ballistic.dreamjournalai")
                                             setPackage("com.android.vending")
                                         }
                                         context.startActivity(intent)
@@ -194,7 +203,7 @@ fun MainScreenView(
                                         }
                                     }
                                 },
-                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding).fillMaxWidth()
                             )
                         }
                     }
@@ -236,8 +245,12 @@ fun MainScreenView(
                                 onClick = {
                                     if (mainScreenViewModelState.isBottomBarEnabledState) {
                                         triggerVibration(vibrator)
-                                        navController.popBackStack()
-                                        navController.navigate(Screens.AddEditDreamScreen.route)
+                                        navController.navigate(Screens.AddEditDreamScreen.route) {
+                                            popUpTo(Screens.DreamJournalScreen.route) {
+                                                saveState = true
+                                                inclusive = true
+                                            }
+                                        }
                                     }
                                 },
                                 containerColor = colorResource(id = R.color.Yellow),
@@ -281,3 +294,22 @@ data class DrawerGroup(
     val items: List<Screens>
 )
 
+@Composable
+fun AnimatedHeartIcon() {
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val size by infiniteTransition.animateFloat(
+        initialValue = 24f,
+        targetValue = 28f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 800),  // Slower animation
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
+
+    Icon(
+        imageVector = Icons.Default.Favorite,
+        contentDescription = "Animated Heart",
+        tint = Color.Red,
+        modifier = Modifier.size(size.dp)
+    )
+}

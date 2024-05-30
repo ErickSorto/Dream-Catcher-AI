@@ -160,11 +160,11 @@ fun ScreenGraph(
             )
         }
 
-        composable(route = Screens.AboutMe.route) {
-            AboutMeScreen(
-                mainScreenViewModelState = mainScreenViewModelState,
-            )
-        }
+//        composable(route = Screens.AboutMe.route) {
+//            AboutMeScreen(
+//                mainScreenViewModelState = mainScreenViewModelState,
+//            )
+//        }
 
         composable(route = Screens.DreamToolGraphScreen.route) {
             DreamToolsGraph(
@@ -172,7 +172,12 @@ fun ScreenGraph(
                 bottomPaddingValue = bottomPaddingValue,
                 onMainEvent = onMainEvent,
                 onNavigate = { route ->
-                    navController.navigate(route)
+                    navController.navigate(route) {
+                        popUpTo(Screens.DreamJournalScreen.route) {
+                            saveState = true
+                            inclusive = true
+                        }
+                    }
                 },
             )
         }
@@ -237,13 +242,13 @@ fun ScreenGraph(
             )
         }
 
-        composable(route = Screens.DreamSettings.route) {
-            FeatureComingSoonScreen(
-                onNavigateToAboutMeScreen = {
-                    navController.popBackStack()
-                    navController.navigate(Screens.AboutMe.route)
-                }
-            )
-        }
+//        composable(route = Screens.DreamSettings.route) {
+//            FeatureComingSoonScreen(
+//                onNavigateToAboutMeScreen = {
+//                    navController.popBackStack()
+//                    navController.navigate(Screens.AboutMe.route)
+//                }
+//            )
+//        }
     }
 }

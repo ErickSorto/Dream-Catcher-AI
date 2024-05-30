@@ -15,7 +15,7 @@ enum class DreamTokenBenefit(
         title = "500 Dream Tokens can unlock:",
         benefit1 = "500 Dream interpretations",
         benefit2 = "250 Dream paintings",
-        benefit3 = "250 Dream dictionary words",
+        benefit3 = "250 Dream symbols",
         benefit4 = "Enough tokens for 6 months",
         image = R.drawable.dream_token_benefit
     ),
@@ -33,8 +33,8 @@ enum class DreamTokenBenefit(
         image = R.drawable.dream_benefit_interpretation
     ),
     DreamDictionary(
-        title = "Unlock more dictionary words",
-        description = "Unlock the dream dictionary words with Dream Tokens. Discover the meanings behind " +
+        title = "Unlock more dream symbols",
+        description = "Unlock the dream symbols with Dream Tokens. Discover the meanings behind " +
                 "the symbols, objects, and themes that appear in your dreams. ",
         image = R.drawable.dream_benefit_words
     ),

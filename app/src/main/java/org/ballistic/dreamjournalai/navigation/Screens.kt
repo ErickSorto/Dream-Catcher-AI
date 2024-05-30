@@ -41,11 +41,11 @@ sealed class Screens(
         icon = Icons.Default.Settings
     )
 
-    data object AboutMe : Screens(
-        route = "about_me",
-        title = "About Me",
-        icon = Icons.Default.Info
-    )
+//    data object AboutMe : Screens(
+//        route = "about_me",
+//        title = "About Me",
+//        icon = Icons.Default.Info
+//    )
 
     data object Tools : Screens(
         route = "tools",
@@ -95,11 +95,11 @@ sealed class Screens(
         icon = Icons.AutoMirrored.Filled.List
     )
 
-    data object DreamSettings : Screens(
-        "dream_settings",
-        "Dream Settings",
-        Icons.Default.Bedtime
-    )
+//    data object DreamSettings : Screens(
+//        "dream_settings",
+//        "Dream Settings",
+//        Icons.Default.Bedtime
+//    )
 
     data object DreamToolGraphScreen : Screens(
         "dream_tool_graph_screen",
@@ -109,7 +109,7 @@ sealed class Screens(
 
     data object RateMyApp : Screens(
         "rate_my_app",
-        "Rate this app!",
+        "Rate this App",
         Icons.Default.Favorite
     )
 

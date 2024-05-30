@@ -22,8 +22,8 @@ class RealityCheckNotificationWorker(
     override suspend fun doWork(): Result {
         Log.d("RealityCheckNotificationWorker", "Executing RealityCheckNotificationWorker")
 
-        val title = inputData.getString("title") ?: "Lucidity Reminder"
-        val message = inputData.getString("message") ?: "Practice lucidity techniques"
+        val title = inputData.getString("title") ?: "Reality Check"
+        val message = inputData.getString("message") ?: "Are you dreaming?"
         val startTime = inputData.getLong("startTime", 0L)
         val endTime = inputData.getLong("endTime", 1440L)  // default to end of day if not set
 
@@ -47,8 +47,10 @@ class RealityCheckNotificationWorker(
             return Result.failure()
         }
 
+        val notificationManager = NotificationManagerCompat.from(applicationContext)
+
         val builder = NotificationCompat.Builder(applicationContext, DreamJournalAiApp.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ai_vector_icon)
+            .setSmallIcon(R.drawable.dream_journal_icon_vector)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -56,11 +58,10 @@ class RealityCheckNotificationWorker(
             .setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
-        with(NotificationManagerCompat.from(applicationContext)) {
-            notify(System.currentTimeMillis().toInt(), builder.build())
-        }
+        notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
 
         Log.d("RealityCheckNotificationWorker", "Notification displayed at: ${LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))}")
         return Result.success()
     }
 }
+

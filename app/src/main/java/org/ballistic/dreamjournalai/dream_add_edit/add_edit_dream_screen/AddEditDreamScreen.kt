@@ -147,8 +147,8 @@ fun AddEditDreamScreen(
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(false))
 
                 onAddEditDreamEvent(AddEditDreamEvent.SaveDream(onSaveSuccess = {
+                    onMainEvent(MainScreenEvent.SetDreamRecentlySaved(true))
                     onMainEvent(MainScreenEvent.ShowSnackBar("Dream Saved Successfully :)"))
-                    onMainEvent(MainScreenEvent.OnDreamSaved)
                     onNavigateToDreamJournalScreen()
                 }))
             },
@@ -195,6 +195,7 @@ fun AddEditDreamScreen(
                 actions = {
                     IconButton(
                         onClick = {
+                            onMainEvent(MainScreenEvent.SetDreamRecentlySaved(true))
                             triggerVibration(vibrator)
                             onAddEditDreamEvent(AddEditDreamEvent.SaveDream(onSaveSuccess = {
                                 keyboardController?.hide()

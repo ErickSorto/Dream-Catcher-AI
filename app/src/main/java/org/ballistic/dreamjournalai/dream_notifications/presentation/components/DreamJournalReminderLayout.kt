@@ -80,7 +80,7 @@ fun DreamJournalReminderLayout(
             Text(
                 text = "Dream Journal Reminder",
                 modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.titleMedium,
+                style = typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.brighter_white)
             )

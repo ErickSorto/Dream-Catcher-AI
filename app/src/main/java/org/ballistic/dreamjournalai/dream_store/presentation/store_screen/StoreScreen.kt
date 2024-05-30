@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,6 @@ import org.ballistic.dreamjournalai.dream_store.presentation.anonymous_store_scr
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.CustomButtonLayout
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StoreScreen(
     storeScreenViewModelState: StoreScreenViewModelState,
@@ -58,12 +58,6 @@ fun StoreScreen(
     val isAnonymous = storeScreenViewModelState.isUserAnonymous.collectAsStateWithLifecycle().value
     val tokenTotal = storeScreenViewModelState.dreamTokens.collectAsStateWithLifecycle().value
     val activity = LocalContext.current as Activity
-
-
-    onMainEvent(MainScreenEvent.SetBottomBarVisibilityState(true))
-    onMainEvent(MainScreenEvent.SetFloatingActionButtonState(true))
-
-
 
     if (isAnonymous) {
         onMainEvent(MainScreenEvent.SetTopBarState(true))
@@ -96,7 +90,8 @@ fun StoreScreen(
                 Text(
                     text = "Get more Dream Tokens",
                     maxLines = 1,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                     color = Color.White,
                     modifier = Modifier
                         .padding(vertical = 12.dp, horizontal = 16.dp)
@@ -104,10 +99,7 @@ fun StoreScreen(
                 )
             }
 
-            DreamBenefitInfoLayout(tokenTotal)
-
-            Spacer(modifier = Modifier.weight(1f))
-
+            Spacer(modifier = Modifier.size(32.dp))
             CustomButtonLayout(
                 storeScreenViewModelState = storeScreenViewModelState,
                 buy100IsClicked = {
@@ -119,6 +111,8 @@ fun StoreScreen(
                     onStoreEvent(StoreEvent.Buy500DreamTokens(activity))
                 },
             )
+
+            DreamBenefitInfoLayout(tokenTotal)
         }
     }
 }
@@ -129,7 +123,7 @@ fun DreamBenefitInfoLayout(
     totalDreamTokens: Int = 0
 ) {
     val orientation = LocalContext.current.resources.configuration.orientation
-    val pageAspectWidth = if (orientation == 1) .8f else .25f
+    val pageAspectWidth = if (orientation == 1) .9f else .25f
 
     //one page and a little bit of the next page is visible
     val oneAndABitPerViewport = object : PageSize {
@@ -186,7 +180,8 @@ fun DreamTokenBenefitItem(
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = dreamTokenBenefit.title,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.ExtraBold,
                 color = Color.White,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -236,7 +231,7 @@ fun CheckAndBenefit(benefit: String) {
         Spacer(modifier = Modifier.size(8.dp))
         Text(
             text = benefit,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = Color.White,
         )
     }

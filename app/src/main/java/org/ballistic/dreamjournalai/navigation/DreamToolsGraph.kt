@@ -66,7 +66,6 @@ fun DreamToolsGraph(
                         randomDreamToolScreenViewModel.onEvent(it)
                     },
                     navigateTo = { route ->
-                        navController.popBackStack()
                         onNavigate(route)
                     },
                     navigateUp = {

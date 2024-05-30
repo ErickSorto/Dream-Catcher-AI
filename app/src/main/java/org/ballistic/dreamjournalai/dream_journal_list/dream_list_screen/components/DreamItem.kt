@@ -143,7 +143,7 @@ fun DreamItem(
             Box(
                 modifier = Modifier
                     .padding(12.dp, 12.dp, 4.dp, 12.dp)
-                    .size(115.dp)
+                    .size(118.dp)
                     .background(Color.Transparent)
                     .shadow(4.dp, RoundedCornerShape(8.dp), true)
 

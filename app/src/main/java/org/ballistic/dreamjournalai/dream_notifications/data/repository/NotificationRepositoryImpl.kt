@@ -21,8 +21,8 @@ class NotificationRepositoryImpl @Inject constructor(
 
     override fun scheduleDailyReminder(timeInMillis: Long) {
         val data = Data.Builder()
-            .putString("title", "Dream Journal Reminder")
-            .putString("message", "Time to log your dreams!")
+            .putString("title", "Reminder")
+            .putString("message", "Log your dreams! 😊🌙")
             .build()
 
         val initialDelay = calculateInitialDelay(timeInMillis)
@@ -61,8 +61,8 @@ class NotificationRepositoryImpl @Inject constructor(
     override fun scheduleLucidityNotification(frequency: Int, startTime: Float, endTime: Float) {
         val intervalMillis = if (frequency == 1) TimeUnit.MINUTES.toMillis(30) else TimeUnit.HOURS.toMillis(frequency.toLong())
         val data = Data.Builder()
-            .putString("title", "Lucidity Reminder")
-            .putString("message", "Practice lucidity techniques")
+            .putString("title", "Reality Check")
+            .putString("message", "Are you dreaming? 🌙")
             .putLong("startTime", startTime.toLong())
             .putLong("endTime", endTime.toLong())
             .build()

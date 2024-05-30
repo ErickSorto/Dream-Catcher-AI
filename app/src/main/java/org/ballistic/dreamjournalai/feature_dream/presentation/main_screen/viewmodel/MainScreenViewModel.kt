@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
@@ -153,16 +154,12 @@ class MainScreenViewModel @Inject constructor(
                 )
             }
 
-            MainScreenEvent.OnDreamSaved -> {
-                viewModelScope.launch {
-                    _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
-                        isDreamRecentlySaved = true
+            is MainScreenEvent.SetDreamRecentlySaved -> {
+                _mainScreenViewModelState.update{
+                    it.copy(
+                        isDreamRecentlySaved = event.state
                     )
                 }
-                delay(3000)
-                _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
-                    isDreamRecentlySaved = false
-                )
             }
         }
     }

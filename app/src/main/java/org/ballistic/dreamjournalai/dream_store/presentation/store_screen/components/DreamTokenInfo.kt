@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,9 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -26,7 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -54,7 +59,7 @@ fun CustomButtonLayout(
             MostPopularBanner(
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .offset(y = (-13).dp)
+                    .offset(y = (-15).dp)
             )
         }
         DreamToken100ButtonBuy(
@@ -80,11 +85,20 @@ fun DreamToken500ButtonBuy(
             .height(80.dp),
         shape = RoundedCornerShape(8.dp, 8.dp, 8.dp, 8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.8f),
+            containerColor = colorResource(id = R.color.lighter_yellow).copy(alpha = 0.8f),
             contentColor = Color.White
         ),
         enabled = !storeScreenViewModelState.isBillingClientLoading
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.dream_token),
+            contentDescription = "Dream Token",
+            modifier = Modifier
+                .offset(x = (-12).dp)
+                .padding(end = 4.dp)
+                .size(48.dp),
+            contentScale = ContentScale.FillBounds
+        )
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "500 Dream Tokens",
@@ -92,7 +106,8 @@ fun DreamToken500ButtonBuy(
                 fontWeight = Bold,
                 maxLines = 1,
                 modifier = Modifier
-                    .padding(8.dp, 8.dp, 8.dp, 8.dp)
+                    .offset(x = (-12).dp)
+                    .padding(0.dp, 8.dp, 8.dp, 8.dp)
                     .align(Alignment.CenterStart)
             )
 
@@ -103,7 +118,7 @@ fun DreamToken500ButtonBuy(
                 // Display the original price with a strikethrough
                 Text(
                     text = "\$14.99",
-                    color = Color.Gray,
+                    color = Color.White,
                     fontSize = 12.sp,
                     maxLines = 1,
                     textDecoration = TextDecoration.LineThrough, // Apply strikethrough
@@ -136,19 +151,29 @@ fun DreamToken100ButtonBuy(
             .height(80.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.light_black).copy(alpha = 0.8f),
+            containerColor = colorResource(id = R.color.sky_blue).copy(alpha = 0.8f),
             contentColor = Color.White
         ),
         enabled = !storeScreenViewModelState.isBillingClientLoading
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.dream_token),
+            contentDescription = "Dream Token",
+            modifier = Modifier
+                .offset(x = (-12).dp)
+                .padding(end = 4.dp)
+                .size(48.dp),
+            contentScale = ContentScale.FillBounds
+        )
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "100 Dream Tokens",
+                text = "100 dream tokens",
                 fontSize = 20.sp,
                 fontWeight = Bold,
                 maxLines = 1,
                 modifier = Modifier
-                    .padding(8.dp, 8.dp, 8.dp, 8.dp)
+                    .offset(x = (-12).dp)
+                    .padding(0.dp, 8.dp, 8.dp, 8.dp)
                     .align(Alignment.CenterStart)
             )
 
@@ -211,17 +236,17 @@ fun MostPopularBanner(modifier: Modifier = Modifier) {
         modifier = modifier
             .padding(8.dp, 8.dp, 8.dp, 0.dp)
             .offset(y = (-15).dp)
-            .fillMaxWidth(.5f)
+            .fillMaxWidth(.65f)
             .background(brush = backgroundBrush)
             .background(brush = shimmerBrush)
     ) {
         Text(
-            text = "Best Value (Save 66%)",
+            text = "Most Popular (Save 66%)",
             modifier = Modifier
-                .padding(4.dp)
+                .padding(4.dp, 6.dp, 4.dp, 6.dp)
                 .align(Alignment.Center),
-            fontSize = 12.sp,
             color = Color.White,
+            style = typography.labelLarge,
             fontWeight = Bold,
             maxLines = 1,
             textAlign = TextAlign.Center,

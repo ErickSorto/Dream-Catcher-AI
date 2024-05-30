@@ -17,6 +17,6 @@ sealed class MainScreenEvent {
     data class ToggleDrawerState(val drawerValue: DrawerValue) : MainScreenEvent()
     data object UserInteracted : MainScreenEvent()
 
-    data object OnDreamSaved : MainScreenEvent()
+    data class SetDreamRecentlySaved(val state: Boolean) : MainScreenEvent()
     data object GetAuthState : MainScreenEvent()
 }
