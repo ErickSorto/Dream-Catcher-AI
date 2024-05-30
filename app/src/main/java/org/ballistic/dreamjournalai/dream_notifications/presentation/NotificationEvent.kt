@@ -10,5 +10,4 @@ sealed class NotificationEvent {
     data class ToggleTimePickerForJournalReminder(val showTimePicker: Boolean) : NotificationEvent()
     data class SetTimeRange(val range: ClosedFloatingPointRange<Float>) : NotificationEvent()
     data object ScheduleLucidityNotification : NotificationEvent()
-    data object TestNotification : NotificationEvent()
 }

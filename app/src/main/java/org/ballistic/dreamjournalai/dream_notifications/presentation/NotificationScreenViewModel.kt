@@ -27,7 +27,6 @@ class NotificationScreenViewModel @Inject constructor(
     private val scheduleDailyReminderUseCase: ScheduleDailyReminderUseCase,
     private val scheduleLucidityNotificationUseCase: ScheduleLucidityNotificationUseCase,
     private val notificationPreferences: NotificationPreferences,
-    private val notificationHandler: NotificationHandler,
     private val context: Context
 ) : ViewModel() {
 
@@ -138,10 +137,6 @@ class NotificationScreenViewModel @Inject constructor(
                 }
             }
 
-            is NotificationEvent.TestNotification -> {
-                showTestNotification()
-            }
-
             NotificationEvent.ScheduleLucidityNotification -> {
                 viewModelScope.launch {
                     scheduleLucidityNotificationUseCase(
@@ -172,10 +167,6 @@ class NotificationScreenViewModel @Inject constructor(
         }
 
         return reminderDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    }
-
-    private fun showTestNotification() {
-        notificationHandler.showSimpleNotification()
     }
 }
 

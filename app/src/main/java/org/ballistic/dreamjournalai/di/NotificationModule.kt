@@ -32,12 +32,4 @@ object NotificationModule {
     ): NotificationRepository {
         return NotificationRepositoryImpl(context)
     }
-
-    @Provides
-    @Singleton
-    fun provideNotificationHandler(
-        @ApplicationContext context: Context
-    ): NotificationHandler {
-        return NotificationHandler(context)
-    }
 }
