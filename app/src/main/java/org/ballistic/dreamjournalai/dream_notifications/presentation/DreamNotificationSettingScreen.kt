@@ -69,6 +69,7 @@ fun DreamNotificationSettingScreen(
                 dreamNotificationScreenState = notificationScreenState,
                 onEvent = onEvent
             )
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
