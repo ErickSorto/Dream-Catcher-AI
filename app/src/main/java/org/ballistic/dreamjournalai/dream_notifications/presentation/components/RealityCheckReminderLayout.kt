@@ -19,6 +19,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +48,12 @@ fun RealityCheckReminderLayout(
 ) {
     val postNotificationPermission =
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
+    LaunchedEffect(Unit) {
+        if (!postNotificationPermission.status.isGranted && dreamNotificationScreenState.dreamJournalReminder) {
+            onEvent(NotificationEvent.ToggleDreamJournalReminder(false))
+        }
+    }
     Column(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -83,7 +90,7 @@ fun RealityCheckReminderLayout(
             )
             Spacer(modifier = Modifier.weight(1f))
             Switch(
-                checked = dreamNotificationScreenState.realityCheckReminder && postNotificationPermission.status.isGranted,
+                checked = dreamNotificationScreenState.realityCheckReminder,
                 onCheckedChange = {
                     if (postNotificationPermission.status.isGranted) {
                         onEvent(NotificationEvent.ToggleRealityCheckReminder(it))

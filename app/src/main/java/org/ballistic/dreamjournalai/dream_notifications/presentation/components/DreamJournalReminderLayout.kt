@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +53,12 @@ fun DreamJournalReminderLayout(
 ) {
     val postNotificationPermission =
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
+    LaunchedEffect(Unit) {
+        if (!postNotificationPermission.status.isGranted && notificationScreenState.dreamJournalReminder) {
+            onEvent(NotificationEvent.ToggleDreamJournalReminder(false))
+        }
+    }
 
     ClockDialog(
         state = notificationScreenState.dreamJournalReminderTimePickerState,
@@ -102,7 +109,7 @@ fun DreamJournalReminderLayout(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
-                    checked = notificationScreenState.dreamJournalReminder && postNotificationPermission.status.isGranted,
+                    checked = notificationScreenState.dreamJournalReminder,
                     onCheckedChange = {
                         if (postNotificationPermission.status.isGranted) {
                             onEvent(NotificationEvent.ToggleDreamJournalReminder(it))
