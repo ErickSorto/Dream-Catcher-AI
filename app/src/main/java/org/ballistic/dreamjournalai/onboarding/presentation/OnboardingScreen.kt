@@ -42,7 +42,6 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -82,25 +81,25 @@ fun OnboardingScreen(
     val context = LocalContext.current
 
     val onClick: () -> Unit = {
-        val credentialManager = androidx.credentials.CredentialManager.create(context)
-        val rawNonce = UUID.randomUUID().toString()
-        val bytes = rawNonce.toByteArray()
-        val md = MessageDigest.getInstance("SHA-256")
-        val digest = md.digest(bytes)
-        val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
-
-        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(context.getString(R.string.web_client_id))
-            .setNonce(hashedNonce)  // Use the generated nonce
-            .build()
-
-
-        val request: GetCredentialRequest = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption).build()
-
         scope.launch {
             try {
+                val credentialManager = androidx.credentials.CredentialManager.create(context)
+                val rawNonce = UUID.randomUUID().toString()
+                val bytes = rawNonce.toByteArray()
+                val md = MessageDigest.getInstance("SHA-256")
+                val digest = md.digest(bytes)
+                val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
+
+                val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+                    .setFilterByAuthorizedAccounts(false)
+                    .setServerClientId(context.getString(R.string.web_client_id))
+                    .setNonce(hashedNonce)  // Use the generated nonce
+                    .build()
+
+
+                val request: GetCredentialRequest = GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption).build()
+
                 val result = credentialManager.getCredential(
                     request = request,
                     context = context,
@@ -118,9 +117,11 @@ fun OnboardingScreen(
                         )
                     )
                 )
+                onLoginEvent(LoginEvent.ToggleLoading(false))
             } catch (e: GoogleIdTokenParsingException) {
                 // Specific exception from parsing the Google ID token
                 Log.d("AccountSettingsScreen", "GoogleIdTokenParsingException: ${e.message}")
+                onLoginEvent(LoginEvent.ToggleLoading(false))
             } catch (e: GetCredentialCancellationException) {
                 // Specific exception when the user cancels the sign-in process
                 Log.d(
@@ -128,10 +129,11 @@ fun OnboardingScreen(
                     "GetCredentialCancellationException: Sign-in cancelled by the user."
                 )
                 // Optionally, you could also invoke a cancellation event or update UI here
-                // onLoginEvent(LoginEvent.SignInCancelled)
+                onLoginEvent(LoginEvent.ToggleLoading(false))
             } catch (e: Exception) {
                 // A general exception catch, if you need to ensure no crash for any other exception
                 Log.e("AccountSettingsScreen", "Exception: An unexpected error occurred.", e)
+                onLoginEvent(LoginEvent.ToggleLoading(false))
             }
         }
     }
@@ -243,7 +245,7 @@ fun OnboardingScreen(
 
             SignInGoogleButton(
                 onClick = {
-                    onLoginEvent(LoginEvent.ToggleLoading)
+                    onLoginEvent(LoginEvent.ToggleLoading(true))
                     onClick()
                 },
                 modifier = Modifier

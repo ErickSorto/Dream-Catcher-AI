@@ -88,19 +88,7 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginEvent.ToggleLoading -> {
-                viewModelScope.launch {
-                    _state.update {
-                        it.copy(
-                            isLoading = true
-                        )
-                    }
-                    delay(2000)
-                    _state.update {
-                        it.copy(
-                            isLoading = false
-                        )
-                    }
-                }
+                _state.update { it.copy(isLoading = event.isLoading) }
             }
         }
     }

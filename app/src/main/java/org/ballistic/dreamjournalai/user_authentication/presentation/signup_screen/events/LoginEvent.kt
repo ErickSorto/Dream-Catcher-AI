@@ -12,7 +12,7 @@ sealed class LoginEvent {
     data class EnteredLoginEmail(val email: String) : LoginEvent()
     data class EnteredLoginPassword(val password: String) : LoginEvent()
     data class EnteredForgotPasswordEmail(val email: String) : LoginEvent()
-    data object ToggleLoading: LoginEvent()
+    data class ToggleLoading(val isLoading: Boolean) : LoginEvent()
 
     data object UserAccountStatus : LoginEvent()
 }

@@ -4,8 +4,10 @@ import android.app.Activity
 import android.os.Vibrator
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -25,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
@@ -46,7 +49,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -96,7 +102,9 @@ fun AIPage(
     LaunchedEffect(key1 = responseState) {
         if (responseState.isLoading) {
             scope.launch {
-                pagerState2.animateScrollToPage(1)
+                pagerState2.animateScrollToPage(
+                    1,
+                )
             }
         }
     }
@@ -469,7 +477,12 @@ fun AIPage(
                 )
             }
             SecondaryTabRow(
-                modifier = Modifier,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp)
+                    .clip(
+                        RoundedCornerShape(8.dp)
+                    ),
                 selectedTabIndex = pagerState2.currentPage,
                 indicator = {
                     TabRowDefaults.SecondaryIndicator(
@@ -485,13 +498,13 @@ fun AIPage(
                     val isSelected = pagerState2.currentPage == index
 
                     // Setup for on-click and selection-based scaling
-                    val targetScale = if (isSelected) 1.1f else 1.0f
+                    val targetScale = if (isSelected) 1.15f else .97f
                     val scale = remember { Animatable(targetScale) }
 
                     // Continuous floating effect setup
                     val floatingScale by infiniteTransition.animateFloat(
                         initialValue = 1f,
-                        targetValue = 1.1f,
+                        targetValue = 1.15f,
                         animationSpec = infiniteRepeatable(
                             animation = tween(durationMillis = 2000, easing = LinearEasing),
                             repeatMode = RepeatMode.Reverse
@@ -503,7 +516,7 @@ fun AIPage(
                             if (textFieldState.text.length >= 20) {
                                 AITool.entries[index].color
                             } else R.color.white
-                        ) else Color.LightGray.copy(alpha = 0.7f),
+                        ) else Color.LightGray.copy(alpha = 0.6f),
                         animationSpec = tween(durationMillis = 500)
                     )
 
@@ -512,6 +525,29 @@ fun AIPage(
                         scale.animateTo(
                             targetValue = targetScale,
                             animationSpec = tween(durationMillis = 400)
+                        )
+                    }
+
+                    val gradientBackground = if (isSelected) {
+                        Brush.linearGradient(
+                            colors = listOf(
+                                colorResource(id = R.color.brighter_white).copy(alpha = 0.12f),
+                                colorResource(id = R.color.brighter_white).copy(alpha = 0.02f)
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(100f, 100f)
+                        )
+                    } else {
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.1f),
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.1f)
+                            ),
+                            startY = 0f,
+                            endY = Float.POSITIVE_INFINITY
                         )
                     }
 
@@ -534,8 +570,16 @@ fun AIPage(
                         selected = isSelected,
                         onClick = {
                             triggerVibration(vibrator)
-                            scope.launch { pagerState2.animateScrollToPage(index) }
-                        }
+                            scope.launch {
+                                pagerState2.animateScrollToPage(
+                                    index,
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .background(
+                                brush = gradientBackground
+                            )
                     )
                 }
             }

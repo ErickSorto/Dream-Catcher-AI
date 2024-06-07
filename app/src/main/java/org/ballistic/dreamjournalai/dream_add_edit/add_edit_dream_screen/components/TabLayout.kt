@@ -122,7 +122,9 @@ fun TabLayout(
                 onClick = {
                     scope.launch {
                         triggerVibration(vibrator)
-                        pagerState.animateScrollToPage(index)
+                        pagerState.animateScrollToPage(
+                            index,
+                        )
                         keyboardController?.hide()
                         focusManager.clearFocus(true)
                     }

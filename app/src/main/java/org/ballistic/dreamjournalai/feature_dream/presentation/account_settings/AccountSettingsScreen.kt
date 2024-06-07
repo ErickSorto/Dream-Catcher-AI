@@ -67,25 +67,24 @@ fun AccountSettingsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val onClick: () -> Unit = {
-
-        val credentialManager = androidx.credentials.CredentialManager.create(context)
-        val rawNonce = UUID.randomUUID().toString()
-        val bytes = rawNonce.toByteArray()
-        val md = MessageDigest.getInstance("SHA-256")
-        val digest = md.digest(bytes)
-        val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
-
-        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(context.getString(R.string.web_client_id))
-            .setNonce(hashedNonce)  // Use the generated nonce
-            .build()
-
-
-        val request: GetCredentialRequest = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption).build()
-
         scope.launch {
+            val credentialManager = androidx.credentials.CredentialManager.create(context)
+            val rawNonce = UUID.randomUUID().toString()
+            val bytes = rawNonce.toByteArray()
+            val md = MessageDigest.getInstance("SHA-256")
+            val digest = md.digest(bytes)
+            val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
+
+            val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(context.getString(R.string.web_client_id))
+                .setNonce(hashedNonce)  // Use the generated nonce
+                .build()
+
+
+            val request: GetCredentialRequest = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption).build()
+
             try {
                 val result = credentialManager.getCredential(
                     request = request,
@@ -104,6 +103,7 @@ fun AccountSettingsScreen(
                         )
                     )
                 )
+                onLoginEvent(LoginEvent.ToggleLoading(false))
             } catch (e: GoogleIdTokenParsingException) {
                 // Specific exception from parsing the Google ID token
                 Log.d("AccountSettingsScreen", "GoogleIdTokenParsingException: ${e.message}")
@@ -115,9 +115,11 @@ fun AccountSettingsScreen(
                 )
                 // Optionally, you could also invoke a cancellation event or update UI here
                 // onLoginEvent(LoginEvent.SignInCancelled)
+                onLoginEvent(LoginEvent.ToggleLoading(false))
             } catch (e: Exception) {
                 // A general exception catch, if you need to ensure no crash for any other exception
                 Log.e("AccountSettingsScreen", "Exception: An unexpected error occurred.", e)
+                onLoginEvent(LoginEvent.ToggleLoading(false))
             }
         }
     }
@@ -196,7 +198,7 @@ fun AccountSettingsScreen(
 
                 SignInGoogleButton(
                     onClick = {
-                        onLoginEvent(LoginEvent.ToggleLoading)
+                        onLoginEvent(LoginEvent.ToggleLoading(true))
                         onClick()
                     },
                     modifier = Modifier
@@ -212,7 +214,7 @@ fun AccountSettingsScreen(
                             .padding(bottom = 8.dp, top = 8.dp, start = 16.dp, end = 16.dp),
                         isVisible = true,
                         onClick = {
-                            onLoginEvent(LoginEvent.ToggleLoading)
+                            onLoginEvent(LoginEvent.ToggleLoading(true))
                             onSignupEvent(SignupEvent.AnonymousSignIn)
                         },
                         isEnabled = !isLoading

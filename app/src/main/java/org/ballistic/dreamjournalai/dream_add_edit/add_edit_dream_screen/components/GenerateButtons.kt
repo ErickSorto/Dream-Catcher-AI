@@ -155,7 +155,7 @@ fun UniversalButton(
             Text(
                 text = "Tap to ${buttonType.title}",
                 fontSize = fontSize,
-                color = Color.White.copy(alpha = 0.5f)
+                color = Color.White.copy(alpha = 0.6f)
             )
         }
     }

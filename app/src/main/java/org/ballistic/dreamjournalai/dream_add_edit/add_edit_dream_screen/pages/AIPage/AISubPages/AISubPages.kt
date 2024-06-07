@@ -95,7 +95,6 @@ fun UniversalAIPage(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StandardAIPageLayout(
     aiContent: AIData,
