@@ -13,7 +13,7 @@ enum class ButtonType(
     val eventCreator: (Boolean) -> AddEditDreamEvent
 ) {
     PAINT("Paint Dream",
-        "Paint Dream",
+        "Generate Painting",
         R.drawable.baseline_brush_24,
         0, R.color.white,
         R.color.sky_blue,
@@ -23,7 +23,7 @@ enum class ButtonType(
             )
         }),
     INTERPRET("Interpret Dream",
-        "Interpret Dream",
+        "Generate Interpretation",
         R.drawable.interpret_vector,
         1,
         R.color.white,
@@ -34,7 +34,7 @@ enum class ButtonType(
             )
         }),
     ADVICE("get Advice",
-        "Dream Advice",
+        "Generate Advice",
         R.drawable.baseline_lightbulb_24,
         2,
         R.color.white,
@@ -56,7 +56,7 @@ enum class ButtonType(
             )
         }),
     STORY("Create Story",
-        "Create Story",
+        "Generate Story",
         R.drawable.baseline_auto_fix_high_24,
         4,
         R.color.white,
@@ -67,7 +67,7 @@ enum class ButtonType(
             )
         }),
     MOOD("Analyze Mood",
-        "Analyze Mood",
+        "Generate Mood Analysis",
         R.drawable.baseline_mood_24,
         5,
         R.color.white,

@@ -74,24 +74,24 @@ composeCompiler {
 
 dependencies {
 
-    var compose_version = "1.7.0-beta02"
+    val composeVersion = "1.7.0-beta03"
     // AndroidX dependencies
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.compose.material3:material3:1.3.0-beta02")
+    implementation("androidx.compose.material3:material3:1.3.0-beta03")
     implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
-    implementation("androidx.compose.animation:animation:$compose_version")
-    implementation("androidx.compose.ui:ui:$compose_version")
-    implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
+    implementation("androidx.compose.animation:animation:$composeVersion")
+    implementation("androidx.compose.ui:ui:$composeVersion")
+    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.room:room-ktx:2.6.1")
@@ -105,12 +105,12 @@ dependencies {
     // Testing and Debugging
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     baselineProfile(project(":baselineprofile"))
-    debugImplementation("androidx.compose.ui:ui-tooling:$compose_version")
+    debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
 
     //noinspection GradleDependency
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
     testImplementation("junit:junit:4.13.2")
 
     // Compose Extensions and Libraries
@@ -121,7 +121,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
@@ -134,8 +134,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads:23.1.0")
 
     // Google Auth
-    implementation("androidx.credentials:credentials:1.3.0-beta01")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-beta01")
+    implementation("androidx.credentials:credentials:1.3.0-beta02")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-beta02")
 
     // Hilt (Dependency Injection)
     implementation("com.google.dagger:hilt-android:2.49")
@@ -144,7 +144,7 @@ dependencies {
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
 
     // Networking
@@ -153,7 +153,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("io.ktor:ktor-client-okhttp:2.3.10")
+    implementation("io.ktor:ktor-client-okhttp:2.3.11")
 
     // OpenAI
     implementation(platform("com.aallam.openai:openai-client-bom:3.7.2"))

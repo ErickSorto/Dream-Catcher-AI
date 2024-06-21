@@ -135,6 +135,10 @@ class NotificationScreenViewModel @Inject constructor(
                         endTime = event.range.endInclusive
                     )
                 }
+
+                viewModelScope.launch {
+                    notificationPreferences.updateTimeRange(event.range.start, event.range.endInclusive)
+                }
             }
 
             NotificationEvent.ScheduleLucidityNotification -> {

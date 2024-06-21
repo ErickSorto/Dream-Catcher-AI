@@ -476,10 +476,18 @@ fun AIPage(
                     infiniteTransition = infiniteTransition
                 )
             }
+
+            Text(
+                text = "AI Tools Selection",
+                style = typography.labelMedium,
+                color = colorResource(id = R.color.white),
+                modifier = Modifier.padding(4.dp, 4.dp, 4.dp, 4.dp)
+            )
+
             SecondaryTabRow(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp)
+                    .padding(top = 0.dp, bottom = 8.dp)
                     .clip(
                         RoundedCornerShape(8.dp)
                     ),
@@ -608,7 +616,7 @@ fun AIPage(
             when (pagerState2.currentPage) {
                 0 -> {
                     AIButton(
-                        text = "Paint Dream",
+                        text = "Generate Painting",
                         color = R.color.sky_blue,
                         onClick = {
                             if (textFieldState.text.length >= 20) {
@@ -632,7 +640,7 @@ fun AIPage(
 
                 1 -> {
                     AIButton(
-                        text = "Interpret Dream",
+                        text = "Generate Interpretation",
                         color = R.color.purple,
                         onClick = {
                             if (textFieldState.text.length >= 20) {
@@ -656,7 +664,7 @@ fun AIPage(
 
                 2 -> {
                     AIButton(
-                        text = "Dream Advice",
+                        text = "Generate Advice",
                         color = R.color.Yellow,
                         onClick = {
                             if (textFieldState.text.length >= 20) {
@@ -680,7 +688,7 @@ fun AIPage(
 
                 3 -> {
                     AIButton(
-                        text = "Ask Question",
+                        text = "Ask a Question",
                         color = R.color.RedOrange,
                         onClick = {
                             if (textFieldState.text.length >= 20) {
@@ -728,7 +736,7 @@ fun AIPage(
 
                 5 -> {
                     AIButton(
-                        text = "Mood Analyser",
+                        text = "Generate Mood Analysis",
                         color = R.color.green,
                         onClick = {
                             if (textFieldState.text.length >= 20) {

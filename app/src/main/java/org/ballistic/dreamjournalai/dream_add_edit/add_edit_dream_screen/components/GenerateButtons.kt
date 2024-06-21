@@ -53,36 +53,48 @@ fun GenerateButtonsLayout(
     textFieldState: TextFieldState,
     vibrator: Vibrator
 ) {
-    Box(
+    Column(
         modifier = Modifier
-            .padding(bottom = 16.dp, start = 16.dp, end = 16.dp, top = 0.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(color = colorResource(id = R.color.white).copy(alpha = 0.1f))
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
+        Text(
+            text = "AI Tools Selection",
+            style = MaterialTheme.typography.labelMedium,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier.padding(4.dp, 4.dp, 4.dp, 4.dp)
+        )
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(bottom = 16.dp, start = 16.dp, end = 16.dp, top = 0.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(color = colorResource(id = R.color.white).copy(alpha = 0.1f))
         ) {
-            ButtonType.entries.forEach { item ->
-                UniversalButton(
-                    buttonType = item,
-                    textFieldState = textFieldState,
-                    vibrator = vibrator,
-                    animateToPage = { index ->
-                        animateToPage(index)
-                    },
-                    onAddEditEvent = onAddEditEvent,
-                    snackBarState = {
-                        snackBarState()
-                    },
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .size(42.dp),
-                    hasText = false
-                )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ButtonType.entries.forEach { item ->
+                    UniversalButton(
+                        buttonType = item,
+                        textFieldState = textFieldState,
+                        vibrator = vibrator,
+                        animateToPage = { index ->
+                            animateToPage(index)
+                        },
+                        onAddEditEvent = onAddEditEvent,
+                        snackBarState = {
+                            snackBarState()
+                        },
+                        modifier = Modifier
+                            .padding(vertical = 2.dp)
+                            .size(44.dp),
+                        hasText = false
+                    )
+                }
             }
         }
     }

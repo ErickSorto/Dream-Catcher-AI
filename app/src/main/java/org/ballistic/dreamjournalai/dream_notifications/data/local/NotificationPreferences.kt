@@ -28,7 +28,7 @@ class NotificationPreferences(private val context: Context) {
 
     val lucidityFrequencyFlow: Flow<Int> = context.dataStore.data
         .map { preferences ->
-            preferences[PreferencesKeys.LUCIDITY_FREQUENCY] ?: 0
+            preferences[PreferencesKeys.LUCIDITY_FREQUENCY] ?: 1
         }
 
     val reminderTimeFlow: Flow<String> = context.dataStore.data

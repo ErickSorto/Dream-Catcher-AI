@@ -4,7 +4,6 @@ package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen
 import android.os.Vibrator
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
@@ -54,13 +52,13 @@ import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPaddi
 import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.AlertSave
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.TabLayout
-import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamState
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditDreamScreen(
     dreamImage: Int,
