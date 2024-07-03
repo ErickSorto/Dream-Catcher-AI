@@ -58,7 +58,7 @@ import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.core.util.VibrationUtils
+import org.ballistic.dreamjournalai.core.util.VibrationUtil
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream.Companion.dreamBackgroundImages
 
@@ -118,7 +118,7 @@ fun DreamItem(
             .combinedClickable(
                 onClick = {
                     if (!isLongPressTriggered) {
-                        VibrationUtils.triggerVibration(vibrator)
+                        VibrationUtil.triggerVibration(vibrator)
                         onClick()
                     }
                 },
@@ -126,7 +126,7 @@ fun DreamItem(
                     isLongPressTriggered = true
                     scope.launch {
                         if (isLongPressTriggered) {
-                            VibrationUtils.triggerVibration(vibrator)
+                            VibrationUtil.triggerVibration(vibrator)
                             onDeleteClick()
                         }
                         isLongPressTriggered = false // Reset after handling

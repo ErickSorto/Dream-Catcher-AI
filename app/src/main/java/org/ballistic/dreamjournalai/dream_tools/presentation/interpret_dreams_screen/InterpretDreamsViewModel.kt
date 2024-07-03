@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.BuildConfig
 import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
 import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
+import org.ballistic.dreamjournalai.core.util.OpenAIApiKeyUtil.getOpenAISecretKey
 import org.ballistic.dreamjournalai.dream_tools.domain.MassInterpretationRepository
 import org.ballistic.dreamjournalai.dream_tools.domain.model.MassInterpretation
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
@@ -253,7 +254,8 @@ class InterpretDreamsViewModel @Inject constructor(
     ) {
         try {
             updateLoadingState(true)
-            val openAI = OpenAI(BuildConfig.API_KEY)
+            val apiKey = getOpenAISecretKey()
+            val openAI = OpenAI(apiKey)
             val currentLocale = Locale.getDefault().language
 
             val modelId = interpretDreamsScreenState.value.modelChosen
@@ -274,7 +276,7 @@ class InterpretDreamsViewModel @Inject constructor(
                 interpretation = completion.choices.firstOrNull()?.message?.content ?: "",
                 listOfDreamIDs = interpretDreamsScreenState.value.chosenDreams.map { it.id },
                 date = System.currentTimeMillis(),
-                model = if (modelId == "gpt-4" || modelId == "gpt-4o") "Advanced" else "Standard",
+                model = if (modelId == "gpt-4o") "Advanced" else "Standard",
                 id = null
             )
             massInterpretationRepository.addInterpretation(

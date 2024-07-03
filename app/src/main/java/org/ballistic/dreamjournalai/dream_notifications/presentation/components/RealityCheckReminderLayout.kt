@@ -175,7 +175,7 @@ fun FrequencySlider(
             onValueChangeFinished = {
                 onValueChangeFinished()
             },
-            valueRange = 1f..6f,
+            valueRange = 0f..6f,
             steps = 5,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
@@ -185,7 +185,7 @@ fun FrequencySlider(
 
 private fun formatFrequency(frequency: Float): String {
     return when (frequency) {
-        1f -> "Every 30 minutes"
+        0f -> "Every 30 minutes"
         else -> "Every ${frequency.toInt()} hours"
     }
 }

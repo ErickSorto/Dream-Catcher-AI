@@ -7,11 +7,8 @@ import org.ballistic.dreamjournalai.feature_dream.domain.repository.DreamReposit
 class AddDream(private val repository: DreamRepository) {
     @Throws(InvalidDreamException::class)
     suspend operator fun invoke(dream: Dream) {
-        if(dream.title.isBlank()) {
-            throw InvalidDreamException("The title of the dream can't be empty")
-        }
         if (dream.content.isBlank()) {
-            throw InvalidDreamException("The content of the dream can't be empty")
+            throw InvalidDreamException("Please enter a dream")
         }
         repository.insertDream(dream)
     }

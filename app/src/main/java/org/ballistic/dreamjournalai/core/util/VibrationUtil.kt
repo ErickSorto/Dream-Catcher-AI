@@ -5,7 +5,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 
 
-object VibrationUtils {
+object VibrationUtil {
     // Static method to trigger vibration
     fun triggerVibration(vibrator: Vibrator) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

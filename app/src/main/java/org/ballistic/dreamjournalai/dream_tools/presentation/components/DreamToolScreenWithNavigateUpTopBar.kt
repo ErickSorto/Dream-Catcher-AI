@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
-import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
+import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

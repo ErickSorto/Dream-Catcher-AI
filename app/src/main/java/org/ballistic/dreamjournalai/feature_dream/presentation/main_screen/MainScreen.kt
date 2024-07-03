@@ -70,7 +70,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
+import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.components.BottomNavigation
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.components.DrawerGroupHeading
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
@@ -223,7 +223,7 @@ fun MainScreenView(
                         }
                     }
                     Text(
-                        text = "Version: 1.2.3",
+                        text = "Version: 1.2.4",
                         color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier
                             .padding(bottom = 16.dp, top = 8.dp)

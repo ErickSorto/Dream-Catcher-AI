@@ -92,6 +92,14 @@ class NotificationScreenViewModel @Inject constructor(
                 viewModelScope.launch {
                     notificationPreferences.updateLucidityFrequency(event.lucidityFrequency)
                 }
+
+                viewModelScope.launch {
+                    scheduleLucidityNotificationUseCase(
+                        event.lucidityFrequency,
+                        _notificationScreenState.value.startTime,
+                        _notificationScreenState.value.endTime
+                    )
+                }
             }
 
             is NotificationEvent.SetReminderTime -> {
@@ -138,6 +146,14 @@ class NotificationScreenViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     notificationPreferences.updateTimeRange(event.range.start, event.range.endInclusive)
+                }
+
+                viewModelScope.launch {
+                    scheduleLucidityNotificationUseCase(
+                        _notificationScreenState.value.lucidityFrequency,
+                        event.range.start,
+                        event.range.endInclusive
+                    )
                 }
             }
 

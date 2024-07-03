@@ -16,6 +16,7 @@ import org.ballistic.dreamjournalai.feature_dream.domain.repository.DreamReposit
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.AddDream
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DeleteDream
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
+import org.ballistic.dreamjournalai.feature_dream.domain.use_case.GetCurrentDreamID
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.GetDream
 import org.ballistic.dreamjournalai.feature_dream.domain.use_case.GetDreams
 import org.ballistic.dreamjournalai.onboarding.presentation.data.DataStoreRepository
@@ -63,7 +64,8 @@ object AppModule {
             getDreams = GetDreams(repository),
             deleteDream = DeleteDream(repository),
             addDream = AddDream(repository),
-            getDream = GetDream(repository)
+            getDream = GetDream(repository),
+            getCurrentDreamId = GetCurrentDreamID(repository)
         )
     }
 

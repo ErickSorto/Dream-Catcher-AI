@@ -1,18 +1,5 @@
 {
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
-      ],
-      "predeploy": [
-        "npm --prefix ./functions/ install",
-        "npm --prefix ./functions/ run lint"
-      ]
-    }
-  ]
+  "functions": {
+    "predeploy": "npm --prefix functions run build"
+  }
 }

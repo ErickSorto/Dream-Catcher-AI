@@ -59,7 +59,7 @@ class NotificationRepositoryImpl @Inject constructor(
     }
 
     override fun scheduleLucidityNotification(frequency: Int, startTime: Float, endTime: Float) {
-        val intervalMillis = if (frequency == 1) TimeUnit.MINUTES.toMillis(30) else TimeUnit.HOURS.toMillis(frequency.toLong())
+        val intervalMillis = if (frequency == 0) TimeUnit.MINUTES.toMillis(30) else TimeUnit.HOURS.toMillis(frequency.toLong())
         val data = Data.Builder()
             .putString("title", "Reality Check")
             .putString("message", "Are you dreaming? 🌙")

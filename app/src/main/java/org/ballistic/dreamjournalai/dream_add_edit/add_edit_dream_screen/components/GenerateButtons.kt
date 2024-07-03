@@ -1,7 +1,6 @@
 package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components
 
 import android.os.Vibrator
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
+import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.ButtonType
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 
@@ -123,6 +122,12 @@ fun UniversalButton(
         colorResource(id = buttonType.baseColorId)
     }
 
+    val alpha = if (textFieldState.text.length >= 20) {
+        1f
+    } else {
+        0.7f
+    }
+
     Column(
         modifier = modifier
             .clickable(
@@ -160,7 +165,7 @@ fun UniversalButton(
             modifier = Modifier
                 .padding(8.dp)
                 .size(size),
-            tint = textColor
+            tint = textColor.copy(alpha = alpha)
         )
         if (hasText) {
             Spacer(modifier = Modifier.height(16.dp))

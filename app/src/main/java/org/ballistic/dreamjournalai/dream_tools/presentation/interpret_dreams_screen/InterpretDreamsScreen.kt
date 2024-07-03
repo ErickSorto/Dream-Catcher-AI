@@ -14,7 +14,6 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -60,7 +59,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
-import org.ballistic.dreamjournalai.core.util.VibrationUtils.triggerVibration
+import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolScreenWithNavigateUpTopBar
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.components.MassInterpretationHistoryPage
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.components.MassInterpretationResultPage

@@ -1,17 +1,68 @@
 /* eslint-disable eol-last */
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as corsFactory from "cors";
+import express from "express";  // Default import
+import cors from "cors";
 import * as nodemailer from "nodemailer";
 import { google } from "googleapis";
+import { SecretManagerServiceClient } from '@google-cloud/secret-manager';  // Ensure you import the client
 
 admin.initializeApp();
 
 const firestore = admin.firestore();
-const cors = corsFactory({ origin: true });
+// Create an instance of Express
+const app = express();
+
+// Automatically allow cross-origin requests
+app.use(cors({ origin: true }));
+
+// Parse JSON bodies
+app.use(express.json());
 
 // The time (in minutes) after which unverified users should be deleted
 const DELETE_UNVERIFIED_USERS_AFTER = 60;
+
+const client = new SecretManagerServiceClient();
+
+exports.getOpenAISecretKey = functions.https.onCall(async (data, context) => {
+    try {
+        console.log("Starting function execution...");
+
+        // Secret Manager client instantiation
+        const secretName = `projects/${process.env.GCLOUD_PROJECT}/secrets/OPENAI_SECRET_KEY/versions/latest`;
+        console.log(`Accessing secret: ${secretName}`);
+
+        const [version] = await client.accessSecretVersion({ name: secretName });
+        console.log("Secret version accessed successfully");
+
+        if (!version.payload || !version.payload.data) {
+            console.error('Error: Secret payload is null or undefined.');
+            throw new functions.https.HttpsError('internal', 'Secret payload is null or undefined.');
+        }
+
+        // Ensure the payload data is a Uint8Array
+        const payloadData = version.payload.data as Uint8Array;
+        console.log(`Payload data length: ${payloadData.length}`);
+
+        const secretKey = Buffer.from(payloadData).toString('utf-8');
+        console.log(`Secret key retrieved: ${secretKey}`);
+
+        if (!secretKey) {
+            console.error('Configuration error: Secret key is not configured.');
+            throw new functions.https.HttpsError('failed-precondition', 'The API key is not configured.');
+        }
+
+        return { apiKey: secretKey };
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error retrieving API key:', error.message);
+            throw new functions.https.HttpsError('internal', 'Unable to retrieve API key', error.message);
+        } else {
+            console.error('Unexpected error type:', error);
+            throw new functions.https.HttpsError('internal', 'Unable to retrieve API key', 'An unknown error occurred');
+        }
+    }
+});
 
 export const deleteUnverifiedUsers =
   functions.pubsub.schedule("every 60 minutes").onRun(async () => {
@@ -110,10 +161,10 @@ exports.handleAccountLinking = functions.https.onCall(async (data, context) => {
 
         do {
             // Fetch anonymous user's dreams and prepare for transfer
-            const anonymousDreamsSnapshot = await (lastSnapshot ? anonymousDreamsRef.startAfter(lastSnapshot.docs[lastSnapshot.docs.length - 1]).limit(500).get() : anonymousDreamsRef.limit(500).get());
+            const anonymousDreamsSnapshot: any = await (lastSnapshot ? anonymousDreamsRef.startAfter(lastSnapshot.docs[lastSnapshot.docs.length - 1]).limit(500).get() : anonymousDreamsRef.limit(500).get());
             const batch = firestore.batch();
 
-            anonymousDreamsSnapshot.forEach((doc) => {
+            anonymousDreamsSnapshot.forEach((doc: any) => {
                 const newDreamRef = permanentDreamsRef.doc(doc.id);
                 batch.set(newDreamRef, doc.data());
             });
@@ -129,7 +180,7 @@ exports.handleAccountLinking = functions.https.onCall(async (data, context) => {
         functions.logger.info("Account linking and dream transfer successful.");
         return {success: true, message: "All dreams transferred successfully."};
     } catch (error) {
-        functions.logger.error(`Error during account linking: ${error.message}`);
+        functions.logger.error(`Error during account linking: ${(error as Error).message}`);
         throw new functions.https.HttpsError("internal", "Error during account linking process.");
     }
 });
@@ -165,8 +216,11 @@ export const handleUserCreate = functions.auth.user().onCreate(async (user) => {
     }
 });
 
-exports.handlePurchaseVerification = functions.https.onRequest(async (req, res) => {
-  cors(req, res, async () => {
+const purchaseVerificationApp = express();
+purchaseVerificationApp.use(cors({ origin: true }));
+purchaseVerificationApp.use(express.json());
+
+purchaseVerificationApp.post('/', async (req, res) => {
     const data = req.body.data;
     const userId = data.userId;
     const dreamTokens = data.dreamTokens;
@@ -186,8 +240,9 @@ exports.handlePurchaseVerification = functions.https.onRequest(async (req, res) 
     } else {
       res.status(200).json({ result: { success: false } });
     }
-  });
 });
+
+exports.handlePurchaseVerification = functions.https.onRequest(purchaseVerificationApp);
 
 type FirebaseAuthError = {
     code: string;
@@ -218,7 +273,7 @@ exports.createAccountAndSendEmailVerification = functions.https.onCall(async (da
             return { message: "Verification email sent!" };
         }
     } catch (error) {
-        if (error.code === "auth/user-not-found") {
+        if ((error as any).code === "auth/user-not-found") {
             // User does not exist, create the user
             const userRecord = await admin.auth().createUser({
                 email: userEmail,

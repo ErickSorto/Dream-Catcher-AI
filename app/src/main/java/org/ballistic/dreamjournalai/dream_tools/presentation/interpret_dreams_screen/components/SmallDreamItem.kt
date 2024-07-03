@@ -35,7 +35,7 @@ import co.yml.charts.common.extensions.isNotNull
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.core.util.VibrationUtils
+import org.ballistic.dreamjournalai.core.util.VibrationUtil
 import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.shimmerEffect
 import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
 
@@ -68,7 +68,7 @@ fun SmallDreamItem(
             .clip(CircleShape)
             .background(colorResource(id = R.color.white).copy(alpha = 0.2f))
             .clickable {
-                VibrationUtils.triggerVibration(vibrator)
+                VibrationUtil.triggerVibration(vibrator)
                 onClick()
             }
     ) {

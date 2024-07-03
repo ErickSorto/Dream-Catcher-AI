@@ -20,8 +20,8 @@ android {
         applicationId = "org.ballistic.dreamjournalai"
         minSdk = 27
         targetSdk = 34
-        versionCode = 65
-        versionName = "1.2.3"
+        versionCode = 66
+        versionName = "1.2.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -57,8 +57,19 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/LICENSE"
+            excludes += "/META-INF/LICENSE.txt"
+            excludes += "/META-INF/license.txt"
+            excludes += "/META-INF/NOTICE"
+            excludes += "/META-INF/NOTICE.txt"
+            excludes += "/META-INF/notice.txt"
+            excludes += "/META-INF/ASL2.0"
+            excludes += "/META-INF/*.kotlin_module"
+            excludes += "/google/protobuf/*.proto"
         }
     }
+
     namespace = "org.ballistic.dreamjournalai"
 
     kapt {
@@ -74,11 +85,11 @@ composeCompiler {
 
 dependencies {
 
-    val composeVersion = "1.7.0-beta03"
+    val composeVersion = "1.7.0-beta04"
     // AndroidX dependencies
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.compose.material3:material3:1.3.0-beta03")
+    implementation("androidx.compose.material3:material3:1.3.0-beta04")
     implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -103,8 +114,8 @@ dependencies {
     implementation("com.google.android.play:review-ktx:2.0.1")
 
     // Testing and Debugging
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     baselineProfile(project(":baselineprofile"))
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
@@ -127,7 +138,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-functions-ktx:21.0.0")
     implementation("com.google.firebase:firebase-storage")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // Google Play Services
     implementation("com.google.android.gms:play-services-auth:21.2.0")

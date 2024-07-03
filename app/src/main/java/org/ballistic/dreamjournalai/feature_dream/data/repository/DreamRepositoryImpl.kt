@@ -29,10 +29,13 @@ class DreamRepositoryImpl(
     private val dreamsCollection
         get() = getCollectionReferenceForDreams()
 
+    private var currentDreamId: String = ""
+
     // Add this function to get the current user's UID
     private fun userID(): String? {
         return FirebaseAuth.getInstance().currentUser?.uid
     }
+
 
     override fun getDreams(): Flow<List<Dream>> {
         return callbackFlow {
@@ -130,11 +133,14 @@ class DreamRepositoryImpl(
         }
     }
 
+    override suspend fun getCurrentDreamId(): Resource<String> {
+        return Resource.Success(currentDreamId)
+    }
+
     override suspend fun insertDream(dream: Dream): Resource<Unit> {
         Log.d("DreamInsert", "Attempting to insert/update dream with ID: ${dream.id}")
         return try {
-            val existingDream = getDream(dream.id ?: "")
-            var newDream = dream.copy(uid = userID(), id = "")
+            val existingDream = if (!dream.id.isNullOrEmpty()) getDream(dream.id) else null
 
             suspend fun uploadImageIfNeeded(dream: Dream, oldImageUrl: String = ""): Dream {
                 if (dream.generatedImage.isNotBlank() && !dream.generatedImage.startsWith("https://firebasestorage.googleapis.com/")) {
@@ -193,9 +199,8 @@ class DreamRepositoryImpl(
                 dreamsCollection?.document(updatedDreamWithImage.id ?: "")?.set(updatedDreamWithImage)?.await()
             } else {
                 Log.d("DreamInsert", "Creating new dream")
-                val newDreamRef = getCollectionReferenceForDreams()?.document()
-                newDream = newDream.copy(id = newDreamRef?.id)
-                val newDreamWithImage = uploadImageIfNeeded(newDream)
+                val newDreamRef = getCollectionReferenceForDreams()?.document(dream.id ?: "")
+                val newDreamWithImage = uploadImageIfNeeded(dream)
                 newDreamRef?.set(newDreamWithImage)?.await()
             }
             Log.d("DreamInsert", "Dream successfully inserted/updated")
