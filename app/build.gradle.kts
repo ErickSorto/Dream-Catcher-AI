@@ -85,7 +85,7 @@ composeCompiler {
 
 dependencies {
 
-    val composeVersion = "1.7.0-beta04"
+    val composeVersion = "1.7.0-beta05"
     // AndroidX dependencies
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
@@ -99,15 +99,15 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.profileinstaller:profileinstaller:1.3.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("com.google.accompanist:accompanist-permissions:0.35.1-alpha")
     implementation("com.google.android.play:review:2.0.1")
@@ -142,11 +142,11 @@ dependencies {
 
     // Google Play Services
     implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("com.google.android.gms:play-services-ads:23.1.0")
+    implementation("com.google.android.gms:play-services-ads:23.2.0")
 
     // Google Auth
-    implementation("androidx.credentials:credentials:1.3.0-beta02")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-beta02")
+    implementation("androidx.credentials:credentials:1.3.0-rc01")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-rc01")
 
     // Hilt (Dependency Injection)
     implementation("com.google.dagger:hilt-android:2.49")
