@@ -27,12 +27,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.BuildConfig
+import okhttp3.internal.wait
 import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
 import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.core.Resource
@@ -80,11 +81,20 @@ class AddEditDreamViewModel @Inject constructor(
             contentTextFieldState.value.text
         }.collect { text ->
             if (text.isNotEmpty()) {
-                _addEditDreamState.update { state ->
-                    state.copy(
-                        dreamContentChanged = true
-                    )
-                }
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamHasChanged = true,
+                    dreamContentChanged = true
+                )
+            }
+        }
+
+        snapshotFlow {
+            titleTextFieldState.value.text
+        }.collect { text ->
+            if (text.isNotEmpty()) {
+                _addEditDreamState.value = addEditDreamState.value.copy(
+                    dreamHasChanged = true,
+                )
             }
         }
     }
@@ -147,6 +157,12 @@ class AddEditDreamViewModel @Inject constructor(
                                     authRepository = authRepository
                                 )
                             }
+                            onEvent(
+                                AddEditDreamEvent.StartListening
+                            )
+                            onEvent(
+                                AddEditDreamEvent.ToggleDreamHasChanged(false)
+                            )
                         }
 
                         is Resource.Error -> {
@@ -158,6 +174,10 @@ class AddEditDreamViewModel @Inject constructor(
                         }
                     }
                 }
+            } else {
+                onEvent(
+                    AddEditDreamEvent.StartListening
+                )
             }
         }
     }
@@ -165,6 +185,7 @@ class AddEditDreamViewModel @Inject constructor(
     fun onEvent(event: AddEditDreamEvent) {
         when (event) {
             is AddEditDreamEvent.ChangeDreamBackgroundImage -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamBackgroundImage = event.dreamBackGroundImage
@@ -173,6 +194,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ClickGenerateAIResponse -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 getAIResponse(command = "Please interpret the following dream: ${
                     contentTextFieldState.value.text
                 } ",
@@ -197,6 +219,7 @@ class AddEditDreamViewModel @Inject constructor(
 
 
             is AddEditDreamEvent.ClickGenerateAIAdvice -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 getAIResponse(command = "Please give advice that can be obtained or for this dream: ${
                     contentTextFieldState.value.text
                 } ",
@@ -216,6 +239,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ClickGenerateMood -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 getAIResponse(command = "Please describe the mood of this dream: ${
                     contentTextFieldState.value.text
                 }",
@@ -239,6 +263,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ClickGenerateStory -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 getAIResponse(command = "Please generate a very short story based on this dream: ${
                     contentTextFieldState.value.text
                 } ",
@@ -262,6 +287,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ClickGenerateFromQuestion -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 getAIResponse(command = "Please answer the following question: ${
                     addEditDreamState.value.dreamAIQuestionAnswer.question
                 }" + "as it relates to this dream: ${
@@ -290,15 +316,21 @@ class AddEditDreamViewModel @Inject constructor(
                 _addEditDreamState.value = addEditDreamState.value.copy(isDreamExitOff = true)
                 viewModelScope.launch {
                     if (!event.isAd) {
+                        onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                         getAIDetailsResponse(event.cost).await()
                         getOpenAIImageResponse(event.cost).await()
-                        onEvent(AddEditDreamEvent.SaveDream {})
+                        onEvent(AddEditDreamEvent.SaveDream {
+                            onEvent(AddEditDreamEvent.ToggleDreamHasChanged(false))
+                        })
                     } else {
                         runAd(event.activity, onRewardedAd = {
+                            onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                             viewModelScope.launch {
                                 getAIDetailsResponse(0).await()
                                 getOpenAIImageResponse(0).await()
-                                onEvent(AddEditDreamEvent.SaveDream {})
+                                onEvent(AddEditDreamEvent.SaveDream {
+                                    onEvent(AddEditDreamEvent.ToggleDreamHasChanged(false))
+                                })
                             }
                         }, onAdFailed = {
                             _addEditDreamState.value =
@@ -316,6 +348,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeLucidity -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamLucidity = event.lucidity
@@ -324,6 +357,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeVividness -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamVividness = event.vividness
@@ -332,6 +366,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeMood -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamEmotion = event.mood
@@ -340,6 +375,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeNightmare -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamIsNightmare = event.boolean
@@ -348,6 +384,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeRecurrence -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamIsRecurring = event.boolean
@@ -356,6 +393,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeIsLucid -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamIsLucid = event.boolean
@@ -364,6 +402,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeFavorite -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamIsFavorite = event.boolean
@@ -372,6 +411,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeFalseAwakening -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamIsFalseAwakening = event.boolean
@@ -380,6 +420,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeTimeOfDay -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamTimeOfDay = event.timeOfDay
@@ -401,6 +442,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeDetailsOfDream -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamGeneratedDetails = DreamAIGeneratedDetails(
                         response = event.value
@@ -415,6 +457,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeDreamDate -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
                 val formattedDate = event.value.format(formatter)
                 _addEditDreamState.value = addEditDreamState.value.copy(
@@ -425,6 +468,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeDreamWakeTime -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 val formatter = DateTimeFormatter.ofPattern(
                     if (event.value.hour < 10) "h:mm a" else "hh:mm a"
                 )
@@ -437,6 +481,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeDreamSleepTime -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 val formatter = DateTimeFormatter.ofPattern(
                     if (event.value.hour < 10) "h:mm a" else "hh:mm a"
                 )
@@ -449,6 +494,7 @@ class AddEditDreamViewModel @Inject constructor(
             }
 
             is AddEditDreamEvent.ChangeQuestionOfDream -> {
+                onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamAIQuestionAnswer = DreamQuestionAIAnswer(
                         question = event.value
@@ -662,6 +708,14 @@ class AddEditDreamViewModel @Inject constructor(
                             duration = SnackbarDuration.Long
                         )
                     }
+                }
+            }
+
+            is AddEditDreamEvent.ToggleDreamHasChanged -> {
+                _addEditDreamState.update {
+                    it.copy(
+                        dreamHasChanged = event.value
+                    )
                 }
             }
         }
@@ -1213,6 +1267,7 @@ data class AddEditDreamState(
     val isDreamFilterLoading: Boolean = false,
     val authRepository: AuthRepository,
     val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
+    val dreamHasChanged: Boolean = false,
 )
 
 data class DreamAIExplanation(

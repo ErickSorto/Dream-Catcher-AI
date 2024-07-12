@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId = "org.ballistic.dreamjournalai"
-        minSdk = 27
+        minSdk = 34
         targetSdk = 34
         versionCode = 66
         versionName = "1.2.4"
@@ -132,7 +132,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")

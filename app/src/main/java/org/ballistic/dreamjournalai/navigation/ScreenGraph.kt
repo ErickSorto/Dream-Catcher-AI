@@ -33,7 +33,6 @@ import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewm
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ScreenGraph(
     navController: NavHostController,

@@ -48,7 +48,6 @@ fun WordPage(
 
     LaunchedEffect(Unit) {
         if (addEditDreamState.dreamContentChanged) {
-            onAddEditDreamEvent(AddEditDreamEvent.StartListening)
             onAddEditDreamEvent(AddEditDreamEvent.FilterDreamWordInDictionary)
         }
     }

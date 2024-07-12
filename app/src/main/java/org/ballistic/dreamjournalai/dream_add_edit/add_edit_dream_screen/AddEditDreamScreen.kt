@@ -30,6 +30,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -90,13 +91,20 @@ fun AddEditDreamScreen(
 
     val scope = rememberCoroutineScope()
 
-    BackHandler(
-        enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading
-                && !addEditDreamState.dreamAIImage.isLoading && !addEditDreamState.dreamAIExplanation.isLoading
-                && !addEditDreamState.dreamAIAdvice.isLoading && !addEditDreamState.dreamAIStory.isLoading &&
-                !addEditDreamState.dreamAIMoodAnalyser.isLoading && !addEditDreamState.dreamAIQuestionAnswer.isLoading
-    ) {
-        onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(true))
+    BackHandler {
+        if( !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading
+            && !addEditDreamState.dreamAIImage.isLoading && !addEditDreamState.dreamAIExplanation.isLoading
+            && !addEditDreamState.dreamAIAdvice.isLoading && !addEditDreamState.dreamAIStory.isLoading &&
+            !addEditDreamState.dreamAIMoodAnalyser.isLoading && !addEditDreamState.dreamAIQuestionAnswer.isLoading){
+            if (addEditDreamState.dreamHasChanged) {
+                triggerVibration(vibrator)
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(true))
+            } else {
+                triggerVibration(vibrator)
+                onNavigateToDreamJournalScreen()
+            }
+        } else {
+        }
     }
 
     val dreamBackgroundImage = remember {
@@ -138,6 +146,7 @@ fun AddEditDreamScreen(
         keyboardController?.hide()
         AlertSave(
             onDismiss = {
+                triggerVibration(vibrator)
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(false))
                 scope.launch {
                     onNavigateToDreamJournalScreen()
@@ -169,7 +178,7 @@ fun AddEditDreamScreen(
                 title = {
                     Box(
                         modifier = Modifier.fillMaxHeight()
-                    ){
+                    ) {
                         Text(
                             text = "Dream Journal AI",
                             color = colorResource(id = R.color.white),
@@ -182,7 +191,15 @@ fun AddEditDreamScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(true)) },
+                        onClick = {
+                            //if no changes, navigate back
+                            if(addEditDreamState.dreamHasChanged) {
+                                onAddEditDreamEvent(AddEditDreamEvent.ToggleDialogState(true))
+                            } else {
+                                triggerVibration(vibrator)
+                                onNavigateToDreamJournalScreen()
+                            }
+                        },
                         enabled = !addEditDreamState.isDreamExitOff && !addEditDreamState.dreamIsSavingLoading
                     ) {
                         Icon(
@@ -233,7 +250,7 @@ fun AddEditDreamScreen(
             )
         },
         containerColor = Color.Transparent,
-        ) { padding ->
+    ) { padding ->
 
         Column(
             modifier = Modifier

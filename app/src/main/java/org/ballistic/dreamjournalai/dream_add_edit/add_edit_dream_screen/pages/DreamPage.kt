@@ -1,7 +1,6 @@
 package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.pages
 
 import android.os.Vibrator
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +38,7 @@ fun DreamPage(
     snackBarState: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .background(color = Color.Transparent)
@@ -60,7 +60,6 @@ fun DreamPage(
                     focusManager.clearFocus()
                 },
             textFieldState = titleTextFieldState
-
         )
 
         Spacer(modifier = Modifier.height(16.dp))
