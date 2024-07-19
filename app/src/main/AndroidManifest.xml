@@ -16,8 +16,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/dream_logo"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CustomSplashScreenTheme"
-        tools:targetApi="31">
+        android:theme="@style/Theme.CustomSplashScreenTheme">
         <activity
             android:screenOrientation="fullSensor"
             android:name="org.ballistic.dreamjournalai.feature_dream.presentation.MainActivity"

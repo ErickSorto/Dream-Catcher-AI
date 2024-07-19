@@ -331,7 +331,7 @@ class InterpretDreamsViewModel @Inject constructor(
 
 data class InterpretDreamsScreenState(
     val dreams: List<Dream> = emptyList(),
-    val modelChosen: String = "gpt-3.5-turbo",
+    val modelChosen: String = "gpt-4o-mini",
     val authRepository: AuthRepository,
     val massMassInterpretations: List<MassInterpretation> = emptyList(),
     val chosenMassInterpretation: MassInterpretation = MassInterpretation(),

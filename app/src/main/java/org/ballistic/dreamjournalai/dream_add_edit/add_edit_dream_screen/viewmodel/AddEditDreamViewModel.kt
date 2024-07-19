@@ -868,7 +868,7 @@ class AddEditDreamViewModel @Inject constructor(
             val openAI = OpenAI(apiKey)
             val currentLocale = Locale.getDefault().language
 
-            val modelId = if (cost <= 0) "gpt-3.5-turbo" else "gpt-4o"
+            val modelId = if (cost <= 0) "gpt-4o-mini" else "gpt-4o"
             val chatCompletionRequest = ChatCompletionRequest(
                 model = ModelId(modelId), messages = listOf(
                     ChatMessage(

@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId = "org.ballistic.dreamjournalai"
-        minSdk = 34
+        minSdk = 27
         targetSdk = 34
         versionCode = 66
         versionName = "1.2.4"
@@ -167,7 +167,7 @@ dependencies {
     implementation("io.ktor:ktor-client-okhttp:2.3.11")
 
     // OpenAI
-    implementation(platform("com.aallam.openai:openai-client-bom:3.7.2"))
+    implementation(platform("com.aallam.openai:openai-client-bom:3.8.1"))
     implementation("com.aallam.openai:openai-client")
 
     // Other Libraries
