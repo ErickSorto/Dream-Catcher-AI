@@ -4,4 +4,28 @@
     <string name="hint_description">Type dream..</string>
 
     <string name="web_client_id">433518106186-fas918qt78ffo3t0rl2eg86ta05sic89.apps.googleusercontent.com</string>
+    <string name="save_changes">Save Changes?</string>
+    <string name="do_you_want_to_save_this_dream">Do you want to save this dream?</string>
+    <string name="save_dream">Save Dream</string>
+    <string name="date">Date</string>
+    <string name="sleep_time">Sleep Time</string>
+    <string name="wake_time">Wake Time</string>
+    <string name="standard_ai">Standard AI</string>
+    <string name="advanced_ai">Advanced AI</string>
+    <string name="background">background</string>
+    <string name="ai_tools_selection">AI Tools Selection</string>
+    <string name="tap">Tap</string>
+    <string name="paint_dream">Paint Dream</string>
+    <string name="generate_painting">Generate Painting</string>
+    <string name="interpret_dream">Interpret Dream</string>
+    <string name="generate_interpretation">Generate Interpretation</string>
+    <string name="get_advice">get Advice</string>
+    <string name="generate_advice">Generate Advice</string>
+    <string name="ask_a_question_title">ask a Question</string>
+    <string name="ask_a_question_description">Ask a Question</string>
+    <string name="create_story_title">Create Story</string>
+    <string name="create_story_description">Generate Story</string>
+    <string name="analyze_mood_title">Analyze Mood</string>
+    <string name="analyze_mood_description">Generate Mood Analysis</string>
+    <string name="watch_ad">Watch Ad</string>
 </resources>

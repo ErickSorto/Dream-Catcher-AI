@@ -20,8 +20,8 @@ android {
         applicationId = "org.ballistic.dreamjournalai"
         minSdk = 27
         targetSdk = 34
-        versionCode = 66
-        versionName = "1.2.4"
+        versionCode = 67
+        versionName = "1.2.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true

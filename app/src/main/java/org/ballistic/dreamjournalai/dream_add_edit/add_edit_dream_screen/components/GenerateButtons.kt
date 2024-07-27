@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -43,6 +45,7 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.ButtonType
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
 
 @Composable
 fun GenerateButtonsLayout(
@@ -58,7 +61,7 @@ fun GenerateButtonsLayout(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "AI Tools Selection",
+            text = stringResource(R.string.ai_tools_selection),
             style = MaterialTheme.typography.labelMedium,
             color = colorResource(id = R.color.white),
             modifier = Modifier.padding(4.dp, 4.dp, 4.dp, 4.dp)
@@ -102,6 +105,7 @@ fun GenerateButtonsLayout(
 
 @Composable
 fun UniversalButton(
+    modifier: Modifier = Modifier,
     buttonType: ButtonType,
     textFieldState: TextFieldState,
     vibrator: Vibrator,
@@ -110,7 +114,6 @@ fun UniversalButton(
     snackBarState: () -> Unit = {},
     size: Dp = 32.dp,
     fontSize: TextUnit = 14.sp,
-    modifier: Modifier = Modifier,
     hasText: Boolean = true
 ) {
     val keyBoardController = LocalSoftwareKeyboardController.current
@@ -152,7 +155,7 @@ fun UniversalButton(
     ) {
         if (hasText) {
             Text(
-                text = "Tap",
+                text = stringResource(R.string.tap),
                 fontSize = fontSize,
                 color = Color.Transparent
             )
@@ -161,7 +164,7 @@ fun UniversalButton(
 
         Icon(
             painter = rememberAsyncImagePainter(buttonType.drawableId),
-            contentDescription = buttonType.title,
+            contentDescription = stringResource(id = buttonType.title),
             modifier = Modifier
                 .padding(8.dp)
                 .size(size),
@@ -170,7 +173,7 @@ fun UniversalButton(
         if (hasText) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Tap to ${buttonType.title}",
+                text = "Tap to ${stringResource(id = buttonType.title)}",
                 fontSize = fontSize,
                 color = Color.White.copy(alpha = 0.6f)
             )
@@ -206,10 +209,9 @@ fun AdTokenLayout(
 fun WatchAdButton(
     onClick: () -> Unit = {}
 ) {
+    val lastClickTime = remember { mutableLongStateOf(0L) }
     Button(
-        onClick = {
-            onClick()
-        },
+        onClick = singleClick(lastClickTime) {onClick()},
         modifier = Modifier
             .fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.RedOrange)),
@@ -217,14 +219,14 @@ fun WatchAdButton(
 
         Icon(
             painter = rememberAsyncImagePainter(R.drawable.baseline_smart_display_24),
-            contentDescription = "Watch Ad",
+            contentDescription = stringResource(R.string.watch_ad),
             modifier = Modifier
                 .size(36.dp),
             tint = colorResource(id = R.color.white),
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "Watch Ad",
+            text = stringResource(R.string.watch_ad),
             modifier = Modifier
                 .padding(4.dp),
             color = Color.White,
@@ -263,7 +265,7 @@ fun DreamTokenGenerateButton(
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = if (amount == 0) "Free" else "Dream Token",
+            text = if (amount == 0) "Free" else "DreamToken",
             modifier = Modifier
                 .padding(4.dp),
             color = Color.White,

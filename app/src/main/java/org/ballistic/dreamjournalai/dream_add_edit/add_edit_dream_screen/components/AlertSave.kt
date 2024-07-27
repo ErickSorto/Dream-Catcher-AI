@@ -6,7 +6,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import org.ballistic.dreamjournalai.R
+
 
 @Composable
 fun AlertSave(
@@ -19,10 +21,10 @@ fun AlertSave(
             onClickOutside()
         },
         title = {
-            Text(text = "Save Changes?", color = colorResource(id = R.color.brighter_white))
+            Text(text = stringResource(R.string.save_changes), color = colorResource(id = R.color.brighter_white))
         },
         text = {
-            Text(text = "Do you want to save this dream?", color = colorResource(id = R.color.brighter_white))
+            Text(text = stringResource(R.string.do_you_want_to_save_this_dream), color = colorResource(id = R.color.brighter_white))
         },
         confirmButton = {
             TextButton(
@@ -30,7 +32,7 @@ fun AlertSave(
                     onConfirm()
                 }
             ) {
-                Text("Save Dream")
+                Text(stringResource(R.string.save_dream))
             }
         },
         dismissButton = {

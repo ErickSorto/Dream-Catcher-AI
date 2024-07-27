@@ -4,16 +4,17 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 
 enum class ButtonType(
-    val title: String,
-    val description: String,
+    val title: Int,
+    val description: Int,
     val drawableId: Int,
     val pageIndex: Int,
     val baseColorId: Int,
     val longTextColorId: Int,
     val eventCreator: (Boolean) -> AddEditDreamEvent
 ) {
-    PAINT("Paint Dream",
-        "Generate Painting",
+    PAINT(
+        R.string.paint_dream,
+        R.string.generate_painting,
         R.drawable.baseline_brush_24,
         0, R.color.white,
         R.color.sky_blue,
@@ -22,8 +23,9 @@ enum class ButtonType(
                 it
             )
         }),
-    INTERPRET("Interpret Dream",
-        "Generate Interpretation",
+    INTERPRET(
+        R.string.interpret_dream,
+        R.string.generate_interpretation,
         R.drawable.interpret_vector,
         1,
         R.color.white,
@@ -33,8 +35,9 @@ enum class ButtonType(
                 it
             )
         }),
-    ADVICE("get Advice",
-        "Generate Advice",
+    ADVICE(
+        R.string.get_advice,
+        R.string.generate_advice,
         R.drawable.baseline_lightbulb_24,
         2,
         R.color.white,
@@ -44,8 +47,9 @@ enum class ButtonType(
                 it
             )
         }),
-    QUESTION("ask a Question",
-        "Ask a Question",
+    QUESTION(
+        R.string.ask_a_question_title,
+        R.string.ask_a_question_description,
         R.drawable.baseline_question_answer_24,
         3,
         R.color.white,
@@ -55,8 +59,9 @@ enum class ButtonType(
                 it
             )
         }),
-    STORY("Create Story",
-        "Generate Story",
+    STORY(
+        R.string.create_story_title,
+        R.string.create_story_description,
         R.drawable.baseline_auto_fix_high_24,
         4,
         R.color.white,
@@ -66,8 +71,9 @@ enum class ButtonType(
                 it
             )
         }),
-    MOOD("Analyze Mood",
-        "Generate Mood Analysis",
+    MOOD(
+        R.string.analyze_mood_title,
+        R.string.analyze_mood_description,
         R.drawable.baseline_mood_24,
         5,
         R.color.white,

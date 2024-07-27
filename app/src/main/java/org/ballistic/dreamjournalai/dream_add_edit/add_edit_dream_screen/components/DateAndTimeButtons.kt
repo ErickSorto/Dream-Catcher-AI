@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -77,7 +78,7 @@ fun DateButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Date",
+            text = stringResource(R.string.date),
             style = typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = colorResource(id = R.color.white),
@@ -108,7 +109,7 @@ fun SleepTimeButton(
     ) {
 
         Text(
-            text = "Sleep Time",
+            text = stringResource(R.string.sleep_time),
             style = typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = colorResource(id = R.color.white),
@@ -139,7 +140,7 @@ fun WakeTimeButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Wake Time",
+            text = stringResource(R.string.wake_time),
             style = typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = colorResource(id = R.color.white),

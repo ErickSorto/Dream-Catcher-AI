@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -85,7 +86,7 @@ fun DreamInterpretationPopUp(
                         )
 
                         //standard ai
-                        Text(text = "Standard AI", color = colorResource(id = R.color.white))
+                        Text(text = stringResource(R.string.standard_ai), color = colorResource(id = R.color.white))
 
                         Spacer(modifier = Modifier.weight(1f))
 
@@ -99,7 +100,7 @@ fun DreamInterpretationPopUp(
                         )
                         //Advanced AI
                         Text(
-                            text = "Advanced AI",
+                            text = stringResource(R.string.advanced_ai),
                             color = colorResource(id = R.color.white),
                             modifier = Modifier.padding(end = 8.dp)
                         )

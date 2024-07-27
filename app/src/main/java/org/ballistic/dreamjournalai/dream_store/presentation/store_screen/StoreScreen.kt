@@ -1,7 +1,6 @@
 package org.ballistic.dreamjournalai.dream_store.presentation.store_screen
 
 import android.app.Activity
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -122,7 +121,6 @@ fun StoreScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DreamBenefitInfoLayout(
     totalDreamTokens: Int = 0

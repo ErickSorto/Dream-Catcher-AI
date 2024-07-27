@@ -81,7 +81,7 @@ class BillingRepositoryImpl(
         suspendCancellableCoroutine { continuation ->
             billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    continuation.resume(productDetailsList, onCancellation = { })
+                    continuation.resume(productDetailsList) { _, _, _ -> }
                 } else {
                     continuation.resumeWith(Result.failure(Exception(billingResult.debugMessage)))
                 }
@@ -140,15 +140,14 @@ class BillingRepositoryImpl(
                     if (isConsumed) {
                         acknowledgePurchase(purchase)
                     }
-                    continuation.resume(isConsumed, onCancellation = { })
+                    continuation.resume(isConsumed) { _, _, _ -> }
                 } else {
-                    continuation.resume(false, onCancellation = { })
+                    continuation.resume(false) { _, _, _ -> }
                 }
             }
         }
 
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun acknowledgePurchase(purchase: Purchase): Boolean =
         suspendCancellableCoroutine { continuation ->
             val acknowledgeParams = AcknowledgePurchaseParams.newBuilder()
@@ -157,9 +156,9 @@ class BillingRepositoryImpl(
 
             billingClient.acknowledgePurchase(acknowledgeParams) { billingResult ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    continuation.resume(true, onCancellation = { })
+                    continuation.resume(true) { _, _, _ -> }
                 } else {
-                    continuation.resume(false, onCancellation = { })
+                    continuation.resume(false) { _, _, _ -> }
                 }
             }
         }
@@ -174,9 +173,9 @@ class BillingRepositoryImpl(
 
             billingClient.consumeAsync(consumeParams) { billingResult, _ ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    continuation.resume(true, onCancellation = { })
+                    continuation.resume(true) { _, _, _ -> }
                 } else {
-                    continuation.resume(false, onCancellation = { })
+                    continuation.resume(false) { _, _, _ -> }
                 }
             }
         }
