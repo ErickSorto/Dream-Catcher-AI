@@ -85,12 +85,12 @@ composeCompiler {
 
 dependencies {
 
-    val composeVersion = "1.7.0-beta05"
+    val composeVersion = "1.7.3"
     // AndroidX dependencies
-    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.activity:activity-compose:1.9.2")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.compose.material3:material3:1.3.0-beta04")
-    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
+    implementation("androidx.compose.material3:material3:1.3.0")
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
@@ -99,16 +99,16 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.navigation:navigation-compose:2.8.2")
     implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.accompanist:accompanist-permissions:0.35.1-alpha")
     implementation("com.google.android.play:review:2.0.1")
     implementation("com.google.android.play:review-ktx:2.0.1")
@@ -132,7 +132,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
@@ -142,11 +142,11 @@ dependencies {
 
     // Google Play Services
     implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("com.google.android.gms:play-services-ads:23.2.0")
+    implementation("com.google.android.gms:play-services-ads:23.4.0")
 
     // Google Auth
-    implementation("androidx.credentials:credentials:1.3.0-rc01")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-rc01")
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
 
     // Hilt (Dependency Injection)
     implementation("com.google.dagger:hilt-android:2.49")
@@ -171,7 +171,6 @@ dependencies {
     implementation("com.aallam.openai:openai-client")
 
     // Other Libraries
-    implementation("com.github.skydoves:cloudy:0.1.2")
     implementation("org.parceler:parceler-api:1.1.13")
     kapt("org.parceler:parceler:1.1.13")
 
@@ -180,7 +179,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Billing Client
-    implementation("com.android.billingclient:billing:7.0.0")
+    implementation("com.android.billingclient:billing:7.1.1")
 
     // Chart Libraries
     implementation("com.patrykandpatrick.vico:compose:2.0.0-alpha.19")

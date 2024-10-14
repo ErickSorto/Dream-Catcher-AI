@@ -27,13 +27,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
 import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.core.Resource
@@ -875,7 +873,7 @@ class AddEditDreamViewModel @Inject constructor(
                         role = ChatRole.User,
                         content = "$command.\n Respond in this language: $currentLocale"
                     )
-                ), maxTokens = 500
+                ), maxTokens = 750
             )
 
             val completion = openAI.chatCompletion(chatCompletionRequest)
@@ -971,7 +969,7 @@ class AddEditDreamViewModel @Inject constructor(
     }
 
 
-    private suspend fun getOpenAIImageResponse(
+    private fun getOpenAIImageResponse(
         cost: Int
     ): Deferred<Unit> = viewModelScope.async {
         // Indicate loading state
@@ -1014,6 +1012,11 @@ class AddEditDreamViewModel @Inject constructor(
             )
         } catch (e: Exception) {
             // Handle error state
+            addEditDreamState.value.snackBarHostState.value.showSnackbar(
+                "Error getting AI image response",
+                duration = SnackbarDuration.Short,
+                actionLabel = "Dismiss"
+            )
             Log.d("AddEditDreamViewModel", "Error: ${e.message}")
             _addEditDreamState.value = addEditDreamState.value.copy(
                 dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
