@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.pages.AIPage.AISubPages
 
+import android.content.res.Resources
 import android.os.Vibrator
 import android.util.Log
 import androidx.compose.animation.core.Animatable
@@ -276,6 +277,14 @@ fun AIPainterPage(
     }
 }
 
+fun getLocalizedString(res: Resources, key: String, packageName: String): String {
+    val resourceId = res.getIdentifier(key, "string", packageName)
+    return if (resourceId != 0) {
+        res.getString(resourceId)
+    } else {
+        key
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

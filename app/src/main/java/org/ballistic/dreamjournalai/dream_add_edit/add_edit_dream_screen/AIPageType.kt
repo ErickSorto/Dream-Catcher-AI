@@ -1,8 +1,10 @@
 package org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen
 
+import androidx.annotation.Keep
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AIData
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamState
 
+@Keep
 enum class AIPageType(
     val title: String,
     val getState: (AddEditDreamState) -> AIData,  // Fetches the right AI state.

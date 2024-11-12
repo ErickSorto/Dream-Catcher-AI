@@ -11,7 +11,6 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -184,7 +183,7 @@ class LoginViewModel @Inject constructor(
         )
     }
 
-    private suspend fun sendPasswordResetEmail(email: String) = viewModelScope.launch {
+    private fun sendPasswordResetEmail(email: String) = viewModelScope.launch {
         _state.value =
             _state.value.copy(sendPasswordResetEmailResponse = mutableStateOf(Resource.Loading()))
         _state.value = _state.value.copy(
@@ -194,7 +193,7 @@ class LoginViewModel @Inject constructor(
         )
     }
 
-    private suspend fun reloadUser() = viewModelScope.launch {
+    private fun reloadUser() = viewModelScope.launch {
         _state.value = _state.value.copy(reloadUserResponse = mutableStateOf(Resource.Loading()))
         _state.value =
             _state.value.copy(reloadUserResponse = mutableStateOf(Resource.Success(repo.reloadFirebaseUser())))

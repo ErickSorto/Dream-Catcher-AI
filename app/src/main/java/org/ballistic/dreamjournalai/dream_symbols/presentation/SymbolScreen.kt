@@ -6,7 +6,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -48,9 +47,9 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.dream_symbols.presentation.components.BuySymbolBottomSheet
-import org.ballistic.dreamjournalai.dream_symbols.presentation.components.SymbolScreenTopBar
 import org.ballistic.dreamjournalai.dream_symbols.presentation.components.DictionaryWordDrawer
 import org.ballistic.dreamjournalai.dream_symbols.presentation.components.DictionaryWordItem
+import org.ballistic.dreamjournalai.dream_symbols.presentation.components.SymbolScreenTopBar
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.SymbolScreenState
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState

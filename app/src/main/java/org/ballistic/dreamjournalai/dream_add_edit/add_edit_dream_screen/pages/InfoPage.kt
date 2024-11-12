@@ -184,7 +184,7 @@ fun SliderWithLabel(
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val animatedValue by animateFloatAsState(targetValue = value.toFloat())
+    val animatedValue by animateFloatAsState(targetValue = value.toFloat(), label = "")
 
     Column(
         modifier = modifier,

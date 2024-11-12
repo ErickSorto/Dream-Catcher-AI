@@ -1,7 +1,5 @@
 package org.ballistic.dreamjournalai.navigation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,7 +13,7 @@ import org.ballistic.dreamjournalai.onboarding.presentation.OnboardingScreen
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainGraph(

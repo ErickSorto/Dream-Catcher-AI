@@ -8,5 +8,7 @@
         <item name="windowSplashScreenAnimatedIcon">@drawable/dream_journal_app_icon</item>
         <item name="windowSplashScreenAnimationDuration">600</item>
         <item name="postSplashScreenTheme">@style/Theme.DreamJournalAI</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

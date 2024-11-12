@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -44,6 +45,7 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
 import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.ButtonType
+import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.pages.AIPage.AISubPages.getLocalizedString
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
 
@@ -164,7 +166,8 @@ fun UniversalButton(
 
         Icon(
             painter = rememberAsyncImagePainter(buttonType.drawableId),
-            contentDescription = stringResource(id = buttonType.title),
+            contentDescription = getLocalizedString(LocalContext.current.resources, buttonType.title,
+                LocalContext.current.packageName),
             modifier = Modifier
                 .padding(8.dp)
                 .size(size),
@@ -173,7 +176,8 @@ fun UniversalButton(
         if (hasText) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Tap to ${stringResource(id = buttonType.title)}",
+                text = "Tap to ${getLocalizedString(LocalContext.current.resources, buttonType.title,
+                    LocalContext.current.packageName)}",
                 fontSize = fontSize,
                 color = Color.White.copy(alpha = 0.6f)
             )

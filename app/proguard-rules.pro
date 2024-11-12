@@ -25,3 +25,7 @@
 -keep class androidx.credentials.playservices.** {
   *;
 }
+-keepclasseswithmembers,includedescriptorclasses class * {
+   @dagger.internal.KeepFieldType <fields>;
+}
+-dontobfuscate

@@ -520,7 +520,7 @@ fun AIPage(
                                 AITool.entries[index].color
                             } else R.color.white
                         ) else Color.LightGray.copy(alpha = 0.6f),
-                        animationSpec = tween(durationMillis = 500)
+                        animationSpec = tween(durationMillis = 500), label = ""
                     )
 
                     // Apply immediate scale change on selection

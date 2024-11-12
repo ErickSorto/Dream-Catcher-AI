@@ -1,13 +1,13 @@
 package org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.components
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.ScaffoldState
+//import androidx.compose.runtime.Composable
+//import androidx.compose.runtime.LaunchedEffect
+//import androidx.compose.ui.platform.LocalContext
+//import androidx.hilt.navigation.compose.hiltViewModel
+//import kotlinx.coroutines.CoroutineScope
+//import kotlinx.coroutines.launch
+//import org.ballistic.dreamjournalai.core.Resource
+//import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.ScaffoldState
 
 
 

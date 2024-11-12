@@ -3,7 +3,6 @@ package org.ballistic.dreamjournalai.core
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 
 class NetworkHelper(private val context: Context) {
     fun isOnline(): Boolean {

@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreScreenViewModel @Inject constructor(
     private val billingRepository: BillingRepository,
-    private val authRepository: AuthRepository,
+    authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _storeScreenViewModelState = MutableStateFlow(
