@@ -1,8 +1,5 @@
 package org.ballistic.dreamjournalai.di
 
-import android.app.Application
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -12,7 +9,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.user_authentication.data.repository.AuthRepositoryImpl
 import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
 
@@ -26,21 +22,6 @@ object SignInModule {
 
     @Provides
     fun provideFirebaseFirestore() = Firebase.firestore
-
-
-    @Provides
-    fun provideGoogleSignInOptions(
-        app: Application
-    ) = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken(app.getString(R.string.web_client_id))
-        .requestEmail()
-        .build()
-
-    @Provides
-    fun provideGoogleSignInClient(
-        app: Application,
-        options: GoogleSignInOptions
-    ) = GoogleSignIn.getClient(app, options)
 
     @Provides
     fun provideAuthRepository(

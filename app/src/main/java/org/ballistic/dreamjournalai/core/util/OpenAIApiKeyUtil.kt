@@ -18,7 +18,7 @@ object OpenAIApiKeyUtil {
                 .getHttpsCallable("getOpenAISecretKey")
                 .call()
                 .await()
-            val data = result.data as? Map<*, *> ?: throw IllegalStateException("Failed to fetch API Key")
+            val data = result.getData() as? Map<*, *> ?: throw IllegalStateException("Failed to fetch API Key")
             data["apiKey"] as? String ?: throw IllegalStateException("API Key is not available")
         } catch (e: Exception) {
             Log.e("OpenAIApiKeyUtil", "Failed to retrieve API Key: ${e.localizedMessage}", e)

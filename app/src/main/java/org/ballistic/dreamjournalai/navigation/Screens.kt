@@ -71,6 +71,18 @@ sealed class Screens(
         icon = Icons.Default.Analytics
     )
 
+    data object PaintDreamWorldDetails : Screens(
+        route = "paint_dream_world_details",
+        title = "Paint Dream World Details",
+        icon = Icons.Default.Brush
+    )
+
+    data object PaintDreamWorld : Screens(
+        route = "paint_dream_world",
+        title = "Paint Dream World",
+        icon = Icons.Default.Brush
+    )
+
     data object Statistics : Screens(
         route = "statistics",
         title = "Statistics",

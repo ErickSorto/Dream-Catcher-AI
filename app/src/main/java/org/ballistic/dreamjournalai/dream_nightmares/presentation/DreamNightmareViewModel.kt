@@ -49,6 +49,22 @@ class DreamNightmareScreenViewModel @Inject constructor(
                     recentlyDeletedDream = null
                 }
             }
+
+            is NightmareEvent.DreamToDelete ->  {
+                viewModelScope.launch {
+                    _dreamNightmareScreenState.value = dreamNightmareScreenState.value.copy(
+                        dreamToDelete = event.dream
+                    )
+                }
+            }
+
+            is NightmareEvent.ToggleBottomDeleteCancelSheetState ->  {
+                viewModelScope.launch {
+                    _dreamNightmareScreenState.value = dreamNightmareScreenState.value.copy(
+                        bottomDeleteCancelSheetState = event.bottomDeleteCancelSheetState
+                    )
+                }
+            }
         }
     }
 
@@ -85,5 +101,7 @@ class DreamNightmareScreenViewModel @Inject constructor(
 data class DreamNightmareScreenState(
     val dreams: List<Dream> = emptyList(),
     val dreamNightmareList: List<Dream> = emptyList(),
+    val dreamToDelete: Dream? = null,
+    val bottomDeleteCancelSheetState: Boolean = false,
     val recentlyDeletedDream: Dream? = null,
 )

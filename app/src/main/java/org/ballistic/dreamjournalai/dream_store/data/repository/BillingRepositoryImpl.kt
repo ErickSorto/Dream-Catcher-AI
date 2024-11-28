@@ -130,7 +130,7 @@ class BillingRepositoryImpl(
                 val response =
                     Firebase.functions.getHttpsCallable("handlePurchaseVerification").call(data)
                         .await()
-                return (response.data as? Map<*, *>)?.get("success") as? Boolean ?: false
+                return (response.getData() as? Map<*, *>)?.get("success") as? Boolean == true
             }
 
             CoroutineScope(Dispatchers.IO).launch {

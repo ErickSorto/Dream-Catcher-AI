@@ -16,6 +16,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
 import org.ballistic.dreamjournalai.core.components.TypewriterText
@@ -65,8 +68,25 @@ fun DreamFavoriteScreen(
             title = "Delete this Dream?",
             message = "Are you sure you want to delete this dream?",
             onDelete = {
-                dreamFavoriteScreenState.dreamToDelete?.let { FavoriteEvent.DeleteDream(it) }
-                    ?.let { onEvent(it) }
+                scope.launch {
+                    val result =
+                        mainScreenViewModelState.scaffoldState.snackBarHostState.value.showSnackbar(
+                            message = "Dream deleted",
+                            actionLabel = "Undo",
+                            duration = SnackbarDuration.Long
+                        )
+
+                    mainScreenViewModelState.scaffoldState.snackBarHostState.value.currentSnackbarData?.dismiss()
+
+                    if (result == SnackbarResult.ActionPerformed) {
+                        onEvent(FavoriteEvent.RestoreDream)
+                    } else {
+                        dreamFavoriteScreenState.dreamToDelete?.let { FavoriteEvent.DeleteDream(it) }
+                            ?.let {
+                                onEvent(it)
+                            }
+                    }
+                }
             },
             onClickOutside = {
                 onEvent(FavoriteEvent.ToggleBottomDeleteCancelSheetState(false))
@@ -108,6 +128,7 @@ fun DreamFavoriteScreen(
                 }
             }
         }
+
         LazyColumn(
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding(), bottom = bottomPaddingValue)
@@ -126,7 +147,7 @@ fun DreamFavoriteScreen(
                                 Locale.getDefault()
                             ) else it.toString()
                         }, dateFormatter)
-                    } catch (e: DateTimeParseException) {
+                    } catch (_: DateTimeParseException) {
                         null
                     }
                 }

@@ -16,6 +16,7 @@ import org.ballistic.dreamjournalai.dream_tools.presentation.DreamToolsScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsDetailScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsViewModel
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.MassInterpretDreamToolScreen
+import org.ballistic.dreamjournalai.dream_tools.presentation.paint_dreams_screen.PaintDreamWorldDetailScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomDreamToolScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomDreamToolScreenViewModel
 import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
@@ -108,6 +109,46 @@ fun DreamToolsGraph(
                     onEvent = { interpretDreamsViewModel.onEvent(it) },
                     bottomPaddingValue = bottomPaddingValue,
                     onMainScreenEvent = { onMainEvent(it) },
+                    navigateUp = {
+                        navController.popBackStack()
+                        navController.navigate(Screens.Tools.route)
+                    }
+                )
+            }
+
+            composable(
+                route = Screens.PaintDreamWorldDetails.route + "/{image}",
+                arguments = listOf(
+                    navArgument("image") {
+                        type = NavType.IntType
+                    }
+                )
+            ) { it ->
+                val imageID = it.arguments?.getInt("image") ?: -1
+                PaintDreamWorldDetailScreen(
+                    imageID = imageID,
+                    animatedVisibilityScope = this,
+                    bottomPadding = bottomPaddingValue,
+                    navigateTo = { route ->
+                        navController.navigate(route)
+                    },
+                    navigateUp = {
+                        navController.popBackStack()
+                        navController.navigate(Screens.Tools.route)
+                    }
+                )
+            }
+
+            composable(
+                route = Screens.PaintDreamWorld.route
+            ) {
+                PaintDreamWorldDetailScreen(
+                    imageID = 0,
+                    animatedVisibilityScope = this,
+                    bottomPadding = bottomPaddingValue,
+                    navigateTo = { route ->
+                        navController.navigate(route)
+                    },
                     navigateUp = {
                         navController.popBackStack()
                         navController.navigate(Screens.Tools.route)

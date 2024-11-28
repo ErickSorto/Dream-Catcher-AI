@@ -32,8 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
+import org.ballistic.dreamjournalai.dream_favorites.presentation.FavoriteEvent
 import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DateHeader
 import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DreamItem
 import org.ballistic.dreamjournalai.dream_nightmares.NightmareEvent
@@ -57,6 +59,21 @@ fun DreamNightmareScreen(
     val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
     val scope = rememberCoroutineScope()
+
+
+    if (dreamNightmareScreenState.bottomDeleteCancelSheetState) {
+        DeleteCancelBottomSheet(
+            title = "Delete this Dream?",
+            message = "Are you sure you want to delete this dream?",
+            onDelete = {
+                dreamNightmareScreenState.dreamToDelete?.let { NightmareEvent.DeleteDream(it) }
+                    ?.let { onEvent(it) }
+            },
+            onClickOutside = {
+                onEvent(NightmareEvent.ToggleBottomDeleteCancelSheetState(false))
+            },
+        )
+    }
 
     LaunchedEffect(key1 = Unit) {
         onEvent(NightmareEvent.LoadDreams)
@@ -147,27 +164,11 @@ fun DreamNightmareScreen(
                             scope = scope,
                             onDeleteClick = {
                                 onEvent(
-                                    NightmareEvent.DeleteDream(
-                                        dream = dream,
-                                        context = context
-                                    )
+                                    NightmareEvent.DreamToDelete(dream)
                                 )
-                                scope.launch {
-                                    val result =
-                                        mainScreenViewModelState.scaffoldState.snackBarHostState.value.showSnackbar(
-                                            message = "Dream deleted",
-                                            actionLabel = "Undo",
-                                            duration = SnackbarDuration.Long
-                                        )
-
-                                    mainScreenViewModelState.scaffoldState.snackBarHostState.value.currentSnackbarData?.dismiss()
-
-                                    if (result == SnackbarResult.ActionPerformed) {
-                                        onEvent(
-                                            NightmareEvent.RestoreDream
-                                        )
-                                    }
-                                }
+                                onEvent(
+                                    NightmareEvent.ToggleBottomDeleteCancelSheetState(true)
+                                )
                             }
                         )
                         Spacer(modifier = Modifier.height(4.dp))

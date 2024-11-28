@@ -266,7 +266,7 @@ class AuthRepositoryImpl @Inject constructor(
                     .call(data)
                     .await()
 
-                val dataMap = result.data as? HashMap<*, *>
+                val dataMap = result.getData() as? HashMap<*, *>
                 val message = dataMap?.get("message") as? String
 
                 if (message != null) {
@@ -411,7 +411,7 @@ class AuthRepositoryImpl @Inject constructor(
 
 
 
-            val data = result.data as? Map<*, *>
+            val data = result.getData() as? Map<*, *>
             if (data?.get("success") == true) {
                 Log.i("TransferDreams", "Dreams transferred successfully. Proceed to clean up anonymous account if needed.")
 

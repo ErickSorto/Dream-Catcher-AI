@@ -24,7 +24,6 @@ fun MainGraph(
         navController = navController,
         startDestination = Screens.OnboardingScreen.route,
     ) {
-        //welcome
         composable(route = Screens.OnboardingScreen.route) {
             val loginViewModel: LoginViewModel = hiltViewModel()
             val signupViewModel: SignupViewModel = hiltViewModel()
