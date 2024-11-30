@@ -266,7 +266,7 @@ fun MainScreenView(
                                         triggerVibration(vibrator)
                                         navController.navigate(Screens.AddEditDreamScreen.route) {
                                             popUpTo(Screens.DreamJournalScreen.route) {
-                                                saveState = true
+                                                saveState = false
                                                 inclusive = true
                                             }
                                         }

@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.dream_main.presentation.components
 
 import android.os.Vibrator
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
@@ -50,7 +52,13 @@ fun BottomNavigation(
         Screens.DreamJournalScreen,
         Screens.StoreScreen
     )
-
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+            Log.d("Navigation", "Current destination: ${backStackEntry.destination.route}")
+            val previousBackStackEntry = navController.previousBackStackEntry
+            Log.d("Navigation", "Previous destination: ${previousBackStackEntry?.destination?.route}")
+        }
+    }
     NavigationBar(
         containerColor = colorResource(id = R.color.sky_blue),
         contentColor = Color.Black,
@@ -138,22 +146,15 @@ fun BottomNavigation(
                 },
                 selected = isSelected,
                 onClick = {
+                    Log.d("Navigation", "Navigating from $currentRoute to ${item.route}")
+
+
                     triggerVibration(vibrator)
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            if (item.route == Screens.DreamJournalScreen.route) {
-                                // Clear the back stack completely and make Dream Journal Screen the root
-                                popUpTo(navController.graph.startDestinationId) {
-                                    inclusive = true
-                                }
-                            } else {
-                                // Ensure only one instance of Dream Journal Screen exists in the back stack
-                                popUpTo(Screens.DreamJournalScreen.route) {
-                                    saveState = true
-                                }
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
-
-                            // Prevent multiple instances of the same screen
                             launchSingleTop = true
                             restoreState = true
                         }
