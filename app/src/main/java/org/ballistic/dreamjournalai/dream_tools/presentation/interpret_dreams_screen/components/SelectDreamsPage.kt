@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DateHeader
-import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DreamItem
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsScreenState
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsToolEvent
-import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
+import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DateHeader
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DreamItem
+import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
+import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException

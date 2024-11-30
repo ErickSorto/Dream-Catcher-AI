@@ -4,7 +4,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,15 +11,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import org.ballistic.dreamjournalai.dream_tools.presentation.DreamToolsScreen
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
+import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.dream_tools.presentation.dream_tools_screen.DreamToolsScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsDetailScreen
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsViewModel
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.MassInterpretDreamToolScreen
+import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsViewModel
 import org.ballistic.dreamjournalai.dream_tools.presentation.paint_dreams_screen.PaintDreamWorldDetailScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomDreamToolScreen
 import org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen.RandomDreamToolScreenViewModel
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -53,7 +53,7 @@ fun DreamToolsGraph(
                 )
             )
             {
-                val randomDreamToolScreenViewModel: RandomDreamToolScreenViewModel = hiltViewModel()
+                val randomDreamToolScreenViewModel = koinViewModel<RandomDreamToolScreenViewModel>()
                 val randomDreamToolScreenState =
                     randomDreamToolScreenViewModel.randomDreamToolScreenState
                         .collectAsStateWithLifecycle()
@@ -101,7 +101,7 @@ fun DreamToolsGraph(
             composable(
                 route = Screens.AnalyzeMultipleDreams.route
             ) {
-                val interpretDreamsViewModel: InterpretDreamsViewModel = hiltViewModel()
+                val interpretDreamsViewModel = koinViewModel<InterpretDreamsViewModel>()
                 val interpretDreamsScreenState = interpretDreamsViewModel.interpretDreamsScreenState
                     .collectAsStateWithLifecycle()
                 MassInterpretDreamToolScreen(

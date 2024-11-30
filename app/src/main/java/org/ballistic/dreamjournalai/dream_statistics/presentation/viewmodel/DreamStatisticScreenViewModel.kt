@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,17 +15,16 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
+import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
+import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.DreamUseCases
+import org.ballistic.dreamjournalai.dream_journal_list.domain.util.OrderType
 import org.ballistic.dreamjournalai.dream_statistics.StatisticEvent
-import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
-import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
-import org.ballistic.dreamjournalai.feature_dream.domain.util.OrderType
+import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
 import java.io.IOException
 import java.util.Locale
-import javax.inject.Inject
 
-@HiltViewModel
-class DreamStatisticScreenViewModel @Inject constructor(
+
+class DreamStatisticScreenViewModel(
     private val dreamUseCases: DreamUseCases,
     private val application: Application,
 ) : ViewModel() {

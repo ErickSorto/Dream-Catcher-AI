@@ -40,9 +40,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
+import org.ballistic.dreamjournalai.dream_store.domain.DreamTokenBenefit
+import org.ballistic.dreamjournalai.dream_store.domain.StoreEvent
 import org.ballistic.dreamjournalai.dream_store.presentation.anonymous_store_screen.AnonymousStoreScreen
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.CustomButtonLayout
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.viewmodel.StoreScreenViewModelState
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 
 @Composable
 fun StoreScreen(
@@ -52,10 +55,7 @@ fun StoreScreen(
     onStoreEvent: (StoreEvent) -> Unit = {},
     navigateToAccountScreen: () -> Unit = {},
 ) {
-    LaunchedEffect(Unit) {
-        storeScreenViewModelState.authRepository.reloadFirebaseUser()
-    }
-    val isAnonymous = storeScreenViewModelState.isUserAnonymous.collectAsStateWithLifecycle().value
+    val isAnonymous = storeScreenViewModelState.isUserAnonymous
     val tokenTotal = storeScreenViewModelState.dreamTokens.collectAsStateWithLifecycle().value
     val activity = LocalContext.current as Activity
 

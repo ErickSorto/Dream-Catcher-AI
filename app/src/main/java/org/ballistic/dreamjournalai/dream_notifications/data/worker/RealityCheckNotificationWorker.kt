@@ -12,9 +12,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import org.ballistic.dreamjournalai.DreamJournalAiApp
+import org.ballistic.dreamjournalai.DreamJournalAIApp
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.feature_dream.presentation.MainActivity
+import org.ballistic.dreamjournalai.MainActivity
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -72,7 +72,7 @@ class RealityCheckNotificationWorker(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val builder = NotificationCompat.Builder(applicationContext, DreamJournalAiApp.CHANNEL_ID)
+        val builder = NotificationCompat.Builder(applicationContext, DreamJournalAIApp.CHANNEL_ID)
             .setSmallIcon(R.drawable.dream_journal_icon_vector)
             .setContentTitle(title)
             .setContentText(message)

@@ -12,9 +12,7 @@ import org.ballistic.dreamjournalai.core.Constants
 import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.dream_tools.domain.MassInterpretationRepository
 import org.ballistic.dreamjournalai.dream_tools.domain.model.MassInterpretation
-import javax.inject.Singleton
 
-@Singleton
 class MassInterpretationRepositoryImpl(
     private val db: FirebaseFirestore
 ) : MassInterpretationRepository {

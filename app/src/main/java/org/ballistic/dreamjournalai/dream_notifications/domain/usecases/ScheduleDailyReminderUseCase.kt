@@ -1,9 +1,8 @@
 package org.ballistic.dreamjournalai.dream_notifications.domain.usecases
 
 import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationRepository
-import javax.inject.Inject
 
-class ScheduleDailyReminderUseCase @Inject constructor(
+class ScheduleDailyReminderUseCase (
     private val repository: NotificationRepository
 ) {
     operator fun invoke(timeInMillis: Long) {

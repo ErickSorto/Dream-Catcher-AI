@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolScreenWithNavigateUpTopBar
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsScreenState
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsToolEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
+import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
+import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 
 @Composable
 fun PaintDreamWorldScreen(

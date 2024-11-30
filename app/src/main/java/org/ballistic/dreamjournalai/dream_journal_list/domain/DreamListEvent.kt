@@ -1,7 +1,7 @@
 package org.ballistic.dreamjournalai.dream_journal_list.domain
 
-import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
-import org.ballistic.dreamjournalai.feature_dream.domain.util.OrderType
+import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
+import org.ballistic.dreamjournalai.dream_journal_list.domain.util.OrderType
 
 sealed class DreamListEvent {
     data class Order(val orderType: OrderType): DreamListEvent()
@@ -12,4 +12,5 @@ sealed class DreamListEvent {
     data class DreamToDelete(val dream: Dream): DreamListEvent()
     data object RestoreDream: DreamListEvent()
     data class SetSearchingState(val state: Boolean): DreamListEvent()
+    data object FetchDreams: DreamListEvent()
 }

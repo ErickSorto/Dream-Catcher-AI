@@ -60,11 +60,14 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
+import org.ballistic.dreamjournalai.dream_tools.domain.MassInterpretationTabs
+import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolScreenWithNavigateUpTopBar
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.components.MassInterpretationHistoryPage
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.components.MassInterpretationResultPage
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.components.SelectDreamsPage
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
+import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 
 
 @OptIn(ExperimentalMaterial3Api::class)

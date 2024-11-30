@@ -36,8 +36,8 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil
-import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.shimmerEffect
-import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.shimmerEffect
+import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

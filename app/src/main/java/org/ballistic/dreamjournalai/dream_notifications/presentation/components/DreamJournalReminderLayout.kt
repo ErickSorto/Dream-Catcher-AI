@@ -36,8 +36,8 @@ import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationEvent
-import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationScreenState
+import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationEvent
+import org.ballistic.dreamjournalai.dream_notifications.presentation.viewmodel.NotificationScreenState
 import java.time.Clock
 import java.time.LocalTime
 

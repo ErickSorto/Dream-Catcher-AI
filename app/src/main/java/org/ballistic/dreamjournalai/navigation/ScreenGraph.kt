@@ -2,34 +2,35 @@ package org.ballistic.dreamjournalai.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.AddEditDreamScreen
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.viewmodel.AddEditDreamViewModel
-import org.ballistic.dreamjournalai.dream_favorites.DreamFavoriteScreenViewModel
+import org.ballistic.dreamjournalai.dream_account.AccountSettingsScreen
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.AddEditDreamScreen
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamViewModel
+import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.events.LoginEvent
+import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.LoginViewModel
+import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 import org.ballistic.dreamjournalai.dream_favorites.presentation.DreamFavoriteScreen
-import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.DreamJournalListScreen
-import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.viewmodel.DreamJournalListViewModel
+import org.ballistic.dreamjournalai.dream_favorites.presentation.viewmodel.DreamFavoriteScreenViewModel
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.DreamJournalListScreen
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.viewmodel.DreamJournalListViewModel
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
+import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.dream_nightmares.presentation.DreamNightmareScreen
-import org.ballistic.dreamjournalai.dream_nightmares.presentation.DreamNightmareScreenViewModel
+import org.ballistic.dreamjournalai.dream_nightmares.presentation.viewmodel.DreamNightmareScreenViewModel
 import org.ballistic.dreamjournalai.dream_notifications.presentation.DreamNotificationSettingScreen
-import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationScreenViewModel
+import org.ballistic.dreamjournalai.dream_notifications.presentation.viewmodel.NotificationScreenViewModel
 import org.ballistic.dreamjournalai.dream_statistics.presentation.DreamStatisticScreen
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenViewModel
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreen
-import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModel
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.viewmodel.StoreScreenViewModel
 import org.ballistic.dreamjournalai.dream_symbols.presentation.SymbolScreen
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryScreenViewModel
-import org.ballistic.dreamjournalai.feature_dream.presentation.account_settings.AccountSettingsScreen
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ScreenGraph(
@@ -46,7 +47,7 @@ fun ScreenGraph(
     ) {
 
         composable(route = Screens.DreamJournalScreen.route) {
-            val dreamJournalListViewModel: DreamJournalListViewModel = hiltViewModel()
+            val dreamJournalListViewModel = koinViewModel<DreamJournalListViewModel>()
             val searchTextFieldState =
                 dreamJournalListViewModel.searchTextFieldState.collectAsStateWithLifecycle().value
             val dreamJournalListState =
@@ -67,7 +68,7 @@ fun ScreenGraph(
 
         //store
         composable(route = Screens.StoreScreen.route) {
-            val storeScreenViewModel: StoreScreenViewModel = hiltViewModel()
+            val storeScreenViewModel = koinViewModel<StoreScreenViewModel>()
             val storeScreenViewModelState = storeScreenViewModel.storeScreenViewModelState
                 .collectAsStateWithLifecycle().value
             StoreScreen(
@@ -101,14 +102,13 @@ fun ScreenGraph(
             )
         ) { value ->
             val image = value.arguments?.getInt("dreamImageBackground") ?: -1
-            val addEditDreamViewModel: AddEditDreamViewModel = hiltViewModel()
+            val addEditDreamViewModel = koinViewModel<AddEditDreamViewModel>()
             val addEditDreamState =
                 addEditDreamViewModel.addEditDreamState.collectAsStateWithLifecycle().value
             val dreamTitle =
                 addEditDreamViewModel.titleTextFieldState.collectAsStateWithLifecycle().value
             val dreamContent =
                 addEditDreamViewModel.contentTextFieldState.collectAsStateWithLifecycle().value
-
 
             AddEditDreamScreen(
                 dreamImage = image,
@@ -125,7 +125,7 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Favorites.route) {
-            val dreamFavoriteScreenViewModel: DreamFavoriteScreenViewModel = hiltViewModel()
+            val dreamFavoriteScreenViewModel = koinViewModel<DreamFavoriteScreenViewModel>()
             val dreamFavoriteScreenState = dreamFavoriteScreenViewModel.dreamFavoriteScreenState
                 .collectAsStateWithLifecycle()
             DreamFavoriteScreen(
@@ -138,28 +138,31 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.AccountSettings.route) {
-            val loginViewModel: LoginViewModel = hiltViewModel()
-            val signupViewModel: SignupViewModel = hiltViewModel()
+            val loginViewModel = koinViewModel<LoginViewModel>()
+            val signupViewModel = koinViewModel<SignupViewModel>()
+
+            val loginViewModelState = loginViewModel.state.collectAsStateWithLifecycle().value
+            val signupViewModelState = signupViewModel.state.collectAsStateWithLifecycle().value
 
             AccountSettingsScreen(
-                loginViewModel.state.collectAsStateWithLifecycle().value,
-                signupViewModel.state.collectAsStateWithLifecycle().value,
+                loginViewModelState = loginViewModelState,
+                signupViewModelState = signupViewModelState,
                 mainScreenViewModelState = mainScreenViewModelState,
                 navigateToOnboardingScreen = onNavigateToOnboardingScreen,
                 onLoginEvent = { loginViewModel.onEvent(it) },
                 onSignupEvent = { signupViewModel.onEvent(it) },
                 navigateToDreamJournalScreen = {
-                    navController.popBackStack()
-                    navController.navigate(Screens.DreamJournalScreen.route)
+                    navController.navigate(Screens.DreamJournalScreen.route) {
+                        // Pop up to the root of the navigation graph, so the back stack is cleared
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                        // Avoid multiple copies of the same destination when reselecting the same item
+                        launchSingleTop = true
+                    }
                 }
             )
         }
-
-//        composable(route = Screens.AboutMe.route) {
-//            AboutMeScreen(
-//                mainScreenViewModelState = mainScreenViewModelState,
-//            )
-//        }
 
         composable(route = Screens.DreamToolGraphScreen.route) {
             DreamToolsGraph(
@@ -178,7 +181,7 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Statistics.route) {
-            val dreamStatisticScreenViewModel: DreamStatisticScreenViewModel = hiltViewModel()
+            val dreamStatisticScreenViewModel = koinViewModel<DreamStatisticScreenViewModel>()
             val dreamStatisticScreenState = dreamStatisticScreenViewModel.dreamStatisticScreen
                 .collectAsStateWithLifecycle()
 
@@ -193,7 +196,7 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.NotificationSettings.route) {
-            val dreamNotificationScreenViewModel: NotificationScreenViewModel = hiltViewModel()
+            val dreamNotificationScreenViewModel = koinViewModel<NotificationScreenViewModel>()
             val dreamNotificationScreenState =
                 dreamNotificationScreenViewModel.notificationScreenState
                     .collectAsStateWithLifecycle()
@@ -208,7 +211,7 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Nightmares.route) {
-            val dreamNightmareScreenViewModel: DreamNightmareScreenViewModel = hiltViewModel()
+            val dreamNightmareScreenViewModel = koinViewModel<DreamNightmareScreenViewModel>()
             val dreamNightmareScreenState =
                 dreamNightmareScreenViewModel.dreamNightmareScreenState
                     .collectAsStateWithLifecycle()
@@ -222,7 +225,7 @@ fun ScreenGraph(
         }
 
         composable(route = Screens.Symbol.route) {
-            val dictionaryScreenViewModel: DictionaryScreenViewModel = hiltViewModel()
+            val dictionaryScreenViewModel = koinViewModel<DictionaryScreenViewModel>()
             val dictionaryScreenState = dictionaryScreenViewModel.symbolScreenState
                 .collectAsStateWithLifecycle()
             val searchTextFieldState = dictionaryScreenViewModel.searchTextFieldState

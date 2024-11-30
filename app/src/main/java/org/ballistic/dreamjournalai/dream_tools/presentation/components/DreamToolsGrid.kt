@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
-import org.ballistic.dreamjournalai.dream_tools.presentation.DreamTools
+import org.ballistic.dreamjournalai.dream_tools.domain.DreamTools
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

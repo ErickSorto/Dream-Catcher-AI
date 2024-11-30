@@ -39,8 +39,8 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
 import org.ballistic.dreamjournalai.dream_tools.domain.model.MassInterpretation
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsScreenState
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsToolEvent
+import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
+import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable

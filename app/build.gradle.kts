@@ -5,7 +5,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-android")
     id("kotlin-kapt")
-    id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1" apply false
     id("kotlin-parcelize")
@@ -117,8 +116,10 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
+    testImplementation ("io.mockk:mockk:1.13.5")
     baselineProfile(project(":baselineprofile"))
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
+
 
     //noinspection GradleDependency
     debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
@@ -129,7 +130,6 @@ dependencies {
     implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.1.0")
     implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.1.0") // CALENDAR
     implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.1.0") // CLOCK
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
@@ -148,10 +148,12 @@ dependencies {
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
 
-    // Hilt (Dependency Injection)
-    implementation("com.google.dagger:hilt-android:2.52")
-    kapt("com.google.dagger:hilt-android-compiler:2.52")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    // Koin
+    implementation ("io.insert-koin:koin-androidx-compose:4.0.1-Beta1")
+    implementation("io.insert-koin:koin-androidx-compose:4.0.1-Beta1")
+    implementation("io.insert-koin:koin-androidx-compose-navigation:4.0.1-Beta1")
+    testImplementation("io.insert-koin:koin-test:4.0.1-Beta1")
+    testImplementation("io.insert-koin:koin-test-junit5:4.0.1-Beta1")
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")

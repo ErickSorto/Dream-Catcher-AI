@@ -38,7 +38,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.StoreScreenViewModelState
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.viewmodel.StoreScreenViewModelState
 
 
 @Composable

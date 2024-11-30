@@ -20,13 +20,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.ArcRotationAnimation
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.ArcRotationAnimation
 import org.ballistic.dreamjournalai.dream_statistics.StatisticEvent
 import org.ballistic.dreamjournalai.dream_statistics.presentation.components.DreamChartBarChart
 import org.ballistic.dreamjournalai.dream_statistics.presentation.components.DreamStatisticScreenTopBar
 import org.ballistic.dreamjournalai.dream_statistics.presentation.components.TopSixDreamWordPieChart
 import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenState
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
 
 @Composable
 fun DreamStatisticScreen(

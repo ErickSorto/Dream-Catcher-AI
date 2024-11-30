@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationEvent
 import org.ballistic.dreamjournalai.dream_notifications.presentation.components.DreamJournalReminderLayout
 import org.ballistic.dreamjournalai.dream_notifications.presentation.components.DreamNotificationTopBar
 import org.ballistic.dreamjournalai.dream_notifications.presentation.components.RealityCheckReminderLayout
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.dream_notifications.presentation.viewmodel.NotificationScreenState
+import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)

@@ -18,7 +18,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.AdTokenLayout
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.AdTokenLayout
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

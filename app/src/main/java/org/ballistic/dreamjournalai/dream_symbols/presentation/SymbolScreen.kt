@@ -46,13 +46,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
+import org.ballistic.dreamjournalai.dream_symbols.domain.SymbolEvent
 import org.ballistic.dreamjournalai.dream_symbols.presentation.components.BuySymbolBottomSheet
 import org.ballistic.dreamjournalai.dream_symbols.presentation.components.DictionaryWordDrawer
 import org.ballistic.dreamjournalai.dream_symbols.presentation.components.DictionaryWordItem
 import org.ballistic.dreamjournalai.dream_symbols.presentation.components.SymbolScreenTopBar
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.SymbolScreenState
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
+import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
 
 @Composable
 fun SymbolScreen(

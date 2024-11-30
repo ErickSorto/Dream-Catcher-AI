@@ -1,35 +1,19 @@
 package org.ballistic.dreamjournalai.di
 
-import android.content.Context
 
-
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import org.ballistic.dreamjournalai.dream_notifications.data.local.NotificationPreferences
 import org.ballistic.dreamjournalai.dream_notifications.data.repository.NotificationRepositoryImpl
 import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationRepository
-import javax.inject.Singleton
+import org.ballistic.dreamjournalai.dream_notifications.domain.usecases.ScheduleDailyReminderUseCase
+import org.ballistic.dreamjournalai.dream_notifications.domain.usecases.ScheduleLucidityNotificationUseCase
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object NotificationModule {
 
-    @Provides
-    @Singleton
-    fun provideNotificationPreferences(
-        @ApplicationContext context: Context
-    ): NotificationPreferences {
-        return NotificationPreferences(context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideNotificationRepository(
-        @ApplicationContext context: Context
-    ): NotificationRepository {
-        return NotificationRepositoryImpl(context)
-    }
+val notificationModule = module {
+    singleOf(::NotificationPreferences)
+    singleOf(::ScheduleDailyReminderUseCase)
+    singleOf(::ScheduleLucidityNotificationUseCase)
+    singleOf(::NotificationRepositoryImpl) { bind<NotificationRepository>() }
 }

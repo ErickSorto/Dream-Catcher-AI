@@ -35,8 +35,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationEvent
-import org.ballistic.dreamjournalai.dream_notifications.presentation.NotificationScreenState
+import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationEvent
+import org.ballistic.dreamjournalai.dream_notifications.presentation.viewmodel.NotificationScreenState
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalPermissionsApi::class)

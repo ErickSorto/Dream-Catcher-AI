@@ -2,16 +2,16 @@ package org.ballistic.dreamjournalai.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenView
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModel
-import org.ballistic.dreamjournalai.onboarding.presentation.OnboardingScreen
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.LoginViewModel
-import org.ballistic.dreamjournalai.user_authentication.presentation.signup_screen.viewmodel.SignupViewModel
+import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.LoginViewModel
+import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.SignupViewModel
+import org.ballistic.dreamjournalai.dream_main.presentation.MainScreenView
+import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModel
+import org.ballistic.dreamjournalai.dream_onboarding.presentation.OnboardingScreen
+import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -25,9 +25,8 @@ fun MainGraph(
         startDestination = Screens.OnboardingScreen.route,
     ) {
         composable(route = Screens.OnboardingScreen.route) {
-            val loginViewModel: LoginViewModel = hiltViewModel()
-            val signupViewModel: SignupViewModel = hiltViewModel()
-
+            val loginViewModel = koinViewModel<LoginViewModel>()
+            val signupViewModel = koinViewModel<SignupViewModel>()
             val loginViewModelState = loginViewModel.state.collectAsStateWithLifecycle().value
             val signupViewModelState = signupViewModel.state.collectAsStateWithLifecycle().value
 
@@ -51,9 +50,11 @@ fun MainGraph(
         }
 
         composable(route = Screens.MainScreen.route) {
-            val mainScreenViewModel: MainScreenViewModel = hiltViewModel()
+            val mainScreenViewModel = koinViewModel<MainScreenViewModel>()
+            val mainScreenViewModelState = mainScreenViewModel.mainScreenViewModelState.collectAsStateWithLifecycle().value
+
             MainScreenView(
-                mainScreenViewModelState = mainScreenViewModel.mainScreenViewModelState.collectAsStateWithLifecycle().value,
+                mainScreenViewModelState = mainScreenViewModelState,
                 onDataLoaded = {
                     onDataLoaded()
                 },

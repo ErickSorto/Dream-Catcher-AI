@@ -14,26 +14,23 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.ads.rewarded.RewardItem
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.ad_feature.domain.AdCallback
-import org.ballistic.dreamjournalai.ad_feature.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.dream_symbols.presentation.SymbolEvent
-import org.ballistic.dreamjournalai.user_authentication.domain.repository.AuthRepository
+import org.ballistic.dreamjournalai.dream_ad.domain.AdCallback
+import org.ballistic.dreamjournalai.dream_ad.domain.AdManagerRepository
+import org.ballistic.dreamjournalai.dream_authentication.domain.repository.AuthRepository
+import org.ballistic.dreamjournalai.dream_symbols.domain.SymbolEvent
 import java.io.IOException
-import javax.inject.Inject
 
-@HiltViewModel
-class DictionaryScreenViewModel @Inject constructor(
-    private val application: Application,
+class DictionaryScreenViewModel(
     private val adManagerRepository: AdManagerRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val application: Application,
 ) : ViewModel() {
 
     private val _symbolScreenState = MutableStateFlow(SymbolScreenState(authRepository))

@@ -3,7 +3,6 @@ package org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_scree
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,13 +11,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.feature_dream.domain.model.Dream
-import org.ballistic.dreamjournalai.feature_dream.domain.use_case.DreamUseCases
-import org.ballistic.dreamjournalai.feature_dream.domain.util.OrderType
-import javax.inject.Inject
+import org.ballistic.dreamjournalai.dream_tools.domain.event.RandomToolEvent
+import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
+import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.DreamUseCases
+import org.ballistic.dreamjournalai.dream_journal_list.domain.util.OrderType
 
-@HiltViewModel
-class RandomDreamToolScreenViewModel @Inject constructor(
+class RandomDreamToolScreenViewModel(
     private val dreamUseCases: DreamUseCases
 ) : ViewModel() {
     private val _randomDreamToolScreenState = MutableStateFlow(RandomDreamToolScreenState())

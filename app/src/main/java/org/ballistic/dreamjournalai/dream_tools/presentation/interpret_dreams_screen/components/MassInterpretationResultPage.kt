@@ -47,10 +47,10 @@ import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.core.components.TypewriterText
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.ArcRotationAnimation
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsScreenState
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsToolEvent
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.MainScreenEvent
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.ArcRotationAnimation
+import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
+import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

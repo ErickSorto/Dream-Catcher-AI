@@ -18,8 +18,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsScreenState
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsToolEvent
+import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
+import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

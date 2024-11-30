@@ -35,11 +35,12 @@ import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
-import org.ballistic.dreamjournalai.dream_favorites.DreamFavoriteScreenState
+import org.ballistic.dreamjournalai.dream_favorites.domain.FavoriteEvent
+import org.ballistic.dreamjournalai.dream_favorites.presentation.viewmodel.DreamFavoriteScreenState
 import org.ballistic.dreamjournalai.dream_favorites.presentation.components.DreamFavoriteScreenTopBar
-import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DateHeader
-import org.ballistic.dreamjournalai.dream_journal_list.dream_list_screen.components.DreamItem
-import org.ballistic.dreamjournalai.feature_dream.presentation.main_screen.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DateHeader
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DreamItem
+import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.navigation.Screens
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

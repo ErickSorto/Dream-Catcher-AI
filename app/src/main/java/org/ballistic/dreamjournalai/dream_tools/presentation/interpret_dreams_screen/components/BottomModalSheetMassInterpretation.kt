@@ -29,9 +29,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
-import org.ballistic.dreamjournalai.dream_add_edit.add_edit_dream_screen.components.AdTokenLayout
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsScreenState
-import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.InterpretDreamsToolEvent
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.AdTokenLayout
+import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
+import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
 
 
 @OptIn(ExperimentalMaterial3Api::class)
