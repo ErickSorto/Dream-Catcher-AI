@@ -141,17 +141,19 @@ fun BottomNavigation(
                     triggerVibration(vibrator)
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            if(item.route == Screens.DreamJournalScreen.route) {
-                                navController.popBackStack(
-                                    Screens.DreamJournalScreen.route,
+                            if (item.route == Screens.DreamJournalScreen.route) {
+                                // Clear the back stack completely and make Dream Journal Screen the root
+                                popUpTo(navController.graph.startDestinationId) {
                                     inclusive = true
-                                )
+                                }
                             } else {
+                                // Ensure only one instance of Dream Journal Screen exists in the back stack
                                 popUpTo(Screens.DreamJournalScreen.route) {
                                     saveState = true
                                 }
                             }
 
+                            // Prevent multiple instances of the same screen
                             launchSingleTop = true
                             restoreState = true
                         }
