@@ -9,7 +9,7 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1" apply false
     id("kotlin-parcelize")
     id("androidx.baselineprofile")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.0"
 }
 
 android {
