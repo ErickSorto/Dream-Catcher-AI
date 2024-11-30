@@ -83,8 +83,7 @@ composeCompiler {
 }
 
 dependencies {
-
-    val composeVersion = "1.7.3"
+    val composeVersion = "1.7.5"
     // AndroidX dependencies
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.appcompat:appcompat:1.7.0")
@@ -106,9 +105,9 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.4")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.profileinstaller:profileinstaller:1.4.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
-    implementation("com.google.accompanist:accompanist-permissions:0.35.1-alpha")
+    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
     implementation("com.google.android.play:review:2.0.2")
     implementation("com.google.android.play:review-ktx:2.0.2")
 
@@ -133,12 +132,12 @@ dependencies {
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation("com.google.firebase:firebase-functions-ktx:21.1.0")
-    implementation("com.google.firebase:firebase-storage")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("dev.gitlive:firebase-firestore:2.1.0")
+    implementation("dev.gitlive:firebase-functions:2.1.0")
+    implementation("dev.gitlive:firebase-storage:2.1.0")
+    implementation("dev.gitlive:firebase-auth:2.1.0")
+    implementation("dev.gitlive:firebase-analytics:2.1.0")
 
     // Google Play Services
     implementation("com.google.android.gms:play-services-auth:21.2.0")
@@ -156,20 +155,15 @@ dependencies {
     testImplementation("io.insert-koin:koin-test-junit5:4.0.1-Beta1")
 
     // Kotlin Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
 
     // Networking
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
-    implementation("com.squareup.okhttp3:okhttp")
-    implementation("com.squareup.okhttp3:logging-interceptor")
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("io.ktor:ktor-client-okhttp:2.3.11")
 
     // OpenAI
-    implementation(platform("com.aallam.openai:openai-client-bom:3.8.1"))
+    implementation(platform("com.aallam.openai:openai-client-bom:3.8.2"))
     implementation("com.aallam.openai:openai-client")
 
     // Other Libraries
@@ -177,8 +171,8 @@ dependencies {
     kapt("org.parceler:parceler:1.1.13")
 
     // Image Loading
-    implementation("io.coil-kt:coil:2.6.0")
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("io.coil-kt:coil:2.7.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Billing Client
     implementation("com.android.billingclient:billing:7.1.1")
