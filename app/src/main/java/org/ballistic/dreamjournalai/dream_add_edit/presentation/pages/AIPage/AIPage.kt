@@ -2,6 +2,9 @@ package org.ballistic.dreamjournalai.dream_add_edit.presentation.pages.AIPage
 
 import android.app.Activity
 import android.os.Vibrator
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -56,6 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
@@ -70,14 +74,16 @@ import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.pages.AIPage.AISubPages.UniversalAIPage
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun AIPage(
+fun SharedTransitionScope.AIPage(
     pages: List<String>,
     pagerState2: PagerState,
     addEditDreamState: AddEditDreamState,
     textFieldState: TextFieldState,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
+    onImageClick: (String) -> Unit = {},
 ) {
     val dreamTokens = addEditDreamState.dreamTokens.collectAsStateWithLifecycle().value
     val responseState = addEditDreamState.dreamAIExplanation
@@ -469,7 +475,11 @@ fun AIPage(
                             )
                         }
                     },
-                    infiniteTransition = infiniteTransition
+                    infiniteTransition = infiniteTransition,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    onImageClick = {
+                        onImageClick(it)
+                    }
                 )
             }
 

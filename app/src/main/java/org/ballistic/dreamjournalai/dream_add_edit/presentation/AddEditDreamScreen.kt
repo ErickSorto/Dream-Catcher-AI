@@ -4,7 +4,10 @@ package org.ballistic.dreamjournalai.dream_add_edit.presentation
 import android.os.Build
 import android.os.Vibrator
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -60,16 +63,18 @@ import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun AddEditDreamScreen(
+fun SharedTransitionScope.AddEditDreamScreen(
     dreamImage: Int,
     dreamTitleState: TextFieldState,
     dreamContentState: TextFieldState,
     addEditDreamState: AddEditDreamState,
+    animateVisibilityScope: AnimatedVisibilityScope,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},
     onNavigateToDreamJournalScreen: () -> Unit = {},
+    onImageClick: (String) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -260,12 +265,14 @@ fun AddEditDreamScreen(
                 .background(Color.Transparent)
         ) {
             TabLayout(
-                dreamBackgroundImage,
+                dreamBackgroundImage = dreamBackgroundImage,
                 dreamTitleState = dreamTitleState,
                 dreamContentState = dreamContentState,
                 addEditDreamState = addEditDreamState,
                 onAddEditDreamEvent = onAddEditDreamEvent,
-                keyboardController = keyboardController
+                keyboardController = keyboardController,
+                animatedVisibilityScope = animateVisibilityScope,
+                onImageClick = onImageClick
             )
         }
     }

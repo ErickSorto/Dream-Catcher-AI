@@ -174,7 +174,7 @@ fun DreamJournalListScreen(
                                 Locale.getDefault()
                             ) else it.toString()
                         }, dateFormatter)
-                    } catch (e: DateTimeParseException) {
+                    } catch (_: DateTimeParseException) {
                         null
                     }
                 }

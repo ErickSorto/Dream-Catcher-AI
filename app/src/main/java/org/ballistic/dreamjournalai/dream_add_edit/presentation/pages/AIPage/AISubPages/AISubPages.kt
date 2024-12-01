@@ -3,12 +3,16 @@ package org.ballistic.dreamjournalai.dream_add_edit.presentation.pages.AIPage.AI
 import android.content.res.Resources
 import android.os.Vibrator
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -27,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -34,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
 import org.ballistic.dreamjournalai.R
@@ -44,16 +50,20 @@ import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.Unive
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AIData
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamState
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.shimmerEffect
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun UniversalAIPage(
+fun SharedTransitionScope.UniversalAIPage(
     contentType: AIPageType,
     addEditDreamState: AddEditDreamState,
     textFieldState: TextFieldState,
     vibrator: Vibrator,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onAddEditEvent: (AddEditDreamEvent) -> Unit,
     snackBarState: () -> Unit,
+    onImageClick: (String) -> Unit,
     infiniteTransition: InfiniteTransition
 ) {
     val aiContent = contentType.getState(addEditDreamState)
@@ -78,6 +88,10 @@ fun UniversalAIPage(
                 snackBarState = snackBarState,
                 vibrator = vibrator,
                 infiniteTransition = infiniteTransition,
+                animatedVisibilityScope = animatedVisibilityScope,
+                onImageClick = { image ->
+                    onImageClick(image)
+                }
             )
         }
 
@@ -171,46 +185,19 @@ fun StandardAIPageLayout(
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun AIPainterPage(
+fun SharedTransitionScope.AIPainterPage(
     addEditDreamState: AddEditDreamState,
     textFieldState: TextFieldState,
     onAddEditEvent: (AddEditDreamEvent) -> Unit,
     vibrator: Vibrator,
     snackBarState: () -> Unit,
     infiniteTransition: InfiniteTransition,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onImageClick: (String) -> Unit
 ) {
     val imageState = addEditDreamState.dreamAIImage
-
-    // Remember a flag to track if the first image load has been processed
-
-    val alphaAnimatable = remember { Animatable(0f) } // Start fully transparent
-    val scaleAnimatable = remember { Animatable(0.95f) } // Start slightly zoomed out
-
-    LaunchedEffect(imageState.response) {
-        // Apply delay only for the first load
-        if (imageState.response != "" && imageState.isLoading) {
-            delay(500) // Half a second delay for the first load
-
-        }
-
-        // Ensure there's an image to load
-        if (imageState.response != "") {
-            // Reset animations to initial state for the new image
-            alphaAnimatable.snapTo(0f)
-            scaleAnimatable.snapTo(0.97f)
-
-            // Start animations
-            alphaAnimatable.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = 1500, easing = LinearOutSlowInEasing)
-            )
-            scaleAnimatable.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = 1500, easing = LinearOutSlowInEasing)
-            )
-        }
-    }
 
     if (imageState.isLoading) {
         Box(
@@ -237,17 +224,33 @@ fun AIPainterPage(
                 .clip(RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
+            Log.d("AIPainterPage", "Image Response: ${imageState.response}")
+            val painter = rememberAsyncImagePainter(
+                model = imageState.response,
+                filterQuality = FilterQuality.High
+            )
+            val painterState = painter.state
+            if (painterState is AsyncImagePainter.State.Loading) {
+               ArcRotationAnimation(
+                   infiniteTransition = infiniteTransition,
+               )
+            }
             Image(
                 rememberAsyncImagePainter(model = imageState.response),
                 contentDescription = "AI Generated Image",
                 modifier = Modifier
-                    .graphicsLayer {
-                        alpha = alphaAnimatable.value
-                        scaleX = scaleAnimatable.value
-                        scaleY = scaleAnimatable.value
-                    }
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(10.dp)),
+                    .clip(RoundedCornerShape(10.dp))
+                    .clickable{
+                        onImageClick(imageState.response)
+                    }
+                    .sharedElement(
+                        rememberSharedContentState(key = "image/${imageState.response}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(250)
+                        }
+                    ),
                 contentScale = ContentScale.Crop
             )
         }

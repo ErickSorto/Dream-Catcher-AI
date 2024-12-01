@@ -2,6 +2,9 @@ package org.ballistic.dreamjournalai.dream_add_edit.presentation.components
 
 import android.os.Vibrator
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -52,16 +55,18 @@ import org.ballistic.dreamjournalai.dream_add_edit.presentation.pages.dictionary
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamState
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 @UiComposable
-fun TabLayout(
+fun SharedTransitionScope.TabLayout(
     dreamBackgroundImage: MutableState<Int>,
     dreamTitleState: TextFieldState,
     dreamContentState: TextFieldState,
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
-    keyboardController: SoftwareKeyboardController?
+    keyboardController: SoftwareKeyboardController?,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onImageClick: (String) -> Unit
 ) {
     val pages = AddEditPages.entries.map { it }
     val pagerState = rememberPagerState(pageCount = { pages.size })
@@ -203,6 +208,8 @@ fun TabLayout(
                     addEditDreamState = addEditDreamState,
                     onAddEditDreamEvent = onAddEditDreamEvent,
                     textFieldState = dreamContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    onImageClick = onImageClick
                 )
             }
 

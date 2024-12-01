@@ -127,4 +127,5 @@ sealed class Screens(
 
     data object OnboardingScreen : Screens(route = "welcome_screen", title = "Welcome", icon = null)
     data object MainScreen : Screens(route = "main_screen", title = "Main", icon = null)
+    data object FullScreenImageScreen : Screens(route = "full_screen_image", title = "Full Screen Image", icon = null)
 }

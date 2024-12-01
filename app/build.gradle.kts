@@ -131,7 +131,6 @@ dependencies {
     implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.1.0") // CLOCK
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("dev.gitlive:firebase-firestore:2.1.0")
     implementation("dev.gitlive:firebase-functions:2.1.0")
