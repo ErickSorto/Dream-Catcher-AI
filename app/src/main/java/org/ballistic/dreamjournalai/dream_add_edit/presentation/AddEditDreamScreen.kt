@@ -193,7 +193,6 @@ fun SharedTransitionScope.AddEditDreamScreen(
                             modifier = Modifier.align(Alignment.Center),
                         )
                     }
-
                 },
                 navigationIcon = {
                     IconButton(

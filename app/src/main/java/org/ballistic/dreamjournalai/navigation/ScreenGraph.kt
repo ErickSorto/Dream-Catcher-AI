@@ -156,6 +156,9 @@ fun ScreenGraph(
                     animatedVisibilityScope = this, // If needed
                     onBackPress = {
                         navController.navigateUp()
+                    },
+                    onFlag = {
+                        // Flag content
                     }
                 )
             }
