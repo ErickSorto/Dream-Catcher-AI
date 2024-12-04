@@ -113,6 +113,36 @@ class DictionaryScreenViewModel(
                     filterWordsByLetter(event.letter)
                 }
             }
+            is SymbolEvent.GetDreamTokens -> {
+                Log.d("DictionaryScreen", "Getting dream tokens")
+                viewModelScope.launch {
+                    authRepository.addDreamTokensFlowListener().collect { result ->
+                        when (result) {
+                            is Resource.Loading -> {
+                                // Handle loading state if needed
+                            }
+
+                            is Resource.Success -> {
+                                _symbolScreenState.update { state ->
+                                    state.copy(
+                                        dreamTokens = result.data ?: 0
+                                    )
+                                }
+                            }
+
+                            is Resource.Error -> {
+                                Log.d("DictionaryScreen", "Error getting dream tokens")
+                                viewModelScope.launch {
+                                    _symbolScreenState.value.snackBarHostState.value.showSnackbar(
+                                        message = "${result.message}",
+                                        actionLabel = "Dismiss"
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

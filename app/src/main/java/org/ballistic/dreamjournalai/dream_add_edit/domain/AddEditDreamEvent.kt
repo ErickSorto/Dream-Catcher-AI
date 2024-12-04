@@ -65,4 +65,6 @@ sealed class AddEditDreamEvent {
 
     data class ToggleDreamHasChanged(val value: Boolean) : AddEditDreamEvent()
     data object FlagDreamContent : AddEditDreamEvent()
+
+    data object GetDreamTokens : AddEditDreamEvent()
 }

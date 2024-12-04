@@ -24,4 +24,6 @@ sealed class InterpretDreamsToolEvent {
         val cost: Int,
         val isFinishedEvent: (Boolean) -> Unit
     ) : InterpretDreamsToolEvent()
+
+    data object GetDreamTokens : InterpretDreamsToolEvent()
 }

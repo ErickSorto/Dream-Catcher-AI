@@ -92,6 +92,7 @@ fun SharedTransitionScope.AddEditDreamScreen(
     ).forEach(onMainEvent)
 
     LaunchedEffect(Unit) {
+        onAddEditDreamEvent(AddEditDreamEvent.GetDreamTokens)
         onAddEditDreamEvent(AddEditDreamEvent.GetUnlockedWords)
         onAddEditDreamEvent(AddEditDreamEvent.LoadWords)
     }

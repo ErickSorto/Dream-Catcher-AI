@@ -23,5 +23,7 @@ sealed class SymbolEvent {
 
     data class SetSearchingState(val state: Boolean) : SymbolEvent()
 
+    data object GetDreamTokens : SymbolEvent()
+
 }
 

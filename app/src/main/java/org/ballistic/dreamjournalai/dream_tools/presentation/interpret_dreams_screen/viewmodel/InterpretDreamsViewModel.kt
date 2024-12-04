@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.dream_ad.domain.AdCallback
 import org.ballistic.dreamjournalai.dream_ad.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.core.util.OpenAIApiKeyUtil.getOpenAISecretKey
@@ -42,8 +43,6 @@ class InterpretDreamsViewModel(
     ))
     val interpretDreamsScreenState: StateFlow<InterpretDreamsScreenState> =
         _interpretDreamsScreenState.asStateFlow()
-
-
 
     private var getDreamJob: Job? = null
     fun onEvent(event: InterpretDreamsToolEvent) {
@@ -143,6 +142,25 @@ class InterpretDreamsViewModel(
             is InterpretDreamsToolEvent.ToggleBottomDeleteCancelSheetState -> {
                 _interpretDreamsScreenState.update {
                     it.copy(bottomDeleteCancelSheetState = event.state)
+                }
+            }
+            is InterpretDreamsToolEvent.GetDreamTokens -> {
+                viewModelScope.launch {
+                    authRepository.addDreamTokensFlowListener().collect { resource ->
+                        when (resource) {
+                            is Resource.Success -> {
+                                _interpretDreamsScreenState.update {
+                                    it.copy(dreamTokens = resource.data?.toInt() ?: 0)
+                                }
+                            }
+                            is Resource.Error -> {
+                                Log.e("GetDreamTokens", "Error fetching dream tokens")
+                            }
+                            is Resource.Loading -> {
+                                Log.d("GetDreamTokens", "Fetching dream tokens")
+                            }
+                        }
+                    }
                 }
             }
         }

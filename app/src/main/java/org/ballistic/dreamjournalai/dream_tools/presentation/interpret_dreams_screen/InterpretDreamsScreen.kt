@@ -92,6 +92,7 @@ fun MassInterpretDreamToolScreen(
     }
 
     LaunchedEffect(Unit) {
+        onEvent(InterpretDreamsToolEvent.GetDreamTokens)
         onEvent(InterpretDreamsToolEvent.GetDreams)
         onEvent(InterpretDreamsToolEvent.GetMassInterpretations)
     }

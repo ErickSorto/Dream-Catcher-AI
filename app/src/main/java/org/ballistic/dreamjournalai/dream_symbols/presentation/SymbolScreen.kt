@@ -78,6 +78,7 @@ fun SymbolScreen(
 
     LaunchedEffect(Unit) {
         Log.d("DictionaryScreen", "LaunchedEffect triggered")
+        onEvent(SymbolEvent.GetDreamTokens)
         onEvent(SymbolEvent.LoadWords)
         onEvent(SymbolEvent.GetUnlockedWords)
         onEvent(SymbolEvent.FilterByLetter('A'))

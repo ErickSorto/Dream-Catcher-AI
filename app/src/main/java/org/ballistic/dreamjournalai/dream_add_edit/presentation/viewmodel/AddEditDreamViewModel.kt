@@ -740,6 +740,30 @@ class AddEditDreamViewModel(
                     }
                 }
             }
+
+            is GetDreamTokens -> {
+                viewModelScope.launch {
+                    authRepository.addDreamTokensFlowListener().collect { resource ->
+                        when (resource) {
+                            is Resource.Success -> {
+                                _addEditDreamState.update {
+                                    it.copy(
+                                        dreamTokens = resource.data?.toInt() ?: 0
+                                    )
+                                }
+                            }
+
+                            is Resource.Error -> {
+                                // Handle error
+                            }
+
+                            is Resource.Loading -> {
+                                // Handle loading state if needed
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
