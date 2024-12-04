@@ -91,12 +91,6 @@ fun SharedTransitionScope.AddEditDreamScreen(
         MainScreenEvent.SetDrawerState(false)
     ).forEach(onMainEvent)
 
-    LaunchedEffect(Unit) {
-        onAddEditDreamEvent(AddEditDreamEvent.GetDreamTokens)
-        onAddEditDreamEvent(AddEditDreamEvent.GetUnlockedWords)
-        onAddEditDreamEvent(AddEditDreamEvent.LoadWords)
-    }
-
     val scope = rememberCoroutineScope()
 
     BackHandler {

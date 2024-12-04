@@ -71,7 +71,7 @@ class AddEditDreamViewModel(
     private val _contentTextFieldState = MutableStateFlow(TextFieldState())
 
     val contentTextFieldState: StateFlow<TextFieldState> = _contentTextFieldState.asStateFlow()
-
+    val flow = Unit;
     private suspend fun listenForContentChanges() {
         snapshotFlow {
             contentTextFieldState.value.text
@@ -93,6 +93,11 @@ class AddEditDreamViewModel(
                 )
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        onEvent(OnCleared)
     }
 
     init {
@@ -159,6 +164,9 @@ class AddEditDreamViewModel(
                             onEvent(
                                 ToggleDreamHasChanged(false)
                             )
+                            onEvent(GetUnlockedWords)
+                            onEvent(LoadWords)
+                            onEvent(GetDreamTokens)
                         }
 
                         is Resource.Error -> {
@@ -174,6 +182,9 @@ class AddEditDreamViewModel(
                 onEvent(
                     StartListening
                 )
+                onEvent(GetUnlockedWords)
+                onEvent(LoadWords)
+                onEvent(GetDreamTokens)
             }
         }
     }
@@ -746,6 +757,7 @@ class AddEditDreamViewModel(
                     authRepository.addDreamTokensFlowListener().collect { resource ->
                         when (resource) {
                             is Resource.Success -> {
+                                Log.d("AddEditDreamViewModel", "Dream tokens: ${resource.data}")
                                 _addEditDreamState.update {
                                     it.copy(
                                         dreamTokens = resource.data?.toInt() ?: 0
@@ -763,6 +775,9 @@ class AddEditDreamViewModel(
                         }
                     }
                 }
+            }
+            is OnCleared -> {
+
             }
         }
     }

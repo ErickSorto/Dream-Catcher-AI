@@ -67,4 +67,6 @@ sealed class AddEditDreamEvent {
     data object FlagDreamContent : AddEditDreamEvent()
 
     data object GetDreamTokens : AddEditDreamEvent()
+
+    data object OnCleared : AddEditDreamEvent()
 }
