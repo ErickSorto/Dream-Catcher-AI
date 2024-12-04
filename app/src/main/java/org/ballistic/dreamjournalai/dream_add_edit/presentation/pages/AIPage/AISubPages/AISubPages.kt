@@ -6,9 +6,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.InfiniteTransition
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -26,32 +24,31 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import kotlinx.coroutines.delay
+import coil.request.ImageRequest
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AIPageType
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.ArcRotationAnimation
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.UniversalButton
-import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AIData
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.shimmerEffect
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
 
 
@@ -238,8 +235,13 @@ fun SharedTransitionScope.AIPainterPage(
                    infiniteTransition = infiniteTransition,
                )
             }
-            Image(
-                rememberAsyncImagePainter(model = imageState.response),
+            AsyncImage(
+                model =  ImageRequest.Builder(LocalContext.current)
+                    .data(imageState.response)
+                    .crossfade(true)
+                    .placeholderMemoryCacheKey("image/${imageState.response}") //  same key as shared element key
+                    .memoryCacheKey("image/${imageState.response}") // same key as shared element key
+                    .build(),
                 contentDescription = "AI Generated Image",
                 modifier = Modifier
                     .fillMaxSize()

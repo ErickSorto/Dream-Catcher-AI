@@ -30,9 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.ActionBottomSheet
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
@@ -123,8 +126,13 @@ fun SharedTransitionScope.FullScreenImageScreen(
 
 
 
-            Image(
-                painter = rememberAsyncImagePainter(model = decodedUrl),
+            AsyncImage(
+                model =  ImageRequest.Builder(LocalContext.current)
+                    .data(decodedUrl)
+                    .crossfade(true)
+                    .placeholderMemoryCacheKey("image/$decodedUrl") //  same key as shared element key
+                    .memoryCacheKey("image/$decodedUrl") // same key as shared element key
+                    .build(),
                 contentDescription = "Full Screen Image",
                 modifier = Modifier
                     .fillMaxWidth()
