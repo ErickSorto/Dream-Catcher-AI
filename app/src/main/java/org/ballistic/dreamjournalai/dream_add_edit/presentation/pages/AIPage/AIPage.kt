@@ -89,7 +89,7 @@ fun SharedTransitionScope.AIPage(
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
     onImageClick: (String) -> Unit = {},
 ) {
-    val dreamTokens = addEditDreamState.dreamTokens.collectAsStateWithLifecycle().value
+    val dreamTokens = addEditDreamState.dreamTokens
     val responseState = addEditDreamState.dreamAIExplanation
     val imageState = addEditDreamState.dreamAIImage
     val questionState = addEditDreamState.dreamAIQuestionAnswer

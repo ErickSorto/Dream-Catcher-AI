@@ -74,7 +74,6 @@ fun ImageGenerationPopUp(
                     )
                     DreamTokenLayout(
                         totalDreamTokens = addEditDreamState.dreamTokens
-                            .collectAsStateWithLifecycle().value,
                     )
                 }
 

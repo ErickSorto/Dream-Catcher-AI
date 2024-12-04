@@ -169,7 +169,7 @@ data class MainScreenViewModelState(
     val drawerMain: DrawerState = DrawerState(DrawerValue.Closed),
     val authRepo: AuthRepository,
     val searchedText: MutableStateFlow<String> = MutableStateFlow(""),
-    val dreamTokens: StateFlow<Int> = authRepo.dreamTokens,
+    val dreamTokens: Int = 0,
     val backgroundResource: Int = R.drawable.background_during_day,
     val paddingValues: PaddingValues = PaddingValues(0.dp),
     val isDreamRecentlySaved: Boolean = false

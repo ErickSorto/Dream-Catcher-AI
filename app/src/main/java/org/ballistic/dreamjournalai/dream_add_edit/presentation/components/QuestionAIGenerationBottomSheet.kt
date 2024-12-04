@@ -31,7 +31,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
@@ -73,8 +72,7 @@ fun QuestionAIGenerationBottomSheet(
                         modifier = Modifier.padding(8.dp)
                     )
                     DreamTokenLayout(
-                        totalDreamTokens = addEditDreamState.dreamTokens
-                            .collectAsStateWithLifecycle().value,
+                        totalDreamTokens = addEditDreamState.dreamTokens,
                     )
                 }
                 OutlinedTextField(

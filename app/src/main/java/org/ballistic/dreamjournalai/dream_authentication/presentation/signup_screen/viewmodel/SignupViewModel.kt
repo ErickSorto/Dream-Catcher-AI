@@ -8,8 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,11 +101,10 @@ class SignupViewModel(
             transform = { authResult ->
                 viewModelScope.launch {
                     Log.d("SignupViewModel", "anonymousSignIn: $authResult")
-                    Log.d("SignupViewModel", "anonymousSignIn: ${repo.currentUser}")
                     Log.d("SignupViewModel", "anonymousSignIn: ${authResult.user?.isAnonymous}")
                     _state.update {
                         it.copy(
-                            isUserAnonymous = authResult.user?.isAnonymous ?: false,
+                            isUserAnonymous = authResult.user?.isAnonymous == true,
                             isLoggedIn = authResult.user != null,
                             isUserExist = authResult.user != null,
                         )

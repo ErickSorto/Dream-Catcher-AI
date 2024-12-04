@@ -41,7 +41,7 @@ fun WordPage(
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit
 ) {
-    val dreamTokens = addEditDreamState.dreamTokens.collectAsStateWithLifecycle().value
+    val dreamTokens = addEditDreamState.dreamTokens
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val scope = rememberCoroutineScope()
     val context = LocalContext.current

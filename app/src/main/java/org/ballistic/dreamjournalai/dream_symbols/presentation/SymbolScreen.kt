@@ -74,7 +74,7 @@ fun SymbolScreen(
     // create vibrator effect with the constant EFFECT_CLICK
     val vibrationEffect1: VibrationEffect =
         VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
-    val tokens = symbolScreenState.dreamTokens.collectAsStateWithLifecycle().value
+    val tokens = symbolScreenState.dreamTokens
 
     LaunchedEffect(Unit) {
         Log.d("DictionaryScreen", "LaunchedEffect triggered")

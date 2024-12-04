@@ -309,7 +309,7 @@ data class SymbolScreenState(
     val selectedLetter: Char = 'A',
     val bottomSheetState: MutableState<Boolean> = mutableStateOf(false),
     val isClickedWordUnlocked: Boolean = false,
-    val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
+    val dreamTokens: Int = 0,
     val clickedSymbol: DictionaryWord = DictionaryWord("", "", false, 0),
     val snackBarHostState: MutableState<SnackbarHostState> = mutableStateOf(SnackbarHostState()),
     val isSearching: Boolean = false

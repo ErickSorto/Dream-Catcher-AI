@@ -337,6 +337,6 @@ data class InterpretDreamsScreenState(
     val response: String = "",
     val bottomMassInterpretationSheetState: Boolean = false,
     val bottomDeleteCancelSheetState: Boolean = false,
-    val dreamTokens: StateFlow<Int> = authRepository.dreamTokens
+    val dreamTokens: Int = 0
 )
 

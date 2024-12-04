@@ -2,7 +2,6 @@ package org.ballistic.dreamjournalai.dream_authentication.domain.repository
 
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,11 +16,12 @@ typealias SendPasswordResetEmailResponse = Resource<Boolean>
 typealias AuthStateResponse = StateFlow<Boolean>
 
 interface AuthRepository {
-    val currentUser: StateFlow<FirebaseUser?>
     val isUserExist: StateFlow<Boolean>
     val isEmailVerified: StateFlow<Boolean>
     val isLoggedIn: StateFlow<Boolean>
     val isUserAnonymous: StateFlow<Boolean>
+    val dreamTokens: StateFlow<Int>
+
     suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): Flow<Resource<Pair<AuthResult, String?>>>
 
     suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): Flow<Resource<String>>
@@ -44,7 +44,7 @@ interface AuthRepository {
 
     suspend fun transferDreamsFromAnonymousToPermanent(permanentUid: String, anonymousUid: String)
 
-    val dreamTokens: StateFlow<Int>
+    suspend fun addDreamTokensFlowListener(): Flow<Resource<Int>>
 
     suspend fun consumeDreamTokens(tokensToConsume: Int): Resource<Boolean>
 

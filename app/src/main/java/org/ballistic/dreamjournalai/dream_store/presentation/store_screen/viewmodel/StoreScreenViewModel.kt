@@ -15,13 +15,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.dream_store.domain.repository.BillingRepository
 import org.ballistic.dreamjournalai.dream_store.domain.StoreEvent
 import org.ballistic.dreamjournalai.dream_authentication.domain.repository.AuthRepository
 
 class StoreScreenViewModel(
     private val billingRepository: BillingRepository,
-    authRepository: AuthRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _storeScreenViewModelState = MutableStateFlow(StoreScreenViewModelState())
@@ -32,26 +33,19 @@ class StoreScreenViewModel(
     private val authStateListener = FirebaseAuth.AuthStateListener { auth ->
         val user = auth.currentUser
         Log.d("LoginViewModel", "AuthStateListener called, user: $user")
-        _storeScreenViewModelState.update { it.copy(
-            isUserAnonymous = user?.isAnonymous == true,) }
-    }
-
-    init {
-        // Collect dreamTokens from AuthRepository
-        viewModelScope.launch {
-            authRepository.dreamTokens.collect { tokens ->
-                _storeScreenViewModelState.update { currentState ->
-                    currentState.copy(dreamTokens = tokens)
-                }
-            }
-        }
-
-        // Initialize other state based on the current user
-        val user = authRepository.currentUser.value
         _storeScreenViewModelState.update {
             it.copy(
                 isUserAnonymous = user?.isAnonymous == true,
-                dreamTokens = authRepository.dreamTokens.value
+            )
+        }
+    }
+
+    init {
+        val user = FirebaseAuth.getInstance().currentUser
+        onEvent(StoreEvent.GetDreamTokens)
+        _storeScreenViewModelState.update {
+            it.copy(
+                isUserAnonymous = user?.isAnonymous == true,
             )
         }
         FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
@@ -74,6 +68,27 @@ class StoreScreenViewModel(
             is StoreEvent.ToggleLoading -> {
                 _storeScreenViewModelState.update {
                     it.copy(isBillingClientLoading = event.isLoading)
+                }
+            }
+
+            is StoreEvent.GetDreamTokens -> {
+                viewModelScope.launch {
+                    authRepository.addDreamTokensFlowListener().collect { resource ->
+                        when (resource) {
+                            is Resource.Success -> {
+                                _storeScreenViewModelState.update {
+                                    it.copy(dreamTokens = resource.data?.toInt() ?: 0)
+                                }
+                            }
+
+                            is Resource.Error -> {
+
+                            }
+                            is Resource.Loading -> {
+
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -1293,7 +1293,7 @@ data class AddEditDreamState(
     val isClickedWordUnlocked: Boolean = false,
     val isDreamFilterLoading: Boolean = false,
     val authRepository: AuthRepository,
-    val dreamTokens: StateFlow<Int> = authRepository.dreamTokens,
+    val dreamTokens: Int = 0,
     val dreamHasChanged: Boolean = false,
 )
 

@@ -44,9 +44,10 @@ class AuthRepositoryImpl (
     private val auth: FirebaseAuth,
     private val db: FirebaseFirestore,
 ) : AuthRepository {
-    override val currentUser = MutableStateFlow(auth.currentUser)
-
     private var anonymousUserId: String? = null
+
+    private val _dreamTokens = MutableStateFlow(0)
+    override val dreamTokens: StateFlow<Int> = _dreamTokens
 
     private val _isUserExist = MutableStateFlow(false)
     override val isUserExist: StateFlow<Boolean> = _isUserExist
@@ -60,70 +61,8 @@ class AuthRepositoryImpl (
     private val _isUserAnonymous = MutableStateFlow(false)
     override val isUserAnonymous: StateFlow<Boolean> = _isUserAnonymous
 
-    private val _dreamTokens = MutableStateFlow(0)
-    override val dreamTokens: StateFlow<Int> = _dreamTokens
-
-    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private var dreamTokensJob: Job? = null
-
-    init {
-        setupUserDataListener()
-    }
-
     init {
         validateUser()
-    }
-
-    init {
-        // Listen for authentication state changes
-        auth.addAuthStateListener { firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            currentUser.value = user
-            validateUser()
-
-            // Cancel any existing dreamTokens collector
-            dreamTokensJob?.cancel()
-
-            if (user != null) {
-                // Start observing dreamTokens for the new user
-                observeDreamTokens(user.uid)
-            } else {
-                // Reset dreamTokens when there's no user
-                _dreamTokens.value = 0
-            }
-        }
-    }
-
-    private fun observeDreamTokens(userId: String) {
-        // Launch a coroutine to collect dreamTokens
-        dreamTokensJob = repositoryScope.launch {
-            getDreamTokensFlow(userId).collect { tokens ->
-                _dreamTokens.value = tokens
-            }
-        }
-    }
-
-    private fun getDreamTokensFlow(userId: String): Flow<Int> = callbackFlow {
-        val userDocRef = db.collection("USERS").document(userId)
-
-        val registration = userDocRef.addSnapshotListener { snapshot, exception ->
-            if (exception != null) {
-                Log.e("AuthRepository", "Error listening to dreamTokens: ${exception.message}")
-                return@addSnapshotListener
-            }
-
-            if (snapshot != null && snapshot.exists()) {
-                val tokens = snapshot.getLong("dreamTokens")?.toInt() ?: 0
-                trySend(tokens).isSuccess
-            } else {
-                trySend(0).isSuccess
-            }
-        }
-
-        // Remove the listener when the flow is closed
-        awaitClose {
-            registration.remove()
-        }
     }
 
     override suspend fun firebaseSignInWithGoogle(
@@ -162,9 +101,9 @@ class AuthRepositoryImpl (
 
     override suspend fun consumeDreamTokens(tokensToConsume: Int): Resource<Boolean> {
         return withContext(Dispatchers.IO) {
-            val user = currentUser
+            val user = FirebaseAuth.getInstance().currentUser
             run {
-                val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
+                val userDocRef = user?.let { db.collection(USERS).document(it.uid) }
                 val snapshot = userDocRef?.get()?.await()
                 val currentDreamTokens = snapshot?.getLong("dreamTokens")?.toInt() ?: 0
 
@@ -181,8 +120,8 @@ class AuthRepositoryImpl (
 
     override suspend fun unlockWord(word: String, tokenCost: Int): Resource<Boolean> {
         return withContext(Dispatchers.IO) {
-            val user = currentUser
-            val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
+            val user = FirebaseAuth.getInstance().currentUser
+            val userDocRef = user?.let { db.collection(USERS).document(it.uid) }
             val snapshot = userDocRef?.get()?.await()
             val unlockedWords = snapshot?.get("unlockedWords") as? ArrayList<String> ?: arrayListOf()
             val userTokens = snapshot?.get("dreamTokens") as? Long ?: 0
@@ -209,9 +148,9 @@ class AuthRepositoryImpl (
         return flow {
             Log.d("UnlockWords", "getUnlockedWords")
             emit(Resource.Loading())
-            val user = currentUser
+            val user = FirebaseAuth.getInstance().currentUser
             run {
-                val userDocRef = user.value?.let { db.collection(USERS).document(it.uid) }
+                val userDocRef = user?.let { db.collection(USERS).document(it.uid) }
                 val snapshot = userDocRef?.get()?.await()
                 val unlockedWords = snapshot?.get("unlockedWords") as? ArrayList<String>
                 if (unlockedWords != null) {
@@ -225,7 +164,7 @@ class AuthRepositoryImpl (
 
     override suspend fun recordUserInteraction() {
         reloadFirebaseUser()
-        val user = currentUser.value
+        val user = FirebaseAuth.getInstance().currentUser
         user?.let {
             val userDocRef = db.collection(USERS).document(it.uid)
 
@@ -252,23 +191,6 @@ class AuthRepositoryImpl (
                 .addOnFailureListener { exception ->
                     Log.e("Firestore", "Error updating email verification status: ", exception)
                 }
-        }
-    }
-
-    private fun setupUserDataListener() {
-        auth.currentUser?.let { user ->
-            val userDocRef = db.collection(USERS).document(user.uid)
-            userDocRef.addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
-                    // Handle the error case
-                    return@addSnapshotListener
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    val dreamTokensValue = snapshot.getLong("dreamTokens")?.toInt() ?: 0
-                    _dreamTokens.value = dreamTokensValue
-                }
-            }
         }
     }
 
@@ -489,6 +411,27 @@ class AuthRepositoryImpl (
                 else -> {
                     Log.e("TransferDreams", "Error transferring dreams2: $e")
                 }
+            }
+        }
+    }
+
+    override suspend fun addDreamTokensFlowListener(): Flow<Resource<Int>> {
+        return callbackFlow {
+            val user = FirebaseAuth.getInstance().currentUser
+            val userDocRef = user?.let { db.collection(USERS).document(it.uid) }
+            val listenerRegistration = userDocRef?.addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    trySend(Resource.Error(e.localizedMessage ?: "Unknown error"))
+                    return@addSnapshotListener
+                }
+
+                val dreamTokens = snapshot?.getLong("dreamTokens")?.toInt() ?: 0
+                _dreamTokens.value = dreamTokens
+                trySend(Resource.Success(dreamTokens))
+            }
+
+            awaitClose {
+                listenerRegistration?.remove()
             }
         }
     }

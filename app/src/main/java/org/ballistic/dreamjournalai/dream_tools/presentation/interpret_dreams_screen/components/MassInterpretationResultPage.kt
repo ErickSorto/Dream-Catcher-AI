@@ -65,7 +65,7 @@ fun MassInterpretationResultPage(
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "loading icon rotation")
     val activity = (LocalContext.current as? Activity)
-    val dreamTokens = interpretDreamsScreenState.dreamTokens.collectAsStateWithLifecycle().value
+    val dreamTokens = interpretDreamsScreenState.dreamTokens
 
     if (interpretDreamsScreenState.bottomMassInterpretationSheetState) {
         BottomModalSheetMassInterpretation(
@@ -73,7 +73,7 @@ fun MassInterpretationResultPage(
             interpretDreamsScreenState = interpretDreamsScreenState,
             onDreamTokenClick = {
                 onEvent(InterpretDreamsToolEvent.ToggleBottomMassInterpretationSheetState(false))
-                if (interpretDreamsScreenState.dreamTokens.value < 2) {
+                if (interpretDreamsScreenState.dreamTokens < 2) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
                             message = "Not enough dream tokens",
