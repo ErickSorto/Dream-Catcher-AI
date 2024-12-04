@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +52,7 @@ import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AIData
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.shimmerEffect
+import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -67,7 +69,7 @@ fun SharedTransitionScope.UniversalAIPage(
     infiniteTransition: InfiniteTransition
 ) {
     val aiContent = contentType.getState(addEditDreamState)
-
+    val lastClickTime = remember { mutableLongStateOf(0L) }
     when (contentType) {
         AIPageType.QUESTION -> {
             AIQuestionPage(
@@ -89,9 +91,12 @@ fun SharedTransitionScope.UniversalAIPage(
                 vibrator = vibrator,
                 infiniteTransition = infiniteTransition,
                 animatedVisibilityScope = animatedVisibilityScope,
-                onImageClick = { image ->
-                    onImageClick(image)
-                }
+                onImageClick = singleClick(
+                    lastClickTimeState = lastClickTime,
+                    onClick = {
+                        onImageClick(addEditDreamState.dreamAIImage.response)
+                    }
+                )
             )
         }
 
@@ -195,10 +200,14 @@ fun SharedTransitionScope.AIPainterPage(
     snackBarState: () -> Unit,
     infiniteTransition: InfiniteTransition,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onImageClick: (String) -> Unit
+    onImageClick: () -> Unit
 ) {
     val imageState = addEditDreamState.dreamAIImage
-
+    val painter = rememberAsyncImagePainter(
+        model = imageState.response,
+        filterQuality = FilterQuality.Low
+    )
+    val painterState = painter.state
     if (imageState.isLoading) {
         Box(
             modifier = Modifier
@@ -224,12 +233,6 @@ fun SharedTransitionScope.AIPainterPage(
                 .clip(RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Log.d("AIPainterPage", "Image Response: ${imageState.response}")
-            val painter = rememberAsyncImagePainter(
-                model = imageState.response,
-                filterQuality = FilterQuality.High
-            )
-            val painterState = painter.state
             if (painterState is AsyncImagePainter.State.Loading) {
                ArcRotationAnimation(
                    infiniteTransition = infiniteTransition,
@@ -241,8 +244,8 @@ fun SharedTransitionScope.AIPainterPage(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(10.dp))
-                    .clickable{
-                        onImageClick(imageState.response)
+                    .clickable {
+                        onImageClick()
                     }
                     .sharedElement(
                         rememberSharedContentState(key = "image/${imageState.response}"),

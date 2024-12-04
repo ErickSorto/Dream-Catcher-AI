@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
+import org.ballistic.dreamjournalai.core.components.ActionBottomSheet
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
 import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
@@ -34,11 +34,12 @@ fun MassInterpretationHistoryPage(
     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     if (interpretDreamsScreenState.bottomDeleteCancelSheetState) {
-        DeleteCancelBottomSheet(
+        ActionBottomSheet(
             modifier = Modifier.fillMaxWidth(),
             title = "Delete this Interpretation?",
             message = "Are you sure you want to delete this interpretation?",
-            onDelete = {
+            buttonText = "Delete",
+            onClick = {
                 triggerVibration(vibrator)
                 onEvent(InterpretDreamsToolEvent.ToggleBottomDeleteCancelSheetState(false))
                 onEvent(InterpretDreamsToolEvent.DeleteMassInterpretation(interpretDreamsScreenState.chosenMassInterpretation))

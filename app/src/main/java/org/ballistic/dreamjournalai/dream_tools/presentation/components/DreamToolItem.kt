@@ -22,6 +22,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 import org.ballistic.dreamjournalai.R
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -51,15 +53,17 @@ fun DreamToolItem(
         val alphaIfDisabled = if (enabled) 1f else 0.4f
         val textColorIfDisabled = if (enabled) Color.White else Color.Gray
         val titleIfDisabled = if (enabled) title else "Coming soon.."
-        Image(
-            painter = painterResource(id = icon),
-            contentDescription = description,
+        CoilImage(
+            imageModel = {icon},
             modifier = modifier
                 .alpha(alphaIfDisabled)
                 .aspectRatio(16 / 9f)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp, 8.dp, 0.dp, 0.dp)),
-            contentScale = ContentScale.Crop,
+            imageOptions = ImageOptions(
+                contentDescription = description,
+                contentScale = ContentScale.Crop
+            )
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(

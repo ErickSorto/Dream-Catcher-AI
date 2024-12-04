@@ -34,7 +34,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
+import org.ballistic.dreamjournalai.core.components.ActionBottomSheet
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.dream_journal_list.domain.DreamListEvent
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DateHeader
@@ -112,11 +112,12 @@ fun DreamJournalListScreen(
     }
 
     if (dreamJournalListState.bottomDeleteCancelSheetState) {
-        DeleteCancelBottomSheet(
+        ActionBottomSheet(
             modifier = Modifier.padding(),
             title = "Delete this Dream?",
             message = "Are you sure you want to delete this dream?",
-            onDelete = {
+            buttonText = "Delete",
+            onClick = {
                 onDreamListEvent(DreamListEvent.ToggleBottomDeleteCancelSheetState(false))
                 onDreamListEvent(DreamListEvent.DeleteDream(dream = dreamJournalListState.chosenDreamToDelete!!))
                 scope.launch {

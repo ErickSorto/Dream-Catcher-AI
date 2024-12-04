@@ -1,7 +1,6 @@
 package org.ballistic.dreamjournalai.dream_store.presentation.store_screen
 
 import android.app.Activity
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,21 +29,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_store.domain.DreamTokenBenefit
 import org.ballistic.dreamjournalai.dream_store.domain.StoreEvent
 import org.ballistic.dreamjournalai.dream_store.presentation.anonymous_store_screen.AnonymousStoreScreen
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.CustomButtonLayout
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.viewmodel.StoreScreenViewModelState
-import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 
 @Composable
 fun StoreScreen(
@@ -84,7 +83,10 @@ fun StoreScreen(
                     .clip(RoundedCornerShape(8.dp))
                     .background(
                         brush = Brush.horizontalGradient(
-                            colors = listOf(Color(0xFFE90F2F), Color(0xFFF7AB5A)), // OrangeRed to Tomato gradient
+                            colors = listOf(
+                                Color(0xFFE90F2F),
+                                Color(0xFFF7AB5A)
+                            ), // OrangeRed to Tomato gradient
                             startX = 0f,
                             endX = 1000f
                         )
@@ -172,13 +174,14 @@ fun DreamTokenBenefitItem(
                 .background(colorResource(id = R.color.light_black).copy(alpha = 0.8f))
                 .verticalScroll(rememberScrollState())
         ) {
-            Image(
-                painter = painterResource(id = dreamTokenBenefit.image),
-                contentDescription = null,
+            CoilImage(
+                imageModel = { dreamTokenBenefit.image },
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(16f / 9f),
-                contentScale = ContentScale.FillBounds
+                imageOptions = ImageOptions(
+                    contentScale = ContentScale.Crop
+                ),
             )
             Spacer(modifier = Modifier.size(16.dp))
             Text(
@@ -225,11 +228,12 @@ fun CheckAndBenefit(benefit: String) {
         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.check_mark),
-            contentDescription = null,
+        CoilImage(
+            imageModel = {R.drawable.check_mark},
             modifier = Modifier.size(32.dp),
-            contentScale = ContentScale.Crop
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.FillBounds
+            ),
         )
         Spacer(modifier = Modifier.size(8.dp))
         Text(

@@ -24,10 +24,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.dream_about_app.presentation.components.DreamAboutMeScreenTopBar
@@ -88,7 +88,7 @@ fun AboutMeScreen(
                         }
                 ) {
                     Image(
-                        painter = rememberAsyncImagePainter(R.drawable.erick_image),
+                        painter = painterResource(R.drawable.erick_image),
                         contentDescription = "Erick",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -137,7 +137,7 @@ fun AboutMeScreen(
                         color = Color.White
                     )
                     Image(
-                        painter = rememberAsyncImagePainter(
+                        painter = painterResource(
                             R.drawable.burrito_icon
                         ),
                         contentDescription = null,

@@ -42,6 +42,9 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
@@ -174,6 +177,7 @@ fun SharedTransitionScope.TabLayout(
 
     HorizontalPager(
         state = pagerState,
+        beyondViewportPageCount = 1,
     ) { page ->
         when (page) {
             0 -> {

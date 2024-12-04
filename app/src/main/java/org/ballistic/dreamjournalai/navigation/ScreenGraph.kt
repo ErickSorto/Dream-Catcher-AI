@@ -1,9 +1,10 @@
 package org.ballistic.dreamjournalai.navigation
 
-import android.util.Log
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -13,12 +14,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.ballistic.dreamjournalai.dream_account.AccountSettingsScreen
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.AddEditDreamScreen
-import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.FullScreenImageScreen
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamViewModel
 import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 import org.ballistic.dreamjournalai.dream_favorites.presentation.DreamFavoriteScreen
 import org.ballistic.dreamjournalai.dream_favorites.presentation.viewmodel.DreamFavoriteScreenViewModel
+import org.ballistic.dreamjournalai.dream_fullscreen.FullScreenImageScreen
+import org.ballistic.dreamjournalai.dream_fullscreen.FullScreenViewModel
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.DreamJournalListScreen
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.viewmodel.DreamJournalListViewModel
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
@@ -34,7 +36,6 @@ import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.viewmo
 import org.ballistic.dreamjournalai.dream_symbols.presentation.SymbolScreen
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryScreenViewModel
 import org.koin.androidx.compose.koinViewModel
-import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -52,6 +53,7 @@ fun ScreenGraph(
         NavHost(
             navController = navController,
             startDestination = Screens.DreamJournalScreen.route,
+            modifier = Modifier.fillMaxSize()
         ) {
 
             composable(route = Screens.DreamJournalScreen.route) {
@@ -132,7 +134,6 @@ fun ScreenGraph(
                     },
                     onImageClick = { imageID ->
                         val encodedURL = URLEncoder.encode(imageID, StandardCharsets.UTF_8.toString())
-                        Log.d("EncodedURL", encodedURL)
                         navController.navigate(
                             Screens.FullScreenImageScreen.route + "/$encodedURL"
                         )
@@ -148,18 +149,19 @@ fun ScreenGraph(
                     }
                 )
             ) { backStackEntry ->
+                val fullScreenViewModel = koinViewModel<FullScreenViewModel>()
                 val encodedImageID = backStackEntry.arguments?.getString("imageID") ?: ""
                 val encodedURL = URLEncoder.encode(encodedImageID, StandardCharsets.UTF_8.toString())
-                Log.d("EncodedURL", encodedURL)
                 FullScreenImageScreen(
                     imageID = encodedURL,
-                    animatedVisibilityScope = this, // If needed
+                    animatedVisibilityScope = this,
                     onBackPress = {
                         navController.navigateUp()
                     },
-                    onFlag = {
-                        // Flag content
-                    }
+                    onFullScreenEvent = {
+                        fullScreenViewModel.onEvent(it)
+                    },
+                    onMainEvent = { onMainEvent(it) }
                 )
             }
 

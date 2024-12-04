@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
+import org.ballistic.dreamjournalai.core.components.ActionBottomSheet
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DateHeader
@@ -59,10 +59,11 @@ fun DreamNightmareScreen(
 
 
     if (dreamNightmareScreenState.bottomDeleteCancelSheetState) {
-        DeleteCancelBottomSheet(
+        ActionBottomSheet(
             title = "Delete this Dream?",
+            buttonText = "Delete",
             message = "Are you sure you want to delete this dream?",
-            onDelete = {
+            onClick = {
                 dreamNightmareScreenState.dreamToDelete?.let { NightmareEvent.DeleteDream(it) }
                     ?.let { onEvent(it) }
             },

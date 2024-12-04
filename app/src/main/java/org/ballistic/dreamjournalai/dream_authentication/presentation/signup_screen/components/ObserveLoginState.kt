@@ -3,6 +3,7 @@ package org.ballistic.dreamjournalai.dream_authentication.presentation.signup_sc
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 
 @Composable
 fun ObserveLoginState(
@@ -17,6 +18,7 @@ fun ObserveLoginState(
     Log.d("ObserveLoginState", "isEmailVerified: $isEmailVerified")
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn && isEmailVerified) {
+            delay(250)
             Log.d("ObserveLoginState", "user is logged in and email is verified now navigating to dream journal screen")
             navigateToDreamJournalScreen()
         }

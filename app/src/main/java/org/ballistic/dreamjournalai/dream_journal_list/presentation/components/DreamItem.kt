@@ -53,8 +53,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
@@ -153,23 +153,14 @@ fun DreamItem(
                 } else {
                     imageResId
                 }
-                val painter = rememberAsyncImagePainter(
-                    model,
-                    filterQuality = FilterQuality.High
-                )
-                val painterState = painter.state
-                val modifierImage = if (painterState is AsyncImagePainter.State.Loading) {
-                    Modifier.shimmerEffect()
-                } else {
-                    Modifier
-                }
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model
-                    ),
-                    contentDescription = "Color",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifierImage.fillMaxSize()
+
+                CoilImage(
+                    imageModel = { model },
+                    modifier = Modifier.fillMaxSize().shimmerEffect(),
+                    imageOptions = ImageOptions(
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "Dream Image"
+                    )
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))

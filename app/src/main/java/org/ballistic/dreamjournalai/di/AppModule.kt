@@ -9,6 +9,7 @@ import org.ballistic.dreamjournalai.dream_journal_list.domain.repository.DreamRe
 import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.AddDream
 import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.DeleteDream
 import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.DreamUseCases
+import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.FlagDream
 import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.GetCurrentDreamID
 import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.GetDream
 import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.GetDreams
@@ -34,7 +35,8 @@ val appModule = module {
             deleteDream = DeleteDream(get()),
             addDream = AddDream(get()),
             getDream = GetDream(get()),
-            getCurrentDreamId = GetCurrentDreamID(get())
+            getCurrentDreamId = GetCurrentDreamID(get()),
+            flagDream = FlagDream(get())
         )
     }
 

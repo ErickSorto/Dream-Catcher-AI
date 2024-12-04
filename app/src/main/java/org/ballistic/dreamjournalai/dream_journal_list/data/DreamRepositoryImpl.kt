@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import org.ballistic.dreamjournalai.core.Constants.USERS
 import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
+import org.ballistic.dreamjournalai.core.domain.Flag
 import org.ballistic.dreamjournalai.dream_journal_list.domain.repository.DreamRepository
 import java.net.URL
 import java.net.URLDecoder
@@ -26,6 +27,9 @@ class DreamRepositoryImpl(
 
     private val dreamsCollection
         get() = getCollectionReferenceForDreams()
+
+    private val flagsCollection: CollectionReference
+        get() = db.collection("flags")
 
     private var currentDreamId: String = ""
 
@@ -237,6 +241,35 @@ class DreamRepositoryImpl(
             Resource.Error("Error deleting dream: ${e.message}")
         }
     }
+
+    override suspend fun flagDream(
+        dreamId: String?,
+        imageAddress: String?
+    ): Resource<Unit> {
+        Log.d("Flagging image", "Dream ID: $dreamId, Image Address: $imageAddress")
+
+        if (dreamId.isNullOrBlank() && imageAddress.isNullOrBlank()) {
+            Log.d("Flagging image result", "Error: Missing dreamId or imageAddress")
+            return Resource.Error("Either dreamId or imageAddress must be provided to flag content.")
+        }
+
+        return try {
+            val flag = Flag(
+                dreamId = dreamId?.takeIf { it.isNotBlank() } ?: "",
+                imageAddress = imageAddress?.takeIf { it.isNotBlank() } ?: ""
+            )
+            Log.d("Flagging image", "Flag object created: $flag")
+
+            val result = flagsCollection.add(flag).await()
+            Log.d("Flagging image result", "Firestore add result: $result")
+
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Log.d("Flagging image result", "Error: ${e.localizedMessage}")
+            Resource.Error("Error flagging content: ${e.localizedMessage}")
+        }
+    }
+
     private fun getCollectionReferenceForDreams(): CollectionReference? {
         val currentUser = FirebaseAuth.getInstance().currentUser
         return currentUser?.uid?.let {

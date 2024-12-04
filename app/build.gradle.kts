@@ -172,6 +172,10 @@ dependencies {
     // Image Loading
     implementation("io.coil-kt:coil:2.7.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation ("com.github.skydoves:landscapist-coil:2.4.4")
+    implementation("com.github.skydoves:landscapist-placeholder:2.4.4")
+    implementation("com.github.skydoves:landscapist-palette:2.4.4")
+    implementation("com.github.skydoves:landscapist-transformation:2.4.4")
 
     // Billing Client
     implementation("com.android.billingclient:billing:7.1.1")

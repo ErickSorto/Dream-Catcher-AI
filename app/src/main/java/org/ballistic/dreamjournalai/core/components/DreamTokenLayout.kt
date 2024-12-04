@@ -11,9 +11,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import com.maxkeppeker.sheets.core.icons.sharp.ContentCopy
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 import org.ballistic.dreamjournalai.R
 
 @Composable
@@ -30,12 +34,14 @@ fun DreamTokenLayout(
             ),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(R.drawable.dream_token),
-            contentDescription = "DreamToken",
+        CoilImage(
+            imageModel =  { R.drawable.dream_token },
             modifier = Modifier
                 .size(40.dp)
                 .padding(4.dp, 4.dp, 0.dp, 4.dp),
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.Fit,
+            )
         )
         AnimatedContent(targetState = totalDreamTokens, label = "") { totalDreamTokens ->
             TypewriterText(

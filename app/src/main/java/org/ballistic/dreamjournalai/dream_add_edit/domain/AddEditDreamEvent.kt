@@ -64,4 +64,5 @@ sealed class AddEditDreamEvent {
     data class ToggleBottomSheetState(val value: Boolean) : AddEditDreamEvent()
 
     data class ToggleDreamHasChanged(val value: Boolean) : AddEditDreamEvent()
+    data object FlagDreamContent : AddEditDreamEvent()
 }

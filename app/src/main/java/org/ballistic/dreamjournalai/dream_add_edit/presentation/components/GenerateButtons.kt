@@ -1,7 +1,6 @@
 package org.ballistic.dreamjournalai.dream_add_edit.presentation.components
 
 import android.os.Vibrator
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,19 +33,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
+import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.domain.ButtonType
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.pages.AIPage.AISubPages.getLocalizedString
-import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
 
 @Composable
@@ -165,7 +165,7 @@ fun UniversalButton(
         }
 
         Icon(
-            painter = rememberAsyncImagePainter(buttonType.drawableId),
+            painter = painterResource(buttonType.drawableId),
             contentDescription = getLocalizedString(LocalContext.current.resources, buttonType.title,
                 LocalContext.current.packageName),
             modifier = Modifier
@@ -222,7 +222,7 @@ fun WatchAdButton(
     ) {
 
         Icon(
-            painter = rememberAsyncImagePainter(R.drawable.baseline_smart_display_24),
+            painter = painterResource(R.drawable.baseline_smart_display_24),
             contentDescription = stringResource(R.string.watch_ad),
             modifier = Modifier
                 .size(36.dp),
@@ -254,12 +254,12 @@ fun DreamTokenGenerateButton(
             .fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.sky_blue)),
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(R.drawable.dream_token),
-            contentDescription = "DreamToken",
+        CoilImage(
+            imageModel = {R.drawable.dream_token},
             modifier = Modifier
                 .size(40.dp)
         )
+
         Text(
             text = amountText,
             modifier = Modifier
@@ -278,7 +278,7 @@ fun DreamTokenGenerateButton(
         )
         Spacer(modifier = Modifier.weight(1f))
         Icon(
-            painter = rememberAsyncImagePainter(R.drawable.dream_token),
+            painter = painterResource(R.drawable.dream_token),
             contentDescription = "DreamToken",
             modifier = Modifier
                 .size(40.dp),

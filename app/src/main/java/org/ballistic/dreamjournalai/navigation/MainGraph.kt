@@ -1,7 +1,9 @@
 package org.ballistic.dreamjournalai.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,6 +25,7 @@ fun MainGraph(
     NavHost(
         navController = navController,
         startDestination = Screens.OnboardingScreen.route,
+        modifier = Modifier.fillMaxSize()
     ) {
         composable(route = Screens.OnboardingScreen.route) {
             val loginViewModel = koinViewModel<LoginViewModel>()

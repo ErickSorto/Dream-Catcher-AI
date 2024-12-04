@@ -37,6 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.viewmodel.StoreScreenViewModelState
 
@@ -90,14 +92,15 @@ fun DreamToken500ButtonBuy(
         ),
         enabled = !storeScreenViewModelState.isBillingClientLoading
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.dream_token),
-            contentDescription = "Dream Token",
+        CoilImage(
+            imageModel = { R.drawable.dream_token },
             modifier = Modifier
                 .offset(x = (-12).dp)
                 .padding(end = 4.dp)
                 .size(48.dp),
-            contentScale = ContentScale.FillBounds
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.FillBounds
+            ),
         )
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(

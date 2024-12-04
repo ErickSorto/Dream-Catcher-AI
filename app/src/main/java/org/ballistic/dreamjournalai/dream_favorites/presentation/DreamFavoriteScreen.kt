@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.core.components.DeleteCancelBottomSheet
+import org.ballistic.dreamjournalai.core.components.ActionBottomSheet
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.dream_favorites.domain.FavoriteEvent
@@ -65,10 +65,11 @@ fun DreamFavoriteScreen(
     }
 
     if (dreamFavoriteScreenState.bottomDeleteCancelSheetState) {
-        DeleteCancelBottomSheet(
+        ActionBottomSheet(
             title = "Delete this Dream?",
             message = "Are you sure you want to delete this dream?",
-            onDelete = {
+            buttonText = "Delete",
+            onClick = {
                 scope.launch {
                     val result =
                         mainScreenViewModelState.scaffoldState.snackBarHostState.value.showSnackbar(

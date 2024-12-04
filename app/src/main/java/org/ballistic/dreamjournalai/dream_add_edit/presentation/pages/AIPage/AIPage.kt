@@ -15,6 +15,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +35,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SnackbarDuration
@@ -43,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -51,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -59,19 +63,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.core.components.ActionBottomSheet
 import org.ballistic.dreamjournalai.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
-import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.DreamInterpretationPopUp
-import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.ImageGenerationPopUp
-import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.QuestionAIGenerationBottomSheet
-import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamState
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AIPageType
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AITool
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.DreamInterpretationPopUp
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.ImageGenerationPopUp
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.QuestionAIGenerationBottomSheet
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.pages.AIPage.AISubPages.UniversalAIPage
+import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamState
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -94,6 +98,7 @@ fun SharedTransitionScope.AIPage(
     val storyState = addEditDreamState.dreamAIStory
     val moodState = addEditDreamState.dreamAIMoodAnalyser
     val detailState = addEditDreamState.dreamGeneratedDetails.response
+    val flagContentBottomSheetState = remember { mutableStateOf(false) }
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -149,6 +154,21 @@ fun SharedTransitionScope.AIPage(
                 pagerState2.animateScrollToPage(5)
             }
         }
+    }
+
+    if (flagContentBottomSheetState.value) {
+        ActionBottomSheet (
+            title = "Flag Content",
+            message = "Are you sure you want to flag this content?",
+            buttonText = "Flag",
+            onClick = {
+                onAddEditDreamEvent(AddEditDreamEvent.FlagDreamContent)
+                flagContentBottomSheetState.value = false
+            },
+            onClickOutside = {
+                flagContentBottomSheetState.value = false
+            }
+        )
     }
 
     if (addEditDreamState.dreamImageGenerationPopUpState) {
@@ -452,7 +472,8 @@ fun SharedTransitionScope.AIPage(
                     .aspectRatio(1f)
                     .background(
                         color = colorResource(id = R.color.light_black).copy(alpha = 0.8f)
-                    )
+                    ),
+                beyondViewportPageCount = 2,
             ) { page ->
 
                 // Get the AI page type corresponding to the current page index
@@ -598,27 +619,51 @@ fun SharedTransitionScope.AIPage(
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(end = 16.dp)
             ) {
-                Spacer(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .weight(1f)
 
-                )
-                Text(
-                    text = "Tokens",
-                    style = typography.titleMedium.copy(color = colorResource(id = R.color.brighter_white)),
-                    fontWeight = FontWeight.Light,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                DreamTokenLayout(
-                    totalDreamTokens = dreamTokens,
-                )
-                Spacer(modifier = Modifier.weight(1f))
+                    )
+                    Text(
+                        text = "Tokens",
+                        style = typography.titleMedium.copy(color = colorResource(id = R.color.brighter_white)),
+                        fontWeight = FontWeight.Light,
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    DreamTokenLayout(
+                        totalDreamTokens = dreamTokens,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+                IconButton(
+                    onClick = {
+                        flagContentBottomSheetState.value = true
+                    },
+                    modifier = Modifier.align(
+                        Alignment.CenterEnd
+                    )
+
+                ){
+                    Icon(
+                        painterResource(id = R.drawable.baseline_report_24),
+                        contentDescription = "Back",
+                        tint = Color.White,
+                    )
+                }
             }
+
             when (pagerState2.currentPage) {
                 0 -> {
                     AIButton(

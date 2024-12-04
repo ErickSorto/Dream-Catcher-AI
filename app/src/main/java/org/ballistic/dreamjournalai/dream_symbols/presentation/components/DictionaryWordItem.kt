@@ -28,9 +28,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
 
@@ -148,7 +149,7 @@ fun DictionaryCostLabel() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            painter = rememberAsyncImagePainter(R.drawable.baseline_lock_24),
+            painter = painterResource(R.drawable.baseline_lock_24),
             tint = colorResource(id = R.color.brighter_white),
             contentDescription = "DreamToken",
             modifier = Modifier

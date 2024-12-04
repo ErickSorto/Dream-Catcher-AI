@@ -32,8 +32,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import co.yml.charts.common.extensions.isNotNull
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.shimmerEffect
@@ -89,31 +89,25 @@ fun SmallDreamItem(
                 } else {
                     imageResId
                 }
-                val painter = rememberAsyncImagePainter(
-                    model,
-                    filterQuality = FilterQuality.Low
-                )
-                val painterState = painter.state
-                val modifierImage = if (painterState is AsyncImagePainter.State.Loading) {
-                    Modifier.shimmerEffect()
-                } else {
-                    Modifier
-                }
+
                 if (isDeleted) {
                     Icon(
                         painter = painterResource(imageResId),
                         contentDescription = "Deleted Dream Icon Question Mark",
-                        modifier = Modifier.fillMaxSize().background(Color.LightGray),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.LightGray),
                         tint = colorResource(id = R.color.RedOrange)
                     )
                 } else {
-                    Image(
-                        painter = rememberAsyncImagePainter(
+                    CoilImage(
+                        imageModel = {
                             model
+                        },
+                        modifier = Modifier.fillMaxSize().shimmerEffect(),
+                        imageOptions = ImageOptions(
+                            contentScale = ContentScale.Crop
                         ),
-                        contentDescription = "Color",
-                        contentScale = ContentScale.Crop,
-                        modifier = modifierImage.fillMaxSize()
                     )
                 }
             }

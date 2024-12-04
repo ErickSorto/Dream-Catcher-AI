@@ -16,7 +16,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,17 +62,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_main.presentation.components.BottomNavigation
 import org.ballistic.dreamjournalai.dream_main.presentation.components.DrawerGroupHeading
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
-import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.navigation.ScreenGraph
 import org.ballistic.dreamjournalai.navigation.Screens
 
@@ -155,13 +155,14 @@ fun MainScreenView(
         onDispose { navController.removeOnDestinationChangedListener(listener) }
     }
 
-    Image(
-        painter = rememberAsyncImagePainter(model = mainScreenViewModelState.backgroundResource),
+    CoilImage(
+        imageModel = {mainScreenViewModelState.backgroundResource},
         modifier = Modifier
             .fillMaxSize()
             .blur(15.dp),
-        contentDescription = "Lighthouse",
-        contentScale = ContentScale.Crop
+        imageOptions = ImageOptions(
+            contentScale = ContentScale.Crop
+        )
     )
 
     val scope = rememberCoroutineScope()

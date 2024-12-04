@@ -25,13 +25,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FlagContentBottomSheet(
+fun ActionBottomSheet(
     modifier: Modifier = Modifier,
     title: String,
     message: String,
-    onFlag: () -> Unit,
+    buttonText: String,
+    onClick: () -> Unit,
     onClickOutside: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState()
@@ -64,7 +66,7 @@ fun FlagContentBottomSheet(
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(
-                    onClick = onFlag,
+                    onClick = onClick,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.RedOrange)
                     ),
@@ -72,7 +74,7 @@ fun FlagContentBottomSheet(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = "Flag Content",
+                        text = buttonText,
                         style = typography.headlineLarge,
                         color = colorResource(id = R.color.white)
                     )

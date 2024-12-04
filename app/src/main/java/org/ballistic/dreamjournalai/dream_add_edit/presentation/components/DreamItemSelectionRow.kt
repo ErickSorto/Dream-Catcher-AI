@@ -17,9 +17,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.smarttoolfactory.animatedlist.AnimatedInfiniteLazyRow
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream.Companion.dreamBackgroundImages
@@ -65,7 +65,7 @@ fun DreamImageSelectionRow(
                     }
             ){
                 Image(
-                    painter = rememberAsyncImagePainter(imageResId),
+                    painter = painterResource(imageResId),
                     contentDescription = stringResource(R.string.background),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
