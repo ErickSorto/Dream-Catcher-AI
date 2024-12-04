@@ -8,6 +8,5 @@ interface BillingRepository {
     suspend fun initiatePurchaseFlow(activity: Activity, productDetails: ProductDetails)
     suspend fun handlePurchase(purchase: Purchase): Boolean
     suspend fun consumePurchase(purchase: Purchase): Boolean
-
     fun getPurchaseListener(): ((Purchase) -> Unit)?
 }

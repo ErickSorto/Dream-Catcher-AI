@@ -17,6 +17,8 @@ import com.google.firebase.functions.ktx.functions
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.ballistic.dreamjournalai.core.Constants.CREATED_AT
@@ -60,12 +63,67 @@ class AuthRepositoryImpl (
     private val _dreamTokens = MutableStateFlow(0)
     override val dreamTokens: StateFlow<Int> = _dreamTokens
 
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var dreamTokensJob: Job? = null
+
     init {
         setupUserDataListener()
     }
 
     init {
         validateUser()
+    }
+
+    init {
+        // Listen for authentication state changes
+        auth.addAuthStateListener { firebaseAuth ->
+            val user = firebaseAuth.currentUser
+            currentUser.value = user
+            validateUser()
+
+            // Cancel any existing dreamTokens collector
+            dreamTokensJob?.cancel()
+
+            if (user != null) {
+                // Start observing dreamTokens for the new user
+                observeDreamTokens(user.uid)
+            } else {
+                // Reset dreamTokens when there's no user
+                _dreamTokens.value = 0
+            }
+        }
+    }
+
+    private fun observeDreamTokens(userId: String) {
+        // Launch a coroutine to collect dreamTokens
+        dreamTokensJob = repositoryScope.launch {
+            getDreamTokensFlow(userId).collect { tokens ->
+                _dreamTokens.value = tokens
+            }
+        }
+    }
+
+    private fun getDreamTokensFlow(userId: String): Flow<Int> = callbackFlow {
+        val userDocRef = db.collection("USERS").document(userId)
+
+        val registration = userDocRef.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                Log.e("AuthRepository", "Error listening to dreamTokens: ${exception.message}")
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val tokens = snapshot.getLong("dreamTokens")?.toInt() ?: 0
+                trySend(tokens).isSuccess
+            } else {
+                trySend(0).isSuccess
+            }
+        }
+
+        // Remove the listener when the flow is closed
+        awaitClose {
+            registration.remove()
+        }
     }
 
     override suspend fun firebaseSignInWithGoogle(
@@ -85,7 +143,7 @@ class AuthRepositoryImpl (
                 Log.d("SignInWithGoogle", "Attempting to sign in with Google")
                 val result = auth.signInWithCredential(googleCredential).await()
 
-                val isNewUser = result.additionalUserInfo?.isNewUser ?: false
+                val isNewUser = result.additionalUserInfo?.isNewUser == true
 
 
                 Log.d("SignInWithGoogle", "Firebase sign-in completed. Is new user: $isNewUser")

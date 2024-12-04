@@ -33,21 +33,30 @@ class StoreScreenViewModel(
         val user = auth.currentUser
         Log.d("LoginViewModel", "AuthStateListener called, user: $user")
         _storeScreenViewModelState.update { it.copy(
-            isUserAnonymous = user?.isAnonymous == true,
-            dreamTokens = authRepository.dreamTokens
-        ) }
+            isUserAnonymous = user?.isAnonymous == true,) }
     }
 
     init {
-        val user = FirebaseAuth.getInstance().currentUser
+        // Collect dreamTokens from AuthRepository
+        viewModelScope.launch {
+            authRepository.dreamTokens.collect { tokens ->
+                _storeScreenViewModelState.update { currentState ->
+                    currentState.copy(dreamTokens = tokens)
+                }
+            }
+        }
+
+        // Initialize other state based on the current user
+        val user = authRepository.currentUser.value
         _storeScreenViewModelState.update {
             it.copy(
                 isUserAnonymous = user?.isAnonymous == true,
-                dreamTokens = authRepository.dreamTokens
+                dreamTokens = authRepository.dreamTokens.value
             )
         }
         FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
     }
+
     fun onEvent(event: StoreEvent) {
         when (event) {
             is StoreEvent.Buy100DreamTokens -> {
@@ -87,6 +96,11 @@ class StoreScreenViewModel(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        FirebaseAuth.getInstance().removeAuthStateListener(authStateListener)
+    }
+
     private suspend fun purchaseDreamTokens(activity: Activity, productId: String) {
         val productDetailsList = queryProductDetails()
         val productDetails = productDetailsList.find { it.productId == productId }
@@ -105,5 +119,5 @@ class StoreScreenViewModel(
 data class StoreScreenViewModelState(
     val isBillingClientLoading: Boolean = false,
     val isUserAnonymous: Boolean = false,
-    val dreamTokens: StateFlow<Int> = MutableStateFlow(0)
+    val dreamTokens: Int = 0
 )

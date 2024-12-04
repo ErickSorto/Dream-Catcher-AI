@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 import org.ballistic.dreamjournalai.R
@@ -55,7 +54,7 @@ fun StoreScreen(
     navigateToAccountScreen: () -> Unit = {},
 ) {
     val isAnonymous = storeScreenViewModelState.isUserAnonymous
-    val tokenTotal = storeScreenViewModelState.dreamTokens.collectAsStateWithLifecycle().value
+    val tokenTotal = storeScreenViewModelState.dreamTokens
     val activity = LocalContext.current as Activity
 
     if (isAnonymous) {
