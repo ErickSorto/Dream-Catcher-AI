@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.dream_tools.presentation.random_dream_screen
 
 import android.os.Vibrator
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -36,8 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.skydoves.landscapist.ImageOptions
-import com.skydoves.landscapist.coil.CoilImage
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
@@ -62,6 +61,10 @@ fun SharedTransitionScope.RandomDreamToolScreen(
     val vibrator = context.getSystemService(Vibrator::class.java)
     LaunchedEffect(Unit) {
         onEvent(RandomToolEvent.GetDreams)
+    }
+
+    BackHandler {
+        navigateUp()
     }
 
     // In your composable function
@@ -103,8 +106,9 @@ fun SharedTransitionScope.RandomDreamToolScreen(
                     )
                     .fillMaxWidth()
             ) {
-                CoilImage(
-                    imageModel = { imageID },
+                Image(
+                    painter = painterResource(id = imageID),
+                    contentDescription = "Random Dream",
                     modifier = Modifier
                         .aspectRatio(16 / 9f)
                         .fillMaxWidth()
@@ -116,9 +120,7 @@ fun SharedTransitionScope.RandomDreamToolScreen(
                             }
                         )
                         .clip(RoundedCornerShape(8.dp, 8.dp, 0.dp, 0.dp)),
-                    imageOptions = ImageOptions(
-                        contentScale = ContentScale.Crop
-                    ),
+                    contentScale = ContentScale.Crop,
                 )
                 Text(
                     text = DreamTools.RandomDreamPicker.title,

@@ -34,8 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.skydoves.landscapist.ImageOptions
-import com.skydoves.landscapist.coil.CoilImage
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
@@ -80,8 +78,9 @@ fun SharedTransitionScope.InterpretDreamsDetailScreen(
                         shape = RoundedCornerShape(8.dp)
                     )
             ) {
-                CoilImage(
-                    imageModel = {imageID},
+                Image(
+                    painter = painterResource(id = imageID),
+                    contentDescription = "Mass Interpretation Tool",
                     modifier = Modifier
                         .aspectRatio(16 / 9f)
                         .fillMaxWidth()
@@ -93,9 +92,7 @@ fun SharedTransitionScope.InterpretDreamsDetailScreen(
                             }
                         )
                         .clip(RoundedCornerShape(8.dp, 8.dp, 0.dp, 0.dp)),
-                    imageOptions = ImageOptions(
-                        contentScale = ContentScale.Crop
-                    ),
+                    contentScale = ContentScale.Crop,
                 )
                 Text(
                     text = DreamTools.AnalyzeDreams.title,

@@ -70,7 +70,7 @@ fun DreamToolsGraph(
                         onNavigate(route)
                     },
                     navigateUp = {
-                        navController.navigate(Screens.Tools.route)
+                        navController.navigateUp()
                     }
                 )
             }
@@ -92,8 +92,7 @@ fun DreamToolsGraph(
                         navController.navigate(route)
                     },
                     navigateUp = {
-                        navController.popBackStack()
-                        navController.navigate(Screens.Tools.route)
+                        navController.navigateUp()
                     }
                 )
             }
