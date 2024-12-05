@@ -38,12 +38,12 @@ import kotlinx.datetime.LocalDate
 import org.ballistic.dreamjournalai.core.components.ActionBottomSheet
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.core.util.formatCustomDate
+import org.ballistic.dreamjournalai.core.util.parseCustomDate
 import org.ballistic.dreamjournalai.dream_journal_list.domain.DreamListEvent
 import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DateHeader
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DreamItem
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DreamListScreenTopBar
-import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.parseCustomDate
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.viewmodel.DreamJournalListState
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
