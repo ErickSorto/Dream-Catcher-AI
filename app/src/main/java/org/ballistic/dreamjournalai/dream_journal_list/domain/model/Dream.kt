@@ -3,10 +3,11 @@ package org.ballistic.dreamjournalai.dream_journal_list.domain.model
 import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.firebase.firestore.PropertyName
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import kotlinx.parcelize.Parcelize
 import org.ballistic.dreamjournalai.R
-import java.time.Clock
-import java.time.LocalDate
 
 @Keep
 @Parcelize
@@ -14,7 +15,7 @@ data class Dream (
     val title: String,
     val content: String,
     val timestamp: Long = System.currentTimeMillis(),
-    val date: String = LocalDate.now(Clock.systemUTC()).toString(),
+    val date: String = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString(),
     val sleepTime: String = String.format("%02d:%02d", 23, 0),
     val wakeTime: String = String.format("%02d:%02d", 7, 0),
     @PropertyName("airesponse")
