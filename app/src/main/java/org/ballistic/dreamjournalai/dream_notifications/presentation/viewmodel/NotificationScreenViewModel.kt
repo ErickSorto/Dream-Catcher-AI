@@ -9,16 +9,23 @@ import androidx.work.WorkManager
 import com.maxkeppeker.sheets.core.models.base.SheetState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+import org.ballistic.dreamjournalai.core.util.addOneDay
+import org.ballistic.dreamjournalai.core.util.formatLocalTime
+import org.ballistic.dreamjournalai.core.util.parseFormattedTime
 import org.ballistic.dreamjournalai.dream_notifications.data.local.NotificationPreferences
 import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationEvent
 import org.ballistic.dreamjournalai.dream_notifications.domain.usecases.ScheduleDailyReminderUseCase
 import org.ballistic.dreamjournalai.dream_notifications.domain.usecases.ScheduleLucidityNotificationUseCase
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Suppress("StaticFieldLeak")
 class NotificationScreenViewModel(
@@ -29,36 +36,49 @@ class NotificationScreenViewModel(
 ) : ViewModel() {
 
     private val _notificationScreenState = MutableStateFlow(NotificationScreenState())
-    val notificationScreenState: StateFlow<NotificationScreenState> = _notificationScreenState
+    val notificationScreenState: StateFlow<NotificationScreenState> = _notificationScreenState.asStateFlow()
 
     init {
+        // Collect Reality Check Reminder
         viewModelScope.launch {
             notificationPreferences.realityCheckReminderFlow.collect { value ->
                 _notificationScreenState.value =
                     _notificationScreenState.value.copy(realityCheckReminder = value)
             }
         }
+
+        // Collect Dream Journal Reminder
         viewModelScope.launch {
             notificationPreferences.dreamJournalReminderFlow.collect { value ->
                 _notificationScreenState.value =
                     _notificationScreenState.value.copy(dreamJournalReminder = value)
             }
         }
+
+        // Collect Lucidity Frequency
         viewModelScope.launch {
             notificationPreferences.lucidityFrequencyFlow.collect { value ->
                 _notificationScreenState.value =
                     _notificationScreenState.value.copy(lucidityFrequency = value)
             }
         }
+
+        // Collect Reminder Time and format it
         viewModelScope.launch {
-            notificationPreferences.reminderTimeFlow.collect { value ->
+            notificationPreferences.reminderTimeFlow.collect { localTime ->
+                val formattedTime = formatLocalTime(localTime)
                 _notificationScreenState.value =
-                    _notificationScreenState.value.copy(reminderTime = value)
+                    _notificationScreenState.value.copy(reminderTime = formattedTime)
             }
         }
+
+        // Collect Time Range
         viewModelScope.launch {
-            notificationPreferences.timeRangeFlow.collect { value ->
-                _notificationScreenState.value = _notificationScreenState.value.copy(startTime = value.start, endTime = value.endInclusive)
+            notificationPreferences.timeRangeFlow.collect { range ->
+                _notificationScreenState.value = _notificationScreenState.value.copy(
+                    startTime = range.start,
+                    endTime = range.endInclusive
+                )
             }
         }
     }
@@ -101,12 +121,13 @@ class NotificationScreenViewModel(
             }
 
             is NotificationEvent.SetReminderTime -> {
+                val formattedTime = formatLocalTime(event.localTime)
                 _notificationScreenState.value = _notificationScreenState.value.copy(
-                    reminderTime = event.javaTime.format(DateTimeFormatter.ofPattern("h:mm a"))
+                    reminderTime = formattedTime
                 )
                 viewModelScope.launch {
-                    notificationPreferences.updateReminderTime(event.javaTime.format(DateTimeFormatter.ofPattern("h:mm a")))
-                    val reminderTimeInMillis = calculateReminderTimeInMillis(event.javaTime)
+                    notificationPreferences.updateReminderTime(event.localTime)
+                    val reminderTimeInMillis = calculateReminderTimeInMillis(event.localTime)
                     Log.d("Notification", "Reminder Time (ms): $reminderTimeInMillis")
                     scheduleDailyReminderUseCase(reminderTimeInMillis)
                 }
@@ -119,10 +140,17 @@ class NotificationScreenViewModel(
                 viewModelScope.launch {
                     notificationPreferences.updateDreamJournalReminder(event.dreamReminder)
                     if (event.dreamReminder) {
-                        val reminderTimeInMillis = calculateReminderTimeInMillis(LocalTime.parse(
-                            _notificationScreenState.value.reminderTime,
-                            DateTimeFormatter.ofPattern("h:mm a")
-                        ))
+                        val reminderTime = try {
+                            parseFormattedTime(_notificationScreenState.value.reminderTime)
+                        } catch (e: IllegalArgumentException) {
+                            Log.e(
+                                "NotificationViewModel",
+                                "Invalid reminderTime format: ${_notificationScreenState.value.reminderTime}",
+                                e
+                            )
+                            LocalTime(7, 0) // Default time
+                        }
+                        val reminderTimeInMillis = calculateReminderTimeInMillis(reminderTime)
                         scheduleDailyReminderUseCase(reminderTimeInMillis)
                     } else {
                         cancelWorkByTag("DailyDreamJournalReminderTag")
@@ -177,14 +205,17 @@ class NotificationScreenViewModel(
     }
 
     private fun calculateReminderTimeInMillis(localTime: LocalTime): Long {
-        val now = LocalDateTime.now()
-        var reminderDateTime = LocalDateTime.of(now.toLocalDate(), localTime)
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        var reminderDateTime = LocalDateTime(now.year, now.monthNumber, now.dayOfMonth, localTime.hour, localTime.minute, localTime.second, localTime.nanosecond)
 
-        if (reminderDateTime.isBefore(now)) {
-            reminderDateTime = reminderDateTime.plusDays(1)
+        if (reminderDateTime < now) {
+            // Manually add one day
+            reminderDateTime = addOneDay(reminderDateTime)
         }
 
-        return reminderDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        // Convert to Instant considering the system's default time zone
+        val reminderInstant = reminderDateTime.toInstant(TimeZone.currentSystemDefault())
+        return reminderInstant.toEpochMilliseconds()
     }
 }
 
@@ -193,7 +224,7 @@ data class NotificationScreenState(
     val dreamJournalReminder: Boolean = false,
     val dreamJournalReminderTimePickerState: SheetState = SheetState(),
     val lucidityFrequency: Int = 1, // Default to 1 hour
-    val reminderTime: String = LocalTime.of(7, 0).format(DateTimeFormatter.ofPattern("h:mm a")),
+    val reminderTime: String = formatLocalTime(LocalTime(7, 0)),
     val startTime: Float = 12f,
     val endTime: Float = 1440f // Default to entire day
 )

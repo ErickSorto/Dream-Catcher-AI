@@ -65,7 +65,6 @@ class DreamNightmareScreenViewModel(
         }
     }
 
-
     private fun getDreams() {
         // Logging the start of the function
         Log.d("getDreams", "Starting to fetch dreams")

@@ -2,6 +2,7 @@ package org.ballistic.dreamjournalai.dream_notifications.presentation.components
 
 
 import android.Manifest
+import android.app.TimePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
@@ -17,12 +18,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,11 +44,15 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.core.util.formatLocalTime
+import org.ballistic.dreamjournalai.core.util.parseFormattedTime
 import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationEvent
 import org.ballistic.dreamjournalai.dream_notifications.presentation.viewmodel.NotificationScreenState
-import java.time.Clock
-import java.time.LocalTime
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -53,24 +66,25 @@ fun DreamJournalReminderLayout(
     val postNotificationPermission =
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
+    var showTimePicker = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         if (!postNotificationPermission.status.isGranted && notificationScreenState.dreamJournalReminder) {
             onEvent(NotificationEvent.ToggleDreamJournalReminder(false))
         }
     }
 
-    ClockDialog(
-        state = notificationScreenState.dreamJournalReminderTimePickerState,
-        config = ClockConfig(
-            defaultTime = Clock.systemDefaultZone().instant().atZone(Clock.systemDefaultZone().zone)
-                .toLocalTime(),
-            is24HourFormat = false,
-
-            ),
-        selection = ClockSelection.HoursMinutes { hour, minute ->
-            onEvent(NotificationEvent.SetReminderTime(LocalTime.of(hour, minute)))
-        }
-    )
+    // Display the Time Picker Dialog when showTimePicker is true
+    if (showTimePicker.value) {
+        DialWithDialogExample (
+            onConfirm = { timePickerState ->
+                val time = LocalTime(timePickerState.hour, timePickerState.minute)
+                onEvent(NotificationEvent.SetReminderTime(time))
+                onEvent(NotificationEvent.ToggleTimePickerForJournalReminder(false))
+                showTimePicker.value = false
+            },
+            onDismiss = { showTimePicker.value = false }
+        )
+    }
 
     Column(
         modifier = modifier
@@ -120,6 +134,22 @@ fun DreamJournalReminderLayout(
                 )
             }
 
+            Button(
+                onClick = {
+                    onEvent(NotificationEvent.ToggleTimePickerForJournalReminder(true))
+                    showTimePicker.value = true
+                },
+                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
+                content = {
+                    Text(
+                        text = "Set Time",
+                        style = typography.bodyLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = colorResource(id = R.color.brighter_white)
+                    )
+                },
+            )
+
             if (notificationScreenState.dreamJournalReminder && postNotificationPermission.status.isGranted) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -153,6 +183,7 @@ fun DreamJournalReminderLayout(
                             )
                             .clickable {
                                 onEvent(NotificationEvent.ToggleTimePickerForJournalReminder(true))
+                                showTimePicker.value = true
                             }
 
                     ) {
@@ -170,4 +201,50 @@ fun DreamJournalReminderLayout(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DialWithDialogExample(
+    onConfirm: (TimePickerState) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val currentTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.hour,
+        initialMinute = currentTime.minute,
+        is24Hour = false,
+    )
+
+    TimePickerDialog(
+        onDismiss = { onDismiss() },
+        onConfirm = { onConfirm(timePickerState) }
+    ) {
+        TimePicker(
+            state = timePickerState,
+        )
+    }
+}
+
+@Composable
+fun TimePickerDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("Dismiss")
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) {
+                Text("OK")
+            }
+        },
+        text = { content() }
+    )
 }

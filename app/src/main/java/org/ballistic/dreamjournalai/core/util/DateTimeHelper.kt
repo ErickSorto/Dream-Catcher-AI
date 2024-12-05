@@ -3,6 +3,8 @@ package org.ballistic.dreamjournalai.core.util
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 
@@ -97,4 +99,89 @@ fun getStartOfWeek(date: LocalDate, firstDayOfWeek: DayOfWeek): LocalDate {
 fun getDayOfWeekDisplayName(dayOfWeek: DayOfWeek): String {
     // DayOfWeek ordinal: Monday = 0, Sunday = 6
     return DAY_OF_WEEK_FULL_NAMES[dayOfWeek.ordinal]
+}
+
+/**
+ * Formats a LocalTime to "h:mm a" format.
+ * Example: "7:00 AM"
+ *
+ * @param localTime The LocalTime to format.
+ * @return The formatted time string.
+ */
+fun formatLocalTime(localTime: LocalTime): String {
+    val hour = localTime.hour % 12
+    val displayHour = if (hour == 0) 12 else hour
+    val minute = localTime.minute
+    val period = if (localTime.hour < 12) "AM" else "PM"
+    return "$displayHour:${minute.toString().padStart(2, '0')} $period"
+}
+
+fun parseFormattedTime(timeStr: String): LocalTime {
+    val regex = Regex("""(\d{1,2}):(\d{2})\s*(AM|PM)""", RegexOption.IGNORE_CASE)
+    val matchResult = regex.matchEntire(timeStr.trim())
+        ?: throw IllegalArgumentException("Invalid time format: $timeStr")
+    val (hourStr, minuteStr, periodStr) = matchResult.destructured
+    var hour = hourStr.toInt()
+    val minute = minuteStr.toInt()
+    val period = periodStr.uppercase()
+
+    if (period == "PM" && hour != 12) {
+        hour += 12
+    }
+    if (period == "AM" && hour == 12) {
+        hour = 0
+    }
+    return LocalTime(hour, minute)
+}
+
+/**
+ * Determines if a given year is a leap year.
+ *
+ * @param year The year to check.
+ * @return `true` if the year is a leap year, `false` otherwise.
+ */
+fun isLeapYear(year: Int): Boolean {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+}
+
+/**
+ * Returns the number of days in a given month for a specific year.
+ *
+ * @param year The year.
+ * @param month The month (1-12).
+ * @return The number of days in the month.
+ * @throws IllegalArgumentException If the month is not between 1 and 12.
+ */
+fun getDaysInMonth(year: Int, month: Int): Int {
+    return when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(year)) 29 else 28
+        else -> throw IllegalArgumentException("Invalid month: $month")
+    }
+}
+
+/**
+ * Adds one day to the provided [LocalDateTime] instance.
+ *
+ * @param dateTime The original [LocalDateTime].
+ * @return A new [LocalDateTime] instance with one day added.
+ */
+fun addOneDay(dateTime: LocalDateTime): LocalDateTime {
+    var year = dateTime.year
+    var month = dateTime.monthNumber
+    var day = dateTime.dayOfMonth + 1
+
+    val daysInMonth = getDaysInMonth(year, month)
+
+    if (day > daysInMonth) {
+        day = 1
+        month += 1
+        if (month > 12) {
+            month = 1
+            year += 1
+        }
+    }
+
+    return LocalDateTime(year, month, day, dateTime.hour, dateTime.minute, dateTime.second, dateTime.nanosecond)
 }
