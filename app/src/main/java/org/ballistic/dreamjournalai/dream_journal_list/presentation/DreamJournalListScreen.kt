@@ -34,20 +34,21 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import org.ballistic.dreamjournalai.core.components.ActionBottomSheet
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
+import org.ballistic.dreamjournalai.core.util.formatCustomDate
 import org.ballistic.dreamjournalai.dream_journal_list.domain.DreamListEvent
+import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DateHeader
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DreamItem
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DreamListScreenTopBar
+import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.parseCustomDate
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.viewmodel.DreamJournalListState
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.navigation.Screens
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
-import java.util.Locale
+
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -73,7 +74,6 @@ fun DreamJournalListScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-
                 onDreamListEvent(DreamListEvent.FetchDreams)
             }
         }
@@ -82,6 +82,7 @@ fun DreamJournalListScreen(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
+
     LaunchedEffect(Unit) {
         onMainEvent(MainScreenEvent.SetBottomBarVisibilityState(true))
         onMainEvent(MainScreenEvent.SetFloatingActionButtonState(true))
@@ -128,12 +129,8 @@ fun DreamJournalListScreen(
                             duration = SnackbarDuration.Long
                         )
 
-                    mainScreenViewModelState.scaffoldState.snackBarHostState.value.currentSnackbarData?.dismiss()
-
                     if (result == SnackbarResult.ActionPerformed) {
-                        onDreamListEvent(
-                            DreamListEvent.RestoreDream
-                        )
+                        onDreamListEvent(DreamListEvent.RestoreDream)
                     }
                 }
             },
@@ -165,60 +162,58 @@ fun DreamJournalListScreen(
                 .padding(top = topPadding, bottom = bottomPaddingValue),
             contentPadding = PaddingValues(bottom = 16.dp),
         ) {
-            val dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
-
-            dreamJournalListState.dreams.groupBy { it.date }
-                .mapKeys { (key, _) ->
+            // Step 1: Parse and Sort Dreams
+            val sortedGroupedDreams = dreamJournalListState.dreams
+                .mapNotNull { dream ->
                     try {
-                        LocalDate.parse(key.replaceFirstChar {
-                            if (it.isLowerCase()) it.titlecase(
-                                Locale.getDefault()
-                            ) else it.toString()
-                        }, dateFormatter)
-                    } catch (_: DateTimeParseException) {
+                        val parsedDate = parseCustomDate(dream.date)
+                        Pair(parsedDate, dream)
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("DreamJournalListScreen", "Invalid date format for dream id ${dream.id}: ${dream.date}")
                         null
                     }
                 }
-                .filterKeys { it != null }
-                .toSortedMap(compareByDescending { it })
-                .mapKeys { (key, _) -> key?.format(dateFormatter) }
-                .forEach { (dateString, dreamsForDate) ->
+                .sortedWith(
+                    compareByDescending<Pair<LocalDate, Dream>> { it.first }
+                        .thenByDescending { it.second.timestamp }
+                )
+                .groupBy { it.first }
 
-                    stickyHeader {
-                        dateString?.let { DateHeader(dateString = it) }
-                    }
+            // Step 2: Iterate Through Groups
+            sortedGroupedDreams.forEach { (date, dreams) ->
 
-                    items(dreamsForDate) { dream ->
-                        DreamItem(
-                            dream = dream,
-                            vibrator = vibrator,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 10.dp)
-                                .padding(horizontal = 12.dp),
-                            scope = scope,
-                            onClick = {
-                                onNavigateToDream(
-                                    Screens.AddEditDreamScreen.route +
-                                            "?dreamId=${dream.id}&dreamImageBackground=${
-                                                dream.backgroundImage
-                                            }"
-                                )
-                            },
-                            onDeleteClick = {
-                                onDreamListEvent(
-                                    DreamListEvent.DreamToDelete(dream)
-                                )
-                                onDreamListEvent(
-                                    DreamListEvent.ToggleBottomDeleteCancelSheetState(
-                                        true
-                                    )
-                                )
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
+                // Sticky Header for the Date
+                stickyHeader {
+                    DateHeader(dateString = formatCustomDate(date))
                 }
+
+                // Items for Each Dream in the Date Group
+                items(dreams) { (_, dream) ->
+                    DreamItem(
+                        dream = dream,
+                        vibrator = vibrator,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp)
+                            .padding(horizontal = 12.dp),
+                        scope = scope,
+                        onClick = {
+                            onNavigateToDream(
+                                "${Screens.AddEditDreamScreen.route}?dreamId=${dream.id}&dreamImageBackground=${dream.backgroundImage}"
+                            )
+                        },
+                        onDeleteClick = {
+                            onDreamListEvent(
+                                DreamListEvent.DreamToDelete(dream)
+                            )
+                            onDreamListEvent(
+                                DreamListEvent.ToggleBottomDeleteCancelSheetState(true)
+                            )
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+            }
         }
         ReportDrawn()
     }
