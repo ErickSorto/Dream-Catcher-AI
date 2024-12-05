@@ -17,11 +17,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_authentication.domain.repository.AuthRepository
-import java.time.LocalDateTime
 
 
 class MainScreenViewModel(
@@ -38,7 +41,7 @@ class MainScreenViewModel(
     }
 
     private fun getBackgroundResource(): Int {
-        val currentTime = LocalDateTime.now()
+        val currentTime =  Clock.System.now().toLocalDateTime(TimeZone.UTC)
         val currentHour = currentTime.hour
 
         return if (currentHour in 20..23 || currentHour in 0..5) {
