@@ -13,12 +13,13 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.ballistic.dreamjournalai.core.Constants.USERS
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.core.domain.Flag
+import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.dream_journal_list.domain.repository.DreamRepository
-import java.net.URL
+import java.net.URL //Todo: Expect/actual for multiplatform
 import java.net.URLDecoder
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class DreamRepositoryImpl(
     private val storage: FirebaseStorage,
@@ -139,6 +140,7 @@ class DreamRepositoryImpl(
         return Resource.Success(currentDreamId)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     override suspend fun insertDream(dream: Dream): Resource<Unit> {
         Log.d("DreamInsert", "Attempting to insert/update dream with ID: ${dream.id}")
         return try {
@@ -148,7 +150,7 @@ class DreamRepositoryImpl(
                 if (dream.generatedImage.isNotBlank() && !dream.generatedImage.startsWith("https://firebasestorage.googleapis.com/")) {
                     Log.d("DreamInsert", "Uploading new image for dream")
                     return withContext(Dispatchers.IO) {
-                        val storageRef = FirebaseStorage.getInstance().reference.child("${userID()}/images/${UUID.randomUUID()}.jpg")
+                        val storageRef = FirebaseStorage.getInstance().reference.child("${userID()}/images/${Uuid.random()}.jpg")
 
                         val imageUrl = URL(dream.generatedImage)
                         val imageBytes = imageUrl.readBytes()

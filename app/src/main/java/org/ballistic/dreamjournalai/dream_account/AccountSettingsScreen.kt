@@ -49,10 +49,12 @@ import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_scr
 import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.LoginViewModelState
 import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.SignupViewModelState
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
-import java.security.MessageDigest
-import java.util.UUID
+import java.security.MessageDigest //TODO: Expect/Actual
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun AccountSettingsScreen(
     loginViewModelState: LoginViewModelState,
@@ -73,7 +75,7 @@ fun AccountSettingsScreen(
     val onClick: () -> Unit = {
         scope.launch {
             val credentialManager = CredentialManager.create(context)
-            val rawNonce = UUID.randomUUID().toString()
+            val rawNonce = Uuid.random().toString()
             val bytes = rawNonce.toByteArray()
             val md = MessageDigest.getInstance("SHA-256")
             val digest = md.digest(bytes)

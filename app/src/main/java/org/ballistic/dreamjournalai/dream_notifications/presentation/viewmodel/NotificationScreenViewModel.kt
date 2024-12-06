@@ -6,14 +6,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
-import com.maxkeppeker.sheets.core.models.base.SheetState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -158,10 +156,6 @@ class NotificationScreenViewModel(
                 }
             }
 
-            is NotificationEvent.ToggleTimePickerForJournalReminder -> {
-                _notificationScreenState.value.dreamJournalReminderTimePickerState.show()
-            }
-
             is NotificationEvent.SetTimeRange -> {
                 _notificationScreenState.update {
                     it.copy(
@@ -222,7 +216,6 @@ class NotificationScreenViewModel(
 data class NotificationScreenState(
     val realityCheckReminder: Boolean = false,
     val dreamJournalReminder: Boolean = false,
-    val dreamJournalReminderTimePickerState: SheetState = SheetState(),
     val lucidityFrequency: Int = 1, // Default to 1 hour
     val reminderTime: String = formatLocalTime(LocalTime(7, 0)),
     val startTime: Float = 12f,

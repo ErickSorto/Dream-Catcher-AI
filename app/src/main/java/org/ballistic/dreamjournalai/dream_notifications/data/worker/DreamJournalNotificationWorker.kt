@@ -12,11 +12,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.ballistic.dreamjournalai.DreamJournalAIApp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.MainActivity
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 class DreamJournalNotificationWorker(
     context: Context,
@@ -64,7 +66,21 @@ class DreamJournalNotificationWorker(
 
         notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
 
-        Log.d("DreamJournalNotificationWorker", "Notification displayed at: ${LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))}")
+        // Get current local time using kotlinx.datetime
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
+        val formattedTime = formatTimeHHmmss(now)
+
+        Log.d("DreamJournalNotificationWorker", "Notification displayed at: $formattedTime")
         return Result.success()
+    }
+
+    /**
+     * Formats a [LocalTime] as "HH:mm:ss".
+     */
+    private fun formatTimeHHmmss(localTime: LocalTime): String {
+        val hour = localTime.hour.toString().padStart(2, '0')
+        val minute = localTime.minute.toString().padStart(2, '0')
+        val second = localTime.second.toString().padStart(2, '0')
+        return "$hour:$minute:$second"
     }
 }

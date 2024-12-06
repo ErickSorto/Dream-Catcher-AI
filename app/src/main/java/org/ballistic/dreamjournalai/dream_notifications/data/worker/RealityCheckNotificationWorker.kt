@@ -12,11 +12,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.ballistic.dreamjournalai.DreamJournalAIApp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.MainActivity
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+
 
 class RealityCheckNotificationWorker(
     context: Context,
@@ -31,15 +34,18 @@ class RealityCheckNotificationWorker(
         val startTime = inputData.getLong("startTime", 0L)
         val endTime = inputData.getLong("endTime", 1440L)  // default to end of day if not set
 
-        val currentTimeMinutes = LocalTime.now().toSecondOfDay() / 60
+        // Get current local time using kotlinx.datetime
+        val nowTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
+        val currentTimeMinutes = nowTime.hour * 60 + nowTime.minute
         val startMinutes = startTime.toInt()
         val endMinutes = endTime.toInt()
 
-        Log.d("RealityCheckNotificationWorker", "Current time: ${LocalTime.now()}, current time minutes: $currentTimeMinutes, start time: $startMinutes minutes, end time: $endMinutes minutes")
+        Log.d("RealityCheckNotificationWorker", "Current time: ${formatTimeHHmmss(nowTime)}, current time minutes: $currentTimeMinutes, start time: $startMinutes minutes, end time: $endMinutes minutes")
 
         val isWithinTimeRange = if (startMinutes <= endMinutes) {
             currentTimeMinutes in startMinutes..endMinutes
         } else {
+            // Handles wrap-around (e.g., start at 22:00 and end at 02:00)
             currentTimeMinutes in startMinutes..1439 || currentTimeMinutes in 0..endMinutes
         }
 
@@ -85,7 +91,17 @@ class RealityCheckNotificationWorker(
 
         notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
 
-        Log.d("RealityCheckNotificationWorker", "Notification displayed at: ${LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))}")
+        Log.d("RealityCheckNotificationWorker", "Notification displayed at: ${formatTimeHHmmss(nowTime)}")
         return Result.success()
+    }
+
+    /**
+     * Formats a [LocalTime] as "HH:mm:ss".
+     */
+    private fun formatTimeHHmmss(localTime: LocalTime): String {
+        val hour = localTime.hour.toString().padStart(2, '0')
+        val minute = localTime.minute.toString().padStart(2, '0')
+        val second = localTime.second.toString().padStart(2, '0')
+        return "$hour:$minute:$second"
     }
 }

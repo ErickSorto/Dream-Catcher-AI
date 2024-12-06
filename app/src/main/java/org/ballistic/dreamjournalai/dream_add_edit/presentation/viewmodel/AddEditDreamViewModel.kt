@@ -47,8 +47,8 @@ import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.dream_journal_list.domain.model.InvalidDreamException
 import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.DreamUseCases
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
-import java.io.IOException
-import java.util.Locale
+import java.io.IOException //TODO: Use different exception
+import java.util.Locale //TODO: Expect/actual for this
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

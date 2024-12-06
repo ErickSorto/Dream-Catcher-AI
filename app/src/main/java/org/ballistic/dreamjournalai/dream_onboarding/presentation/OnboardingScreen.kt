@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -57,10 +55,12 @@ import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_scr
 import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.events.SignupEvent
 import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.LoginViewModelState
 import org.ballistic.dreamjournalai.dream_authentication.presentation.signup_screen.viewmodel.SignupViewModelState
-import java.security.MessageDigest
-import java.util.UUID
+import java.security.MessageDigest //TODO: Find alternative to MessageDigest
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
+@OptIn(ExperimentalUuidApi::class)
 @ExperimentalAnimationApi
 @Composable
 fun OnboardingScreen(
@@ -88,7 +88,7 @@ fun OnboardingScreen(
         scope.launch {
             try {
                 val credentialManager = androidx.credentials.CredentialManager.create(context)
-                val rawNonce = UUID.randomUUID().toString()
+                val rawNonce = Uuid.random().toString()
                 val bytes = rawNonce.toByteArray()
                 val md = MessageDigest.getInstance("SHA-256")
                 val digest = md.digest(bytes)

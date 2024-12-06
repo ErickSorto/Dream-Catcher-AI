@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.ExperimentalPermissionsApi    // Migrate to Mocko
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationEvent
@@ -27,8 +27,8 @@ import org.ballistic.dreamjournalai.dream_notifications.presentation.components.
 import org.ballistic.dreamjournalai.dream_notifications.presentation.viewmodel.NotificationScreenState
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
 
-@OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun DreamNotificationSettingScreen(
     mainScreenViewModelState: MainScreenViewModelState,

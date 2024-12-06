@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.components
 
 import android.os.Vibrator
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -16,15 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import org.ballistic.dreamjournalai.core.util.formatCustomDate
+import org.ballistic.dreamjournalai.core.util.parseCustomDate
 import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DateHeader
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.DreamItem
 import org.ballistic.dreamjournalai.dream_tools.domain.event.InterpretDreamsToolEvent
 import org.ballistic.dreamjournalai.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsScreenState
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
-import java.util.Locale
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -43,61 +45,70 @@ fun SelectDreamsPage(
         modifier = modifier,
         contentPadding = PaddingValues(bottom = 16.dp),
     ) {
-        val dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
-
-        interpretDreamsScreenState.dreams.groupBy { it.date }
-            .mapKeys { (key, _) ->
+        // Step 1: Parse and Sort Dreams
+        val sortedGroupedDreams = interpretDreamsScreenState.dreams
+            .mapNotNull { dream ->
                 try {
-                    LocalDate.parse(key.replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(
-                            Locale.getDefault()
-                        ) else it.toString()
-                    }, dateFormatter)
-                } catch (e: DateTimeParseException) {
+                    val parsedDate = parseCustomDate(dream.date)
+                    Pair(parsedDate, dream)
+                } catch (e: IllegalArgumentException) {
+                    Log.e(
+                        "DreamJournalListScreen",
+                        "Invalid date format for dream id ${dream.id}: ${dream.date}"
+                    )
                     null
                 }
             }
-            .filterKeys { it != null }
-            .toSortedMap(compareByDescending { it })
-            .mapKeys { (key, _) -> key?.format(dateFormatter) }
-            .forEach { (dateString, dreamsForDate) ->
+            .sortedWith(
+                compareByDescending<Pair<LocalDate, Dream>> { it.first }
+                    .thenByDescending { it.second.timestamp }
+            )
+            .groupBy { it.first }
 
-                stickyHeader {
-                    dateString?.let { DateHeader(dateString = it) }
-                }
+        // Step 2: Iterate Through Groups
+        sortedGroupedDreams.forEach { (date, dreams) ->
 
-                items(dreamsForDate) { dream ->
-                    val isDreamChosen = chosenDreams.contains(dream)
-                    DreamItem(
-                        dream = dream,
-                        vibrator = vibrator,
-                        hasBorder = isDreamChosen,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 10.dp)
-                            .padding(horizontal = 12.dp),
-                        scope = scope,
-                        onClick = {
-                            val chosenDreamSizeLimit = 15
-                            if (chosenDreams.size >= chosenDreamSizeLimit && !chosenDreams.contains(dream)) {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        "Only 15 dreams can be selected",
-                                        "Dismiss",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
-                            } else {
-                                onEvent(
-                                    InterpretDreamsToolEvent.ToggleDreamToInterpretationList(
-                                        dream
-                                    )
+            // Sticky Header for the Date
+            stickyHeader {
+                DateHeader(dateString = formatCustomDate(date))
+            }
+
+
+            items(dreams) { (_, dream) ->
+                val isDreamChosen = chosenDreams.contains(dream)
+                DreamItem(
+                    dream = dream,
+                    vibrator = vibrator,
+                    hasBorder = isDreamChosen,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                        .padding(horizontal = 12.dp),
+                    scope = scope,
+                    onClick = {
+                        val chosenDreamSizeLimit = 15
+                        if (chosenDreams.size >= chosenDreamSizeLimit && !chosenDreams.contains(
+                                dream
+                            )
+                        ) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    "Only 15 dreams can be selected",
+                                    "Dismiss",
+                                    duration = SnackbarDuration.Short
                                 )
                             }
-                        },
-                        )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
+                        } else {
+                            onEvent(
+                                InterpretDreamsToolEvent.ToggleDreamToInterpretationList(
+                                    dream
+                                )
+                            )
+                        }
+                    },
+                )
+                Spacer(modifier = Modifier.height(4.dp))
             }
+        }
     }
 }

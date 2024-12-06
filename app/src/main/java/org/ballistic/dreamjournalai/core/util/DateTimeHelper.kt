@@ -5,6 +5,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.Month
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 
@@ -201,4 +202,73 @@ fun addOneDay(dateTime: LocalDateTime): LocalDateTime {
     }
 
     return LocalDateTime(year, month, day, dateTime.hour, dateTime.minute, dateTime.second, dateTime.nanosecond)
+}
+
+/**
+ * Adds the specified number of [minutesToAdd] to [dateTime] and returns a new [LocalDateTime].
+ * If adding minutes crosses the midnight boundary, it adjusts the date accordingly.
+ */
+fun addMinutes(dateTime: LocalDateTime, minutesToAdd: Int): LocalDateTime {
+    var totalMinutes = dateTime.hour * 60 + dateTime.minute + minutesToAdd
+    var year = dateTime.year
+    var month = dateTime.monthNumber
+    var day = dateTime.dayOfMonth
+
+    // Adjust if totalMinutes is negative (going back in time)
+    while (totalMinutes < 0) {
+        // Go one day back
+        month -= 1
+        if (month < 1) {
+            month = 12
+            year -= 1
+        }
+        val prevMonthDays = getDaysInMonth(year, month)
+        totalMinutes += 1440 // minutes in a day
+        day = prevMonthDays
+        day-- // Move to the last minute of the previous day as needed
+    }
+
+    // Move forward in days if totalMinutes exceeds a day
+    while (totalMinutes >= 1440) {
+        totalMinutes -= 1440
+        day++
+        val daysInCurrentMonth = getDaysInMonth(year, month)
+        if (day > daysInCurrentMonth) {
+            day = 1
+            month += 1
+            if (month > 12) {
+                month = 1
+                year += 1
+            }
+        }
+    }
+
+    // Ensure day is valid if minutes wrapped around month/year boundaries
+    while (true) {
+        val daysInMonth = getDaysInMonth(year, month)
+        if (day > daysInMonth) {
+            day -= daysInMonth
+            month += 1
+            if (month > 12) {
+                month = 1
+                year += 1
+            }
+        } else if (day < 1) {
+            month -= 1
+            if (month < 1) {
+                month = 12
+                year -= 1
+            }
+            val prevMonthDays = getDaysInMonth(year, month)
+            day += prevMonthDays
+        } else {
+            break
+        }
+    }
+
+    // Now compute hour and minute from totalMinutes
+    val newHour = totalMinutes / 60
+    val newMinute = totalMinutes % 60
+
+    return LocalDateTime(year, month, day, newHour, newMinute, dateTime.second, dateTime.nanosecond)
 }

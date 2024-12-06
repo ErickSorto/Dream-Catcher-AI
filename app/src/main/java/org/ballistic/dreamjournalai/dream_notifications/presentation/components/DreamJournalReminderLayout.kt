@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Switch
@@ -73,7 +72,6 @@ fun DreamJournalReminderLayout(
             onConfirm = { timePickerState ->
                 val time = LocalTime(timePickerState.hour, timePickerState.minute)
                 onEvent(NotificationEvent.SetReminderTime(time))
-                onEvent(NotificationEvent.ToggleTimePickerForJournalReminder(false))
                 showTimePicker.value = false
             },
             onDismiss = { showTimePicker.value = false }
@@ -128,22 +126,6 @@ fun DreamJournalReminderLayout(
                 )
             }
 
-            Button(
-                onClick = {
-                    onEvent(NotificationEvent.ToggleTimePickerForJournalReminder(true))
-                    showTimePicker.value = true
-                },
-                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
-                content = {
-                    Text(
-                        text = "Set Time",
-                        style = typography.bodyLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = colorResource(id = R.color.brighter_white)
-                    )
-                },
-            )
-
             if (notificationScreenState.dreamJournalReminder && postNotificationPermission.status.isGranted) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -176,7 +158,6 @@ fun DreamJournalReminderLayout(
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .clickable {
-                                onEvent(NotificationEvent.ToggleTimePickerForJournalReminder(true))
                                 showTimePicker.value = true
                             }
 
