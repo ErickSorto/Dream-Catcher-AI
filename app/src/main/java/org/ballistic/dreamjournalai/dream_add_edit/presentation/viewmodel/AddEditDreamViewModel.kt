@@ -22,7 +22,6 @@ import com.aallam.openai.api.image.ImageSize
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.google.android.gms.ads.rewarded.RewardItem
-import com.maxkeppeker.sheets.core.models.base.SheetState
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -31,23 +30,35 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.ballistic.dreamjournalai.dream_ad.domain.AdCallback
-import org.ballistic.dreamjournalai.dream_ad.domain.AdManagerRepository
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.ballistic.dreamjournalai.core.Resource
 import org.ballistic.dreamjournalai.core.util.OpenAIApiKeyUtil.getOpenAISecretKey
+import org.ballistic.dreamjournalai.core.util.formatLocalDate
+import org.ballistic.dreamjournalai.core.util.formatLocalTime
+import org.ballistic.dreamjournalai.dream_ad.domain.AdCallback
+import org.ballistic.dreamjournalai.dream_ad.domain.AdManagerRepository
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent.*
-import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
+import org.ballistic.dreamjournalai.dream_authentication.domain.repository.AuthRepository
 import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.dream_journal_list.domain.model.InvalidDreamException
 import org.ballistic.dreamjournalai.dream_journal_list.domain.use_case.DreamUseCases
-import org.ballistic.dreamjournalai.dream_authentication.domain.repository.AuthRepository
+import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
 import java.io.IOException
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.util.Locale
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+// Get current date
+private val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+private val currentDate = now.date
+
+// Static sleep and wake times
+private val sleepTime = LocalTime(23, 0) // 11 PM
+private val wakeTime = LocalTime(7, 0)   // 7 A
 
 class AddEditDreamViewModel(
     private val dreamUseCases: DreamUseCases,
@@ -189,6 +200,7 @@ class AddEditDreamViewModel(
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     fun onEvent(event: AddEditDreamEvent) {
         when (event) {
             is ChangeDreamBackgroundImage -> {
@@ -465,8 +477,7 @@ class AddEditDreamViewModel(
 
             is ChangeDreamDate -> {
                 onEvent(ToggleDreamHasChanged(true))
-                val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
-                val formattedDate = event.value.format(formatter)
+                val formattedDate = formatLocalDate(event.value)
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
                         dreamDate = formattedDate
@@ -476,26 +487,20 @@ class AddEditDreamViewModel(
 
             is ChangeDreamWakeTime -> {
                 onEvent(ToggleDreamHasChanged(true))
-                val formatter = DateTimeFormatter.ofPattern(
-                    if (event.value.hour < 10) "h:mm a" else "hh:mm a"
-                )
-
+                val formattedWakeTime = formatLocalTime(event.value)
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
-                        dreamWakeTime = event.value.format(formatter)
+                        dreamWakeTime = formattedWakeTime
                     )
                 )
             }
 
             is ChangeDreamSleepTime -> {
                 onEvent(ToggleDreamHasChanged(true))
-                val formatter = DateTimeFormatter.ofPattern(
-                    if (event.value.hour < 10) "h:mm a" else "hh:mm a"
-                )
-
+                val formattedSleepTime = formatLocalTime(event.value)
                 _addEditDreamState.value = addEditDreamState.value.copy(
                     dreamInfo = addEditDreamState.value.dreamInfo.copy(
-                        dreamSleepTime = event.value.format(formatter)
+                        dreamSleepTime = formattedSleepTime
                     )
                 )
             }
@@ -658,7 +663,7 @@ class AddEditDreamViewModel(
                         _addEditDreamState.update {
                             it.copy(
                                 dreamInfo = it.dreamInfo.copy(
-                                    dreamId = UUID.randomUUID().toString()
+                                    dreamId = Uuid.random().toString()
                                 )
                             )
                         }
@@ -778,6 +783,28 @@ class AddEditDreamViewModel(
             }
             is OnCleared -> {
 
+            }
+
+            is ToggleSleepTimePickerDialog -> {
+                _addEditDreamState.update {
+                    it.copy(
+                        sleepTimePickerDialogState = event.show
+                    )
+                }
+            }
+            is ToggleWakeTimePickerDialog -> {
+                _addEditDreamState.update {
+                    it.copy(
+                        wakeTimePickerDialogState = event.show
+                    )
+                }
+            }
+            is ToggleCalendarDialog -> {
+                _addEditDreamState.update {
+                    it.copy(
+                        calendarDialogState = event.show
+                    )
+                }
             }
         }
     }
@@ -1273,11 +1300,9 @@ data class AddEditDreamState(
         dreamIsNightmare = false,
         dreamIsRecurring = false,
         dreamIsFalseAwakening = false,
-        dreamSleepTime = LocalTime.of(23, 0).format(DateTimeFormatter.ofPattern("hh:mm a")),
-        dreamWakeTime = LocalTime.of(7, 0).format(DateTimeFormatter.ofPattern("h:mm a")),
-        dreamDate = LocalDate.now().month.toString().substring(0, 1)
-            .uppercase() + LocalDate.now().month.toString().substring(1, 3)
-            .lowercase() + " " + LocalDate.now().dayOfMonth.toString() + ", " + LocalDate.now().year.toString(),
+        dreamSleepTime = formatLocalTime(sleepTime),    // "11:00 PM"
+        dreamWakeTime = formatLocalTime(wakeTime),      // "7:00 AM"
+        dreamDate = formatLocalDate(currentDate),        // "Jun 3, 2023" for example
         dreamTimeOfDay = "",
         dreamLucidity = 0,
         dreamVividness = 0,
@@ -1313,9 +1338,9 @@ data class AddEditDreamState(
     val isLoading: Boolean = false,
     val saveSuccess: Boolean = false,
     val dialogState: Boolean = false,
-    val calendarState: SheetState = SheetState(),
-    val sleepTimePickerState: SheetState = SheetState(),
-    val wakeTimePickerState: SheetState = SheetState(),
+    val calendarDialogState: Boolean = false,
+    val sleepTimePickerDialogState: Boolean = false,
+    val wakeTimePickerDialogState: Boolean = false,
     val dreamImageGenerationPopUpState: Boolean = false,
     val dreamInterpretationPopUpState: Boolean = false,
     val dreamAdvicePopUpState: Boolean = false,

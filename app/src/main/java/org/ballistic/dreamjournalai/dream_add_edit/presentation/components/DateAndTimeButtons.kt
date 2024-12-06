@@ -27,6 +27,9 @@ import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEdi
 @Composable
 fun DateAndTimeButtonsLayout(
     addEditDreamState: AddEditDreamState,
+    onDateClick: () -> Unit,
+    onSleepTimeClick: () -> Unit,
+    onWakeTimeClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -39,7 +42,9 @@ fun DateAndTimeButtonsLayout(
             modifier = Modifier
                 .weight(1f)
                 .background(Color.Transparent),
-            onClick = { addEditDreamState.calendarState.show() })
+            onClick = {
+                onDateClick()
+            })
         Spacer(
             modifier = Modifier
                 .width(1.dp)
@@ -48,7 +53,9 @@ fun DateAndTimeButtonsLayout(
         )
         SleepTimeButton(addEditDreamState = addEditDreamState,
             modifier = Modifier.weight(1f),
-            onClick = { addEditDreamState.sleepTimePickerState.show() })
+            onClick = {
+                onSleepTimeClick()
+            })
         Spacer(
             modifier = Modifier
                 .width(1.dp)
@@ -57,7 +64,9 @@ fun DateAndTimeButtonsLayout(
         )
         WakeTimeButton(addEditDreamState = addEditDreamState,
             modifier = Modifier.weight(1f),
-            onClick = { addEditDreamState.wakeTimePickerState.show() })
+            onClick = {
+                onWakeTimeClick()
+            })
     }
 
 }

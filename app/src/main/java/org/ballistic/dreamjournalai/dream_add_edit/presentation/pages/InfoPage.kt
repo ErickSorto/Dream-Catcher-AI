@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -27,21 +31,18 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.maxkeppeler.sheets.calendar.CalendarDialog
-import com.maxkeppeler.sheets.calendar.models.CalendarConfig
-import com.maxkeppeler.sheets.calendar.models.CalendarSelection
-import com.maxkeppeler.sheets.clock.ClockDialog
-import com.maxkeppeler.sheets.clock.models.ClockConfig
-import com.maxkeppeler.sheets.clock.models.ClockSelection
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.ballistic.dreamjournalai.R
+import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.DateAndTimeButtonsLayout
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.DreamImageSelectionRow
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.components.LucidFavoriteLayout
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
-import java.time.Clock
-import java.time.LocalTime
-
+import org.ballistic.dreamjournalai.dream_notifications.presentation.components.DialWithDialogExample
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,40 +51,60 @@ fun InfoPage(
     addEditDreamState: AddEditDreamState,
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
 ) {
-    CalendarDialog(
-        state = addEditDreamState.calendarState,
-        config = CalendarConfig(
-            monthSelection = true,
-            yearSelection = true,
-        ),
-        selection = CalendarSelection.Date { date ->
-            onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamDate(date))
-        },
-    )
-    ClockDialog(state = addEditDreamState.sleepTimePickerState,
-        config = ClockConfig(
-            //default time 12:00am
-            defaultTime = Clock.systemDefaultZone().instant().atZone(Clock.systemDefaultZone().zone)
-                .toLocalTime(),
-            is24HourFormat = false,
-        ),
-        selection = ClockSelection.HoursMinutes { hour, minute ->
-            onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamSleepTime(LocalTime.of(hour, minute)))
-        }
-    )
+    // Existing CalendarDialog usage remains unchanged
+    if (addEditDreamState.calendarDialogState) {
+        DatePickerModal(
+            onDateSelected = { selectedDate ->
+                selectedDate?.let {
+                    onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamDate(it))
+                }
+                // After selection (or null if canceled), close the dialog
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleCalendarDialog(show = false))
+            },
+            onDismiss = {
+                // If user cancels, close the dialog
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleCalendarDialog(show = false))
+            }
+        )
+    }
+    // Sleep time picker
+    if (addEditDreamState.sleepTimePickerDialogState) {
+        DialWithDialogExample(
+            onConfirm = { timePickerState ->
+                onAddEditDreamEvent(
+                    AddEditDreamEvent.ChangeDreamSleepTime(
+                        LocalTime(timePickerState.hour, timePickerState.minute)
+                    )
+                )
+                // Close sleep dialog
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleSleepTimePickerDialog(show = false))
+            },
+            onDismiss = {
+                // Close sleep dialog without action
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleSleepTimePickerDialog(show = false))
+            }
+        )
+    }
 
-    ClockDialog(state = addEditDreamState.wakeTimePickerState,
-        config = ClockConfig(
-            //default time 12:00am
-            defaultTime = Clock.systemDefaultZone().instant().atZone(Clock.systemDefaultZone().zone)
-                .toLocalTime(),
-            is24HourFormat = false,
+    // Wake time picker
+    if (addEditDreamState.wakeTimePickerDialogState) {
+        DialWithDialogExample(
+            onConfirm = { timePickerState ->
+                onAddEditDreamEvent(
+                    AddEditDreamEvent.ChangeDreamWakeTime(
+                        LocalTime(timePickerState.hour, timePickerState.minute)
+                    )
+                )
+                // Close wake dialog
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleWakeTimePickerDialog(show = false))
+            },
+            onDismiss = {
+                // Close wake dialog without action
+                onAddEditDreamEvent(AddEditDreamEvent.ToggleWakeTimePickerDialog(show = false))
+            }
+        )
+    }
 
-            ),
-        selection = ClockSelection.HoursMinutes { hour, minute ->
-            onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamWakeTime(LocalTime.of(hour, minute)))
-        }
-    )
 
     Column(
         modifier = Modifier
@@ -136,7 +157,12 @@ fun InfoPage(
                     addEditDreamState = addEditDreamState,
                     onAddEditDreamEvent = onAddEditDreamEvent
                 )
-                DateAndTimeButtonsLayout(addEditDreamState = addEditDreamState)
+                DateAndTimeButtonsLayout(
+                    addEditDreamState = addEditDreamState,
+                    onDateClick = { onAddEditDreamEvent(AddEditDreamEvent.ToggleCalendarDialog(show = true)) },
+                    onSleepTimeClick = { onAddEditDreamEvent(AddEditDreamEvent.ToggleSleepTimePickerDialog(show = true)) },
+                    onWakeTimeClick = { onAddEditDreamEvent(AddEditDreamEvent.ToggleWakeTimePickerDialog(show = true)) }
+                    )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -208,5 +234,40 @@ fun SliderWithLabel(
                 inactiveTrackColor = colorResource(id = R.color.white).copy(alpha = 0.3f)
             )
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModal(
+    onDateSelected: (LocalDate?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                val selectedMillis = datePickerState.selectedDateMillis
+                val selectedDate = selectedMillis?.let {
+                    // Use UTC to avoid the one-day offset issue.
+                    Instant.fromEpochMilliseconds(it)
+                        .toLocalDateTime(TimeZone.UTC)
+                        .date
+                }
+                onDateSelected(selectedDate)
+                onDismiss()
+            }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
     }
 }

@@ -1,9 +1,9 @@
 package org.ballistic.dreamjournalai.dream_add_edit.domain
 
 import android.app.Activity
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryWord
-import java.time.LocalDate
-import java.time.LocalTime
 
 sealed class AddEditDreamEvent {
     data class ChangeDreamBackgroundImage(val dreamBackGroundImage: Int) : AddEditDreamEvent()
@@ -62,6 +62,10 @@ sealed class AddEditDreamEvent {
     data class ToggleDialogState(val value: Boolean) : AddEditDreamEvent()
 
     data class ToggleBottomSheetState(val value: Boolean) : AddEditDreamEvent()
+
+    data class ToggleSleepTimePickerDialog(val show: Boolean) : AddEditDreamEvent()
+    data class ToggleWakeTimePickerDialog(val show: Boolean) : AddEditDreamEvent()
+    data class ToggleCalendarDialog(val show: Boolean) : AddEditDreamEvent()
 
     data class ToggleDreamHasChanged(val value: Boolean) : AddEditDreamEvent()
     data object FlagDreamContent : AddEditDreamEvent()

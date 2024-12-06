@@ -2,7 +2,6 @@ package org.ballistic.dreamjournalai.dream_notifications.presentation.components
 
 
 import android.Manifest
-import android.app.TimePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
@@ -41,16 +40,11 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.maxkeppeler.sheets.clock.ClockDialog
-import com.maxkeppeler.sheets.clock.models.ClockConfig
-import com.maxkeppeler.sheets.clock.models.ClockSelection
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.core.util.formatLocalTime
-import org.ballistic.dreamjournalai.core.util.parseFormattedTime
 import org.ballistic.dreamjournalai.dream_notifications.domain.NotificationEvent
 import org.ballistic.dreamjournalai.dream_notifications.presentation.viewmodel.NotificationScreenState
 

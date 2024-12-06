@@ -102,6 +102,23 @@ fun getDayOfWeekDisplayName(dayOfWeek: DayOfWeek): String {
 }
 
 /**
+ * Formats a LocalDate to "MMM d, yyyy" format.
+ * Example: "Jun 3, 2023"
+ *
+ * @param localDate The LocalDate to format.
+ * @return The formatted date string.
+ */
+fun formatLocalDate(localDate: LocalDate): String {
+    // We map the month ordinal to a short month name.
+    val shortMonthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    val monthName = shortMonthNames[localDate.month.ordinal]
+    val day = localDate.dayOfMonth
+    val year = localDate.year
+    return "$monthName $day, $year"
+}
+
+/**
  * Formats a LocalTime to "h:mm a" format.
  * Example: "7:00 AM"
  *
