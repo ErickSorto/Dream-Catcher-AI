@@ -17,4 +17,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Dream Journal AI"
 include ':composeApp'
-include ':baselineprofile'

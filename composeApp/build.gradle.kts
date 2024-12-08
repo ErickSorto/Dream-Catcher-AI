@@ -98,7 +98,6 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     testImplementation ("io.mockk:mockk:1.13.5")
-    baselineProfile(project(":baselineprofile"))
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
 
 
@@ -108,9 +107,6 @@ dependencies {
 
     // Compose Extensions and Libraries
     implementation("com.github.SmartToolFactory:Compose-AnimatedList:0.5.1")
-    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.1.0")
-    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.1.0") // CALENDAR
-    implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.1.0") // CLOCK
 
     // Firebase
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
