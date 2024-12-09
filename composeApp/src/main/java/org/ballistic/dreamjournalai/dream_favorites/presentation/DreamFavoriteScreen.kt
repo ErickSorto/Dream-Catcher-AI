@@ -53,8 +53,8 @@ fun DreamFavoriteScreen(
     dreamFavoriteScreenState: DreamFavoriteScreenState,
     mainScreenViewModelState: MainScreenViewModelState,
     bottomPaddingValue: Dp,
-    navController: NavController,
-    onEvent: (FavoriteEvent) -> Unit
+    onEvent: (FavoriteEvent) -> Unit,
+    onNavigateToDream: (dreamID: String?, backgroundID: Int) -> Unit
 ) {
     val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
@@ -172,13 +172,7 @@ fun DreamFavoriteScreen(
                                 .padding(bottom = 10.dp)
                                 .padding(horizontal = 12.dp),
                             onClick = {
-                                navController.popBackStack()
-                                navController.navigate(
-                                    Screens.AddEditDreamScreen.route +
-                                            "?dreamId=${dream.id}&dreamImageBackground=${
-                                                dream.backgroundImage
-                                            }"
-                                )
+                                onNavigateToDream(dream.id, dream.backgroundImage)
                             },
                             onDeleteClick = {
                                 onEvent(

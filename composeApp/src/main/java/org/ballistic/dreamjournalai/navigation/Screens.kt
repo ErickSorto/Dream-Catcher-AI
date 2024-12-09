@@ -78,20 +78,24 @@ sealed class Route{
 
     @Serializable
     data class FullScreenImageScreen(val imageID: String) : Route()
+
+    @Serializable
+    data object RateMyApp : Route()
 }
 
-enum class DrawerNavigation(title: String?, icon: ImageVector, route: Route){
+enum class DrawerNavigation(val title: String?, val icon: ImageVector, val route: Route){
     DreamJournalScreen("My Dreams", Icons.Filled.Book, Route.DreamJournalScreen),
     AddEditDreamScreen("Add Dream", Icons.Default.Add, Route.AddEditDreamScreen("", -1)),
     StoreScreen("Store", Icons.Default.Shop, Route.StoreScreen),
-    Favorites("Favorites", Icons.Default.Star, Route.MainScreen),
-    AccountSettings("Account Settings", Icons.Default.Settings, Route.MainScreen),
-    Tools("Tools", Icons.Default.Build, Route.MainScreen),
-    Statistics("Statistics", Icons.Default.BarChart, Route.MainScreen),
-    NotificationSettings("Notification Settings", Icons.Default.Notifications, Route.MainScreen),
-    Nightmares("Nightmares", Icons.Default.ErrorOutline, Route.MainScreen),
-    Symbol("Symbols", Icons.AutoMirrored.Filled.List, Route.MainScreen),
-    RateMyApp("Rate this App", Icons.Default.Favorite, Route.MainScreen),
+    Favorites("Favorites", Icons.Default.Star, Route.Favorites),
+    AccountSettings("Account Settings", Icons.Default.Settings, Route.AccountSettings),
+    Tools("Tools", Icons.Default.Build, Route.Tools),
+    Statistics("Statistics", Icons.Default.BarChart, Route.Statistics),
+    NotificationSettings("Notification Settings", Icons.Default.Notifications, Route.NotificationSettings),
+    Nightmares("Nightmares", Icons.Default.ErrorOutline, Route.Nightmares),
+    Symbol("Symbols", Icons.AutoMirrored.Filled.List, Route.Symbol),
+    RateMyApp("Rate this App", Icons.Default.Favorite, Route.RateMyApp),
+    DreamToolGraphScreen("Tools", Icons.Default.Build, Route.DreamToolGraphScreen),
     //AboutMe("About Me", Icons.Default.Info, Route.MainScreen),
 }
 

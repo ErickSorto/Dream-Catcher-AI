@@ -31,7 +31,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.FloatingActionButton
@@ -74,9 +73,9 @@ import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_main.presentation.components.BottomNavigation
 import org.ballistic.dreamjournalai.dream_main.presentation.components.DrawerGroupHeading
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.navigation.DrawerNavigation
 import org.ballistic.dreamjournalai.navigation.Route
 import org.ballistic.dreamjournalai.navigation.ScreenGraph
-import org.ballistic.dreamjournalai.navigation.Screens
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -116,26 +115,27 @@ fun MainScreenView(
         DrawerGroup(
             title = "Pages",
             items = listOf(
-                Screens.StoreScreen,
-                Screens.Favorites,
-                Screens.Nightmares,
-                Screens.DreamToolGraphScreen,
-                Screens.Statistics,
-                Screens.Symbol,
+                DrawerNavigation.DreamJournalScreen,
+                DrawerNavigation.StoreScreen,
+                DrawerNavigation.Favorites,
+                DrawerNavigation.Nightmares,
+                DrawerNavigation.DreamToolGraphScreen,
+                DrawerNavigation.Statistics,
+                DrawerNavigation.Symbol,
             )
         ),
         DrawerGroup(
             title = "Settings",
             items = listOf(
-                Screens.AccountSettings,
-                Screens.NotificationSettings,
+                DrawerNavigation.AccountSettings,
+                DrawerNavigation.NotificationSettings,
             //    Screens.DreamSettings,
             )
         ),
         DrawerGroup(
             title = "Others",
             items = listOf(
-                Screens.RateMyApp,
+                DrawerNavigation.RateMyApp,
               //  Screens.AboutMe
             )
         )
@@ -145,7 +145,9 @@ fun MainScreenView(
     DisposableEffect(navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             val route = destination.route ?: return@OnDestinationChangedListener
-            val matchedScreen = drawerGroups.flatMap { it.items }.firstOrNull { it.route == route }
+            val matchedScreen = drawerGroups.flatMap { it.items }.firstOrNull { it ->
+                it.route::class.qualifiedName == route
+            }
             if (matchedScreen != null) {
                 selectedItem.value = matchedScreen
             }
@@ -185,11 +187,11 @@ fun MainScreenView(
                         group.items.forEach { item ->
                             NavigationDrawerItem(
                                 icon = {
-                                    if (item == Screens.RateMyApp) {
+                                    if (item == DrawerNavigation.RateMyApp) {
                                         AnimatedHeartIcon()
                                     } else {
                                         Icon(
-                                            item.icon ?: Icons.AutoMirrored.Filled.Help,
+                                            item.icon,
                                             contentDescription = null
                                         )
                                     }
@@ -203,7 +205,7 @@ fun MainScreenView(
                                     }
                                     selectedItem.value = item
 
-                                    if (item == Screens.RateMyApp) {
+                                    if (item == DrawerNavigation.RateMyApp) {
                                         // Launch Play Store intent
                                         val intent = Intent(Intent.ACTION_VIEW).apply {
                                             data =
@@ -213,7 +215,7 @@ fun MainScreenView(
                                         context.startActivity(intent)
                                     } else {
                                         navController.navigate(item.route) {
-                                            popUpTo(Route.DreamJournalScreen) {
+                                            popUpTo(DrawerNavigation.DreamJournalScreen) {
                                                 saveState = true
                                             }
                                             launchSingleTop = true
@@ -314,7 +316,7 @@ fun MainScreenView(
 
 data class DrawerGroup(
     val title: String,
-    val items: List<Screens>
+    val items: List<DrawerNavigation>
 )
 
 @Composable

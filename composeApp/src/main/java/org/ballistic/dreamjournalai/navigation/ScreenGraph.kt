@@ -89,7 +89,7 @@ fun ScreenGraph(
                     onStoreEvent = { storeScreenViewModel.onEvent(it) },
                     navigateToAccountScreen = {
                         navController.popBackStack()
-                        navController.navigate(Screens.AccountSettings.route)
+                        navController.navigate(Route.AccountSettings)
                     }
                 )
             }
@@ -151,8 +151,16 @@ fun ScreenGraph(
                     dreamFavoriteScreenState = dreamFavoriteScreenState.value,
                     mainScreenViewModelState = mainScreenViewModelState,
                     bottomPaddingValue = bottomPaddingValue,
-                    navController = navController,
                     onEvent = { dreamFavoriteScreenViewModel.onEvent(it) },
+                    onNavigateToDream = { dreamID, backgroundID ->
+                        navController.popBackStack()
+                        navController.navigate(
+                            Route.AddEditDreamScreen(
+                                dreamID = dreamID,
+                                backgroundID = backgroundID
+                            )
+                        )
+                    }
                 )
             }
 
@@ -188,14 +196,17 @@ fun ScreenGraph(
                     mainScreenViewModelState = mainScreenViewModelState,
                     bottomPaddingValue = bottomPaddingValue,
                     onMainEvent = onMainEvent,
-                    onNavigate = { route ->
-                        navController.navigate(route) {
+                    onNavigate = { dreamID, backgroundID ->
+                        navController.popBackStack()
+                        navController.navigate(
+                            Route.AddEditDreamScreen(dreamID = dreamID, backgroundID = backgroundID)
+                        ) {
                             popUpTo(Route.DreamJournalScreen) {
                                 saveState = true
                                 inclusive = true
                             }
                         }
-                    },
+                    }
                 )
             }
 
@@ -238,8 +249,16 @@ fun ScreenGraph(
                     dreamNightmareScreenState = dreamNightmareScreenState.value,
                     mainScreenViewModelState = mainScreenViewModelState,
                     bottomPaddingValue = bottomPaddingValue,
-                    navController = navController,
                     onEvent = { dreamNightmareScreenViewModel.onEvent(it) },
+                    onNavigateToDream = { dreamID, backgroundID ->
+                        navController.popBackStack()
+                        navController.navigate(
+                            Route.AddEditDreamScreen(
+                                dreamID = dreamID,
+                                backgroundID = backgroundID
+                            )
+                        )
+                    }
                 )
             }
 

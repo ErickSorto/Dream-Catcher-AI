@@ -28,7 +28,7 @@ fun DreamToolsGraph(
     navController: NavHostController = rememberNavController(),
     mainScreenViewModelState: MainScreenViewModelState,
     bottomPaddingValue: Dp,
-    onNavigate: (String) -> Unit,
+    onNavigate: (dreamID: String?, backgroundID: Int) -> Unit,
     onMainEvent: (MainScreenEvent) -> Unit
 ) {
     SharedTransitionLayout {
@@ -66,8 +66,8 @@ fun DreamToolsGraph(
                     onEvent = {
                         randomDreamToolScreenViewModel.onEvent(it)
                     },
-                    navigateTo = { route ->
-                        onNavigate(route)
+                    onNavigateToDream = { dreamID, backgroundID ->
+                        onNavigate(dreamID, backgroundID)
                     },
                     navigateUp = {
                         navController.navigateUp()

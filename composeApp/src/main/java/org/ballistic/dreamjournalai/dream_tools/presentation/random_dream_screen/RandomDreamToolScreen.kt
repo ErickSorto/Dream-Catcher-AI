@@ -40,10 +40,9 @@ import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
-import org.ballistic.dreamjournalai.dream_tools.domain.event.RandomToolEvent
 import org.ballistic.dreamjournalai.dream_tools.domain.DreamTools
+import org.ballistic.dreamjournalai.dream_tools.domain.event.RandomToolEvent
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolScreenWithNavigateUpTopBar
-import org.ballistic.dreamjournalai.navigation.Screens
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -53,7 +52,7 @@ fun SharedTransitionScope.RandomDreamToolScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     bottomPadding: Dp,
     onEvent: (RandomToolEvent) -> Unit,
-    navigateTo: (String) -> Unit,
+    onNavigateToDream: (dreamID: String?, backgroundID: Int) -> Unit,
     navigateUp: () -> Unit
 ) {
 
@@ -71,11 +70,8 @@ fun SharedTransitionScope.RandomDreamToolScreen(
     LaunchedEffect(key1 = randomDreamToolScreenState) {
         snapshotFlow { randomDreamToolScreenState.randomDream }
             .collect { randomDream ->
-                randomDream?.let {
-                    navigateTo(
-                        Screens.AddEditDreamScreen.route +
-                                "?dreamId=${it.id}&dreamImageBackground=${it.backgroundImage}"
-                    )
+                randomDream?.let { dream ->
+                    onNavigateToDream(dream.id, dream.backgroundImage)
                 }
             }
     }
