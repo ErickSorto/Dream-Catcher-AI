@@ -8,10 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import org.ballistic.dreamjournalai.dream_account.AccountSettingsScreen
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.AddEditDreamScreen
@@ -37,8 +35,6 @@ import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.viewmo
 import org.ballistic.dreamjournalai.dream_symbols.presentation.SymbolScreen
 import org.ballistic.dreamjournalai.dream_symbols.presentation.viewmodel.DictionaryScreenViewModel
 import org.koin.androidx.compose.koinViewModel
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
