@@ -14,13 +14,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
-import org.ballistic.dreamjournalai.dream_tools.domain.DreamTools
+import org.ballistic.dreamjournalai.navigation.DreamTools
+import org.ballistic.dreamjournalai.navigation.ToolRoute
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.DreamToolsGrid(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onNavigate: (Int, String) -> Unit,
+    onNavigate: (ToolRoute) -> Unit,
     modifier: Modifier
 ) {
     val lastClickTime = remember { mutableLongStateOf(0L) }
@@ -32,15 +33,15 @@ fun SharedTransitionScope.DreamToolsGrid(
         items(DreamTools.entries.toTypedArray()) { tool ->
             DreamToolItem(
                 title = tool.title,
-                icon = tool.icon,
+                icon = tool.route.image,
                 description = tool.description,
                 enabled = tool.enabled,
                 onClick = singleClick(
                     lastClickTimeState = lastClickTime,
-                    onClick = { onNavigate(tool.icon, tool.route) }
+                    onClick = { onNavigate(tool.route) }
                 ),
                 modifier = Modifier.sharedElement(
-                    rememberSharedContentState(key = "image/${tool.icon}"),
+                    rememberSharedContentState(key = "image/${tool.route.image}"),
                     animatedVisibilityScope = animatedVisibilityScope,
                     boundsTransform = { _, _ ->
                         tween(500)

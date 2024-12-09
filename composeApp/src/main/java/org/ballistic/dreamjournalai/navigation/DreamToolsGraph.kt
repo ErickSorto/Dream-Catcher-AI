@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.dream_tools.presentation.dream_tools_screen.DreamToolsScreen
@@ -36,31 +37,25 @@ fun DreamToolsGraph(
             navController = navController,
             startDestination = Screens.Tools.route,
         ) {
-            composable(route = Screens.Tools.route) {
+            composable<Route.Tools> {
                 DreamToolsScreen(
                     mainScreenViewModelState = mainScreenViewModelState,
                     animatedVisibilityScope = this,
-                    onNavigate = { image, route->
-                        navController.navigate("$route/$image")
+                    onNavigate = { route ->
+                        navController.navigate(route)
                     },
                 )
             }
-            composable(route = Screens.RandomDreamPicker.route + "/{image}",
-                arguments = listOf(
-                    navArgument("image") {
-                        type = NavType.IntType
-                    }
-                )
-            )
-            {
+            composable<ToolRoute.RandomDreamPicker> {
+                val args = it.toRoute<ToolRoute.RandomDreamPicker>()
                 val randomDreamToolScreenViewModel = koinViewModel<RandomDreamToolScreenViewModel>()
                 val randomDreamToolScreenState =
                     randomDreamToolScreenViewModel.randomDreamToolScreenState
                         .collectAsStateWithLifecycle()
-                val imageID = it.arguments?.getInt("image") ?: -1
+
                 RandomDreamToolScreen(
                     animatedVisibilityScope = this,
-                    imageID = imageID,
+                    imageID = args.imageID,
                     bottomPadding = bottomPaddingValue,
                     randomDreamToolScreenState = randomDreamToolScreenState.value,
                     onEvent = {
@@ -75,17 +70,10 @@ fun DreamToolsGraph(
                 )
             }
 
-            composable(
-                route = Screens.AnalyzeMultipleDreamsDetails.route + "/{image}",
-                arguments = listOf(
-                    navArgument("image") {
-                        type = NavType.IntType
-                    },
-                )
-            ) { it ->
-                val imageID = it.arguments?.getInt("image") ?: -1
+            composable<ToolRoute.AnalyzeMultipleDreamsDetails> {
+                val args = it.toRoute<ToolRoute.AnalyzeMultipleDreamsDetails>()
                 InterpretDreamsDetailScreen(
-                    imageID = imageID,
+                    imageID = args.imageID,
                     animatedVisibilityScope = this,
                     bottomPadding = bottomPaddingValue,
                     navigateTo = { route ->

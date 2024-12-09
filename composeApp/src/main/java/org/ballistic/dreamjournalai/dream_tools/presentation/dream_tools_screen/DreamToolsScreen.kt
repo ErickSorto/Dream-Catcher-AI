@@ -13,12 +13,15 @@ import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPaddi
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolsGrid
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolsScreenTopBar
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.navigation.DreamTools
+import org.ballistic.dreamjournalai.navigation.Route
+import org.ballistic.dreamjournalai.navigation.ToolRoute
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.DreamToolsScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onNavigate: (Int, String) -> Unit,
+    onNavigate: (ToolRoute) -> Unit,
     mainScreenViewModelState: MainScreenViewModelState,
 ) {
     Scaffold(
