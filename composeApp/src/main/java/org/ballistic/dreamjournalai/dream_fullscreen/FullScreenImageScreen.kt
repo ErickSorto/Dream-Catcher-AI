@@ -53,7 +53,7 @@ fun SharedTransitionScope.FullScreenImageScreen(
         onBackPress()
     }
     val backButtonEnabled = remember { mutableStateOf(true) }
-    val decodedUrl = Uri.decode(imageID)
+
     val flagContentBottomSheetState = remember { mutableStateOf(false) }
     Log.d("FullScreenImageScreen", "imageID: $imageID")
     Scaffold(
@@ -68,7 +68,7 @@ fun SharedTransitionScope.FullScreenImageScreen(
                 message = "Are you sure you want to flag this content?",
                 buttonText = "Flag",
                 onClick = {
-                    onFullScreenEvent(FullScreenEvent.Flag(decodedUrl,
+                    onFullScreenEvent(FullScreenEvent.Flag(imageID,
                         onSuccessEvent = {
                             onMainEvent(MainScreenEvent.ShowSnackBar(
                                 "Image flagged successfully",
@@ -128,17 +128,17 @@ fun SharedTransitionScope.FullScreenImageScreen(
 
             AsyncImage(
                 model =  ImageRequest.Builder(LocalContext.current)
-                    .data(decodedUrl)
+                    .data(imageID)
                     .crossfade(true)
-                    .placeholderMemoryCacheKey("image/$decodedUrl") //  same key as shared element key
-                    .memoryCacheKey("image/$decodedUrl") // same key as shared element key
+                    .placeholderMemoryCacheKey("image/$imageID") //  same key as shared element key
+                    .memoryCacheKey("image/$imageID") // same key as shared element key
                     .build(),
                 contentDescription = "Full Screen Image",
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .sharedElement(
-                        rememberSharedContentState(key = "image/$decodedUrl"),
+                        rememberSharedContentState(key = "image/$imageID"),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ ->
                             tween(500)

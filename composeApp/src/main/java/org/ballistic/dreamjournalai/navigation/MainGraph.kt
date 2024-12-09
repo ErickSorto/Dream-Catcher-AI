@@ -24,10 +24,10 @@ fun MainGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screens.OnboardingScreen.route,
+        startDestination = Route.OnboardingScreen,
         modifier = Modifier.fillMaxSize()
     ) {
-        composable(route = Screens.OnboardingScreen.route) {
+        composable<Route.OnboardingScreen> {
             val loginViewModel = koinViewModel<LoginViewModel>()
             val signupViewModel = koinViewModel<SignupViewModel>()
             val loginViewModelState = loginViewModel.state.collectAsStateWithLifecycle().value
@@ -36,7 +36,7 @@ fun MainGraph(
             OnboardingScreen(
                 navigateToDreamJournalScreen = {
                     navController.popBackStack()
-                    navController.navigate(Screens.MainScreen.route)
+                    navController.navigate(Route.MainScreen)
                 },
                 onDataLoaded = {
                     onDataLoaded()
@@ -52,7 +52,7 @@ fun MainGraph(
             )
         }
 
-        composable(route = Screens.MainScreen.route) {
+        composable<Route.MainScreen> {
             val mainScreenViewModel = koinViewModel<MainScreenViewModel>()
             val mainScreenViewModelState = mainScreenViewModel.mainScreenViewModelState.collectAsStateWithLifecycle().value
 
@@ -66,7 +66,7 @@ fun MainGraph(
                 },
                 onNavigateToOnboardingScreen = {
                     navController.popBackStack()
-                    navController.navigate(Screens.OnboardingScreen.route)
+                    navController.navigate(Route.OnboardingScreen)
                 },
             )
         }

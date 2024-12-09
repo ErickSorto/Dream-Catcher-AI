@@ -123,27 +123,19 @@ fun ScreenGraph(
                         navController.navigate(Route.DreamJournalScreen)
                     },
                     onImageClick = { imageID ->
-                        val encodedURL = URLEncoder.encode(imageID, StandardCharsets.UTF_8.toString())
                         navController.navigate(
-                            Screens.FullScreenImageScreen.route + "/$encodedURL"
+                            Route.FullScreenImageScreen(imageID)
                         )
                     }
                 )
             }
 
-            composable(
-                route = Screens.FullScreenImageScreen.route + "/{imageID}",
-                arguments = listOf(
-                    navArgument("imageID") {
-                        type = NavType.StringType
-                    }
-                )
-            ) { backStackEntry ->
+            composable<Route.FullScreenImageScreen>{
+                val args = it.toRoute<Route.FullScreenImageScreen>()
                 val fullScreenViewModel = koinViewModel<FullScreenViewModel>()
-                val encodedImageID = backStackEntry.arguments?.getString("imageID") ?: ""
-                val encodedURL = URLEncoder.encode(encodedImageID, StandardCharsets.UTF_8.toString())
+
                 FullScreenImageScreen(
-                    imageID = encodedURL,
+                    imageID = args.imageID,
                     animatedVisibilityScope = this,
                     onBackPress = {
                         navController.navigateUp()
@@ -155,7 +147,7 @@ fun ScreenGraph(
                 )
             }
 
-            composable(route = Screens.Favorites.route) {
+            composable<Route.Favorites> {
                 val dreamFavoriteScreenViewModel = koinViewModel<DreamFavoriteScreenViewModel>()
                 val dreamFavoriteScreenState = dreamFavoriteScreenViewModel.dreamFavoriteScreenState
                     .collectAsStateWithLifecycle()
@@ -168,7 +160,7 @@ fun ScreenGraph(
                 )
             }
 
-            composable(route = Screens.AccountSettings.route) {
+            composable<Route.AccountSettings> {
                 val loginViewModel = koinViewModel<LoginViewModel>()
                 val signupViewModel = koinViewModel<SignupViewModel>()
 
@@ -195,7 +187,7 @@ fun ScreenGraph(
                 )
             }
 
-            composable(route = Screens.DreamToolGraphScreen.route) {
+            composable<Route.DreamToolGraphScreen> {
                 DreamToolsGraph(
                     mainScreenViewModelState = mainScreenViewModelState,
                     bottomPaddingValue = bottomPaddingValue,
@@ -211,7 +203,7 @@ fun ScreenGraph(
                 )
             }
 
-            composable(route = Screens.Statistics.route) {
+            composable<Route.Statistics> {
                 val dreamStatisticScreenViewModel = koinViewModel<DreamStatisticScreenViewModel>()
                 val dreamStatisticScreenState = dreamStatisticScreenViewModel.dreamStatisticScreen
                     .collectAsStateWithLifecycle()
@@ -226,7 +218,7 @@ fun ScreenGraph(
                 )
             }
 
-            composable(route = Screens.NotificationSettings.route) {
+            composable<Route.NotificationSettings> {
                 val dreamNotificationScreenViewModel = koinViewModel<NotificationScreenViewModel>()
                 val dreamNotificationScreenState =
                     dreamNotificationScreenViewModel.notificationScreenState
@@ -241,7 +233,7 @@ fun ScreenGraph(
                 }
             }
 
-            composable(route = Screens.Nightmares.route) {
+            composable<Route.Nightmares> {
                 val dreamNightmareScreenViewModel = koinViewModel<DreamNightmareScreenViewModel>()
                 val dreamNightmareScreenState =
                     dreamNightmareScreenViewModel.dreamNightmareScreenState
@@ -255,7 +247,7 @@ fun ScreenGraph(
                 )
             }
 
-            composable(route = Screens.Symbol.route) {
+            composable<Route.Symbol> {
                 val dictionaryScreenViewModel = koinViewModel<DictionaryScreenViewModel>()
                 val dictionaryScreenState = dictionaryScreenViewModel.symbolScreenState
                     .collectAsStateWithLifecycle()
