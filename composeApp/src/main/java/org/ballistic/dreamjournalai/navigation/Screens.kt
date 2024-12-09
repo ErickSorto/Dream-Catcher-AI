@@ -4,18 +4,38 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
+
+
+
+sealed class Route{
+
+    @Serializable
+    data object DreamJournalScreen : Route()
+
+    @Serializable
+    data class AddEditDreamScreen(val dreamID: String?, val backgroundID: Int) : Route()
+
+    @Serializable
+    data object MainScreen : Route()
+
+    @Serializable
+    data object OnboardingScreen : Route()
+}
+
+enum class RouteNavigation(title: String?, icon: ImageVector, route: Route){
+    DreamJournalScreen("My Dreams", Icons.Filled.Book, Route.DreamJournalScreen),
+    AddEditDreamScreen("Add Dream", Icons.Default.Add, Route.AddEditDreamScreen("", -1)),
+    MainScreen(null, Icons.Default.Home, Route.MainScreen),
+    OnboardingScreen(null, Icons.Default.Info, Route.OnboardingScreen)
+}
 sealed class Screens(
     val route: String,
     val title: String? = null,
     val icon: ImageVector? = null
 ) {
-    data object DreamJournalScreen : Screens(
-        route = "dreams_screen",
-        title = "My Dreams",
-        icon = Icons.Filled.Book,
-    )
-
     data object AddEditDreamScreen : Screens(
         route = "add_edit_dream_screen",
         title = "AddEdit",
@@ -127,5 +147,6 @@ sealed class Screens(
 
     data object OnboardingScreen : Screens(route = "welcome_screen", title = "Welcome", icon = null)
     data object MainScreen : Screens(route = "main_screen", title = "Main", icon = null)
-    data object FullScreenImageScreen : Screens(route = "full_screen_image", title = "Full Screen Image", icon = null)
+    data object FullScreenImageScreen :
+        Screens(route = "full_screen_image", title = "Full Screen Image", icon = null)
 }

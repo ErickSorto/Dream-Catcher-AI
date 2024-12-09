@@ -8,6 +8,7 @@ plugins {
     id("kotlin-parcelize")
     id("androidx.baselineprofile")
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.0"
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -65,102 +66,101 @@ composeCompiler {
 }
 
 dependencies {
-    val composeVersion = "1.7.5"
     // AndroidX dependencies
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.compose.material3:material3:1.3.1")
-    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
-    implementation("androidx.compose.animation:animation:$composeVersion")
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.navigation:navigation-compose:2.8.4")
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
-    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
-    implementation("com.google.android.play:review:2.0.2")
-    implementation("com.google.android.play:review-ktx:2.0.2")
+    implementation(libs.activityCompose)
+    implementation(libs.appcompat)
+    implementation(libs.material3)
+    implementation(libs.material3WindowSize)
+    implementation(libs.animation)
+    implementation(libs.composeUi)
+    implementation(libs.composeUiToolingPreview)
+    implementation(libs.constraintLayoutCompose)
+    implementation(libs.coreKtx)
+    implementation(libs.coreSplashscreen)
+    implementation(libs.datastorePreferences)
+    implementation(libs.lifecycleExtensions)
+    implementation(libs.lifecycleRuntimeCompose)
+    implementation(libs.lifecycleRuntimeKtx)
+    implementation(libs.lifecycleViewModelCompose)
+    implementation(libs.lifecycleViewModelKtx)
+    implementation(libs.materialIconsExtended)
+    implementation(libs.navigationCompose)
+    implementation(libs.roomKtx)
+    implementation(libs.profileInstaller)
+    implementation(libs.datetime)
+    implementation(libs.workRuntimeKtx)
+    implementation(libs.accompanistPermissions)
+    implementation(libs.playReview)
+    implementation(libs.playReviewKtx)
 
     // Testing and Debugging
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
-    testImplementation ("io.mockk:mockk:1.13.5")
-    debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
+    androidTestImplementation(libs.espressoCore)
+    androidTestImplementation(libs.androidxJunit)
+    androidTestImplementation(libs.uiTestJunit4)
+    testImplementation(libs.mockk)
+    debugImplementation(libs.uiTooling)
 
-
-    //noinspection GradleDependency
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
-    testImplementation("junit:junit:4.13.2")
+    // Testing
+    debugImplementation(libs.uiTestManifest)
+    testImplementation(libs.junit)
 
     // Compose Extensions and Libraries
-    implementation("com.github.SmartToolFactory:Compose-AnimatedList:0.5.1")
+    implementation(libs.animatedList)
 
     // Firebase
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-    implementation("dev.gitlive:firebase-firestore:2.1.0")
-    implementation("dev.gitlive:firebase-functions:2.1.0")
-    implementation("dev.gitlive:firebase-storage:2.1.0")
-    implementation("dev.gitlive:firebase-auth:2.1.0")
-    implementation("dev.gitlive:firebase-analytics:2.1.0")
+    implementation(libs.googleid)
+    implementation(libs.firebaseFirestore)
+    implementation(libs.firebaseFunctions)
+    implementation(libs.firebaseStorage)
+    implementation(libs.firebaseAuth)
+    implementation(libs.firebaseAnalytics)
 
     // Google Play Services
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("com.google.android.gms:play-services-ads:23.5.0")
+    implementation(libs.playServicesAuth)
+    implementation(libs.playServicesAds)
 
     // Google Auth
-    implementation("androidx.credentials:credentials:1.3.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation(libs.credentials)
+    implementation(libs.credentialsPlayServicesAuth)
 
     // Koin
-    implementation ("io.insert-koin:koin-androidx-compose:4.0.1-Beta1")
-    implementation("io.insert-koin:koin-androidx-compose:4.0.1-Beta1")
-    implementation("io.insert-koin:koin-androidx-compose-navigation:4.0.1-Beta1")
-    testImplementation("io.insert-koin:koin-test:4.0.1-Beta1")
-    testImplementation("io.insert-koin:koin-test-junit5:4.0.1-Beta1")
+    implementation(libs.koinAndroidxCompose)
+    implementation(libs.koinComposeNavigation)
+    testImplementation(libs.koinTest)
+    testImplementation(libs.koinTestJunit5)
 
     // Kotlin Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
+    implementation(libs.kotlinxCoroutinesAndroid)
+    implementation(libs.kotlinxCoroutinesCore)
+    implementation(libs.kotlinxCoroutinesPlayServices)
 
     // Networking
-    implementation("io.ktor:ktor-client-okhttp:2.3.11")
+    implementation(libs.ktorClientOkhttp)
 
     // OpenAI
-    implementation(platform("com.aallam.openai:openai-client-bom:3.8.2"))
-    implementation("com.aallam.openai:openai-client")
+    implementation(platform(libs.openaiClientBom))
+    implementation(libs.openaiClient)
 
     // Other Libraries
-    implementation("org.parceler:parceler-api:1.1.13")
-    kapt("org.parceler:parceler:1.1.13")
+    implementation(libs.parcelerApi)
+    kapt(libs.parceler)
 
     // Image Loading
-    implementation("io.coil-kt:coil:2.7.0")
-    implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation ("com.github.skydoves:landscapist-coil:2.4.4")
-    implementation("com.github.skydoves:landscapist-placeholder:2.4.4")
-    implementation("com.github.skydoves:landscapist-palette:2.4.4")
-    implementation("com.github.skydoves:landscapist-transformation:2.4.4")
+    implementation(libs.coil)
+    implementation(libs.coilCompose)
+    implementation(libs.landscapistCoil)
+    implementation(libs.landscapistPlaceholder)
+    implementation(libs.landscapistPalette)
+    implementation(libs.landscapistTransformation)
 
     // Billing Client
-    implementation("com.android.billingclient:billing:7.1.1")
+    implementation(libs.billingClient)
 
     // Chart Libraries
-    implementation("com.patrykandpatrick.vico:compose:2.0.0-alpha.19")
-    implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-alpha.19")
-    implementation("com.patrykandpatrick.vico:core:2.0.0-alpha.19")
-    implementation("co.yml:ycharts-dreamjournalai:2.1.0")
+    implementation(libs.vicoCompose)
+    implementation(libs.vicoComposeM3)
+    implementation(libs.vicoCore)
+    implementation(libs.ychartsDreamjournalai)
+
+    implementation(libs.kotlin.serialization.json)
 }

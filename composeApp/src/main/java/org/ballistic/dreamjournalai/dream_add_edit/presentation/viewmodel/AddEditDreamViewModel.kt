@@ -112,7 +112,7 @@ class AddEditDreamViewModel(
     }
 
     init {
-        savedStateHandle.get<String>("dreamId")?.let { dreamId ->
+        savedStateHandle.get<String>("dreamID")?.let { dreamId ->
             if (dreamId.isNotEmpty()) {
                 viewModelScope.launch {
                     _addEditDreamState.value = addEditDreamState.value.copy(isLoading = true)

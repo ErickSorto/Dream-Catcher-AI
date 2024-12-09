@@ -49,7 +49,6 @@ fun BottomNavigation(
     modifier: Modifier
 ) {
     val items = listOf(
-        Screens.DreamJournalScreen,
         Screens.StoreScreen
     )
     LaunchedEffect(navController) {

@@ -82,10 +82,10 @@ class StoreScreenViewModel(
                             }
 
                             is Resource.Error -> {
-
+                                //TODO: Handle error
                             }
                             is Resource.Loading -> {
-
+                                //TODO: Handle loading
                             }
                         }
                     }

@@ -12,6 +12,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import org.ballistic.dreamjournalai.dream_account.AccountSettingsScreen
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.AddEditDreamScreen
 import org.ballistic.dreamjournalai.dream_add_edit.presentation.viewmodel.AddEditDreamViewModel
@@ -52,11 +53,11 @@ fun ScreenGraph(
     SharedTransitionLayout{
         NavHost(
             navController = navController,
-            startDestination = Screens.DreamJournalScreen.route,
+            startDestination = Route.DreamJournalScreen,
             modifier = Modifier.fillMaxSize()
         ) {
 
-            composable(route = Screens.DreamJournalScreen.route) {
+            composable<Route.DreamJournalScreen> {
                 val dreamJournalListViewModel = koinViewModel<DreamJournalListViewModel>()
                 val searchTextFieldState =
                     dreamJournalListViewModel.searchTextFieldState.collectAsStateWithLifecycle().value
@@ -69,9 +70,14 @@ fun ScreenGraph(
                     bottomPaddingValue = bottomPaddingValue,
                     onMainEvent = { onMainEvent(it) },
                     onDreamListEvent = { dreamJournalListViewModel.onEvent(it) },
-                    onNavigateToDream = {
+                    onNavigateToDream = { dreamID, backgroundID ->
                         navController.popBackStack()
-                        navController.navigate(it)
+                        navController.navigate(
+                            Route.AddEditDreamScreen(
+                                dreamID = dreamID,
+                                backgroundID = backgroundID
+                            )
+                        )
                     }
                 )
             }
@@ -93,25 +99,10 @@ fun ScreenGraph(
                 )
             }
 
-            composable(
-                route = Screens.AddEditDreamScreen.route +
-                        "?dreamId={dreamId}&dreamImageBackground={dreamImageBackground}",
-                arguments = listOf(
-                    navArgument(
-                        name = "dreamId"
-                    ) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    },
-                    navArgument(
-                        name = "dreamImageBackground"
-                    ) {
-                        type = NavType.IntType
-                        defaultValue = -1
-                    },
-                )
-            ) { value ->
-                val image = value.arguments?.getInt("dreamImageBackground") ?: -1
+            composable<Route.AddEditDreamScreen> {
+                val args = it.toRoute<Route.AddEditDreamScreen>()
+                val image = args.backgroundID
+
                 val addEditDreamViewModel = koinViewModel<AddEditDreamViewModel>()
                 val addEditDreamState =
                     addEditDreamViewModel.addEditDreamState.collectAsStateWithLifecycle().value
@@ -130,7 +121,7 @@ fun ScreenGraph(
                     animateVisibilityScope = this,
                     onNavigateToDreamJournalScreen = {
                         navController.popBackStack()
-                        navController.navigate(Screens.DreamJournalScreen.route)
+                        navController.navigate(Route.DreamJournalScreen)
                     },
                     onImageClick = { imageID ->
                         val encodedURL = URLEncoder.encode(imageID, StandardCharsets.UTF_8.toString())
@@ -193,7 +184,7 @@ fun ScreenGraph(
                     onLoginEvent = { loginViewModel.onEvent(it) },
                     onSignupEvent = { signupViewModel.onEvent(it) },
                     navigateToDreamJournalScreen = {
-                        navController.navigate(Screens.DreamJournalScreen.route) {
+                        navController.navigate(Route.DreamJournalScreen) {
                             // Pop up to the root of the navigation graph, so the back stack is cleared
                             popUpTo(navController.graph.startDestinationId) {
                                 inclusive = true
@@ -212,7 +203,7 @@ fun ScreenGraph(
                     onMainEvent = onMainEvent,
                     onNavigate = { route ->
                         navController.navigate(route) {
-                            popUpTo(Screens.DreamJournalScreen.route) {
+                            popUpTo(Route.DreamJournalScreen) {
                                 saveState = true
                                 inclusive = true
                             }

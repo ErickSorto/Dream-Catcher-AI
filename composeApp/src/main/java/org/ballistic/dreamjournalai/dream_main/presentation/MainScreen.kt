@@ -74,6 +74,7 @@ import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_main.presentation.components.BottomNavigation
 import org.ballistic.dreamjournalai.dream_main.presentation.components.DrawerGroupHeading
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
+import org.ballistic.dreamjournalai.navigation.Route
 import org.ballistic.dreamjournalai.navigation.ScreenGraph
 import org.ballistic.dreamjournalai.navigation.Screens
 
@@ -115,7 +116,6 @@ fun MainScreenView(
         DrawerGroup(
             title = "Pages",
             items = listOf(
-                Screens.DreamJournalScreen,
                 Screens.StoreScreen,
                 Screens.Favorites,
                 Screens.Nightmares,
@@ -213,7 +213,7 @@ fun MainScreenView(
                                         context.startActivity(intent)
                                     } else {
                                         navController.navigate(item.route) {
-                                            popUpTo(Screens.DreamJournalScreen.route) {
+                                            popUpTo(Route.DreamJournalScreen) {
                                                 saveState = true
                                             }
                                             launchSingleTop = true
@@ -265,8 +265,11 @@ fun MainScreenView(
                                 onClick = {
                                     if (mainScreenViewModelState.isBottomBarEnabledState) {
                                         triggerVibration(vibrator)
-                                        navController.navigate(Screens.AddEditDreamScreen.route) {
-                                            popUpTo(Screens.DreamJournalScreen.route) {
+                                        navController.navigate(Route.AddEditDreamScreen(
+                                            dreamID = "",
+                                            backgroundID = -1
+                                        )) {
+                                            popUpTo(Route.DreamJournalScreen) {
                                                 saveState = false
                                                 inclusive = true
                                             }

@@ -47,8 +47,6 @@ import org.ballistic.dreamjournalai.dream_journal_list.presentation.components.D
 import org.ballistic.dreamjournalai.dream_journal_list.presentation.viewmodel.DreamJournalListState
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
-import org.ballistic.dreamjournalai.navigation.Screens
-
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -60,7 +58,7 @@ fun DreamJournalListScreen(
     bottomPaddingValue: Dp,
     onMainEvent: (MainScreenEvent) -> Unit = {},
     onDreamListEvent: (DreamListEvent) -> Unit = {},
-    onNavigateToDream: (String) -> Unit = {},
+    onNavigateToDream: (dreamID: String?, backgroundID: Int) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -198,9 +196,7 @@ fun DreamJournalListScreen(
                             .padding(horizontal = 12.dp),
                         scope = scope,
                         onClick = {
-                            onNavigateToDream(
-                                "${Screens.AddEditDreamScreen.route}?dreamId=${dream.id}&dreamImageBackground=${dream.backgroundImage}"
-                            )
+                            onNavigateToDream(dream.id, dream.backgroundImage)
                         },
                         onDeleteClick = {
                             onDreamListEvent(
