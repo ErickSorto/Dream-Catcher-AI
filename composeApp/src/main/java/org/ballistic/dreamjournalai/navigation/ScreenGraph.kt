@@ -56,7 +56,6 @@ fun ScreenGraph(
             startDestination = Route.DreamJournalScreen,
             modifier = Modifier.fillMaxSize()
         ) {
-
             composable<Route.DreamJournalScreen> {
                 val dreamJournalListViewModel = koinViewModel<DreamJournalListViewModel>()
                 val searchTextFieldState =
@@ -83,7 +82,7 @@ fun ScreenGraph(
             }
 
             //store
-            composable(route = Screens.StoreScreen.route) {
+            composable<Route.StoreScreen> {
                 val storeScreenViewModel = koinViewModel<StoreScreenViewModel>()
                 val storeScreenViewModelState = storeScreenViewModel.storeScreenViewModelState
                     .collectAsStateWithLifecycle().value

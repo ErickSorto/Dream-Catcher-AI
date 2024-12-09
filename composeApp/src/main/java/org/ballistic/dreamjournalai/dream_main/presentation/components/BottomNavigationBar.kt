@@ -24,7 +24,9 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +40,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.util.VibrationUtil.triggerVibration
-import org.ballistic.dreamjournalai.navigation.Screens
+import org.ballistic.dreamjournalai.navigation.BottomNavigationRoutes
 
 
 @Composable
@@ -48,9 +50,6 @@ fun BottomNavigation(
     vibrator: Vibrator,
     modifier: Modifier
 ) {
-    val items = listOf(
-        Screens.StoreScreen
-    )
     LaunchedEffect(navController) {
         navController.currentBackStackEntryFlow.collect { backStackEntry ->
             Log.d("Navigation", "Current destination: ${backStackEntry.destination.route}")
@@ -73,11 +72,15 @@ fun BottomNavigation(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         val infiniteTransition = rememberInfiniteTransition(label = "")
-        items.forEach { item ->
-            val isSelected = currentRoute == item.route
+        BottomNavigationRoutes.entries.forEachIndexed { index, item ->
+            val isSelected by remember(currentRoute) {
+                mutableStateOf(
+                    derivedStateOf { currentRoute == item.route::class.qualifiedName }
+                )
+            }
 
             // Setup for on-click and selection-based scaling
-            val targetScale = if (isSelected) 1.25f else 1.1f
+            val targetScale = if (isSelected.value) 1.25f else 1.1f
             val scale = remember { Animatable(targetScale) }
 
             // Continuous floating effect setup
@@ -99,7 +102,7 @@ fun BottomNavigation(
             )
 
             val iconColor by animateColorAsState(
-                targetValue = if (isSelected) colorResource(id = R.color.dark_purple) else Color.LightGray,
+                targetValue = if (isSelected.value) colorResource(id = R.color.dark_purple) else Color.LightGray,
                 animationSpec = tween(durationMillis = 500), label = ""
             )
 
@@ -115,23 +118,23 @@ fun BottomNavigation(
                 icon = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            item.icon!!,
+                            item.icon,
                             contentDescription = item.title,
                             modifier = Modifier
                                 .graphicsLayer {
                                     // Combine both scaling effects for a dynamic, floating appearance
                                     val finalScale =
-                                        if (isSelected) floatingScale * scale.value else scale.value
+                                        if (isSelected.value) floatingScale * scale.value else scale.value
                                     scaleX = finalScale
                                     scaleY = finalScale
-                                    rotationZ = if (isSelected) rotation else 0f
+                                    rotationZ = if (isSelected.value) rotation else 0f
                                 }
                                 .size(24.dp), // Example icon size, adjust as needed
                             tint = iconColor
                         )
 
                         AnimatedVisibility(
-                            visible = isSelected,
+                            visible = isSelected.value,
                             modifier = Modifier.padding(start = 4.dp),
                         ) {
                             Text(
@@ -143,13 +146,13 @@ fun BottomNavigation(
                         }
                     }
                 },
-                selected = isSelected,
+                selected = isSelected.value,
                 onClick = {
                     Log.d("Navigation", "Navigating from $currentRoute to ${item.route}")
 
 
                     triggerVibration(vibrator)
-                    if (currentRoute != item.route) {
+                    if (currentRoute != item.route.toString()) {
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true

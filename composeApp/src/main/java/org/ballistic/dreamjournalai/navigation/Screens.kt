@@ -23,14 +23,25 @@ sealed class Route{
 
     @Serializable
     data object OnboardingScreen : Route()
+
+    @Serializable
+    data object StoreScreen : Route()
 }
 
-enum class RouteNavigation(title: String?, icon: ImageVector, route: Route){
+enum class DrawerNavigation(title: String?, icon: ImageVector, route: Route){
     DreamJournalScreen("My Dreams", Icons.Filled.Book, Route.DreamJournalScreen),
     AddEditDreamScreen("Add Dream", Icons.Default.Add, Route.AddEditDreamScreen("", -1)),
     MainScreen(null, Icons.Default.Home, Route.MainScreen),
-    OnboardingScreen(null, Icons.Default.Info, Route.OnboardingScreen)
+    OnboardingScreen(null, Icons.Default.Info, Route.OnboardingScreen),
+    StoreScreen("Store", Icons.Default.Shop, Route.StoreScreen)
 }
+
+enum class BottomNavigationRoutes(val title: String?, val icon: ImageVector, val route: Route){
+    DreamJournalScreen("My Dreams", Icons.Filled.Book, Route.DreamJournalScreen),
+    StoreScreen("Store", Icons.Default.Shop, Route.StoreScreen)
+}
+
+
 sealed class Screens(
     val route: String,
     val title: String? = null,
