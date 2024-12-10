@@ -65,7 +65,7 @@ If you encounter any issues, including those related to offline mode, you can fi
 | 💾 Persistence    | [Firebase](https://firebase.google.com/) (Remote Storage)                                                                                                                                                                                |
 | ⌨️ Logging        | [Logcat](https://developer.android.com/studio/debug/am-logcat) (Android)                                                                                                                                                                |
 | 📸 Image Loading  | [Coil](https://coil-kt.github.io/coil/)                                                                                                                                                                                                  |
-| ⌚ Date and Time  | [Java Time](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/package-summary.html)                                                                                                                                |
+| ⌚ Date and Time  | [Kotlin Date Time](https://github.com/Kotlin/kotlinx-datetime)                                                                                                                                |
 | 🔧 Supplementary  | [Accompanist](https://github.com/google/accompanist)                                                                                                                                                                                     |
 | 📢 Ads             | [Google AdMob](https://admob.google.com/home/)   
 | 💵 Billing         | [Google Play Billing](https://developer.android.com/google/play/billing/)    
