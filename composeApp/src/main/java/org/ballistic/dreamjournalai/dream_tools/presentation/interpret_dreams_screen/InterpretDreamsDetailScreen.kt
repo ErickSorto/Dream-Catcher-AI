@@ -39,7 +39,6 @@ import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.dream_tools.domain.DreamTools
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolScreenWithNavigateUpTopBar
-import org.ballistic.dreamjournalai.navigation.Screens
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -47,7 +46,7 @@ fun SharedTransitionScope.InterpretDreamsDetailScreen(
     imageID: Int,
     animatedVisibilityScope: AnimatedVisibilityScope,
     bottomPadding: Dp,
-    navigateTo: (String) -> Unit,
+    onNavigate: () -> Unit,
     navigateUp: () -> Unit
 ) {
     val context = LocalContext.current
@@ -123,7 +122,7 @@ fun SharedTransitionScope.InterpretDreamsDetailScreen(
 
             Button(
                 onClick = {
-                    navigateTo(Screens.AnalyzeMultipleDreams.route)
+                    onNavigate()
                 },
                 modifier = Modifier
                     .padding(5.dp)

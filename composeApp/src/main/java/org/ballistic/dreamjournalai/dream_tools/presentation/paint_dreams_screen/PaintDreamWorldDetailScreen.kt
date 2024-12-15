@@ -41,7 +41,6 @@ import org.ballistic.dreamjournalai.core.components.TypewriterText
 import org.ballistic.dreamjournalai.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.dream_tools.domain.DreamTools
 import org.ballistic.dreamjournalai.dream_tools.presentation.components.DreamToolScreenWithNavigateUpTopBar
-import org.ballistic.dreamjournalai.navigation.Screens
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -49,7 +48,7 @@ fun SharedTransitionScope.PaintDreamWorldDetailScreen(
     imageID: Int,
     animatedVisibilityScope: AnimatedVisibilityScope,
     bottomPadding: Dp,
-    navigateTo: (String) -> Unit,
+    onNavigate: () -> Unit,
     navigateUp: () -> Unit
 ) {
     val context = LocalContext.current
@@ -151,7 +150,7 @@ fun SharedTransitionScope.PaintDreamWorldDetailScreen(
             // Action Button Section
             Button(
                 onClick = {
-                    navigateTo(Screens.PaintDreamWorld.route)
+                    onNavigate()
                 },
                 modifier = Modifier
                     .padding(vertical = 8.dp)

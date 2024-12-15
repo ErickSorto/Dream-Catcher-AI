@@ -3,12 +3,9 @@ package org.ballistic.dreamjournalai.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Notifications
@@ -102,7 +99,6 @@ sealed class ToolRoute(val image: Int){
 
 enum class DrawerNavigation(val title: String?, val icon: ImageVector, val route: Route){
     DreamJournalScreen("My Dreams", Icons.Filled.Book, Route.DreamJournalScreen),
-    AddEditDreamScreen("Add Dream", Icons.Default.Add, Route.AddEditDreamScreen("", -1)),
     StoreScreen("Store", Icons.Default.Shop, Route.StoreScreen),
     Favorites("Favorites", Icons.Default.Star, Route.Favorites),
     AccountSettings("Account Settings", Icons.Default.Settings, Route.AccountSettings),
@@ -112,7 +108,6 @@ enum class DrawerNavigation(val title: String?, val icon: ImageVector, val route
     Symbol("Symbols", Icons.AutoMirrored.Filled.List, Route.Symbol),
     RateMyApp("Rate this App", Icons.Default.Favorite, Route.RateMyApp),
     DreamToolGraphScreen("Tools", Icons.Default.Build, Route.DreamToolGraphScreen),
-    //AboutMe("About Me", Icons.Default.Info, Route.MainScreen),
 }
 
 enum class BottomNavigationRoutes(val title: String?, val icon: ImageVector, val route: Route){
@@ -127,124 +122,4 @@ enum class DreamTools(val title: String, val description: String, val route: Too
     DynamicLucidChecker("Dynamic Lucid Checker",  "Dynamic Lucid Reminder Task", ToolRoute.DynamicLucidChecker(R.drawable.reality_check_reminder_tool), false), //Analyze Statistics
     DreamJournalReminder("Dream Journal Reminder",  "Set a reminder to write in your dream journal", ToolRoute.DreamJournalReminder(R.drawable.dream_journal_reminder_tool), false), //Dream Journal Reminder
     DREAM_WORLD("Dream World", "Dream World Painter", ToolRoute.PaintDreamWorld(R.drawable.dream_world_painter_tool), false), //Dream World Painter
-}
-
-sealed class Screens(
-    val route: String,
-    val title: String? = null,
-    val icon: ImageVector? = null
-) {
-    data object AddEditDreamScreen : Screens(
-        route = "add_edit_dream_screen",
-        title = "AddEdit",
-        icon = Icons.Default.Add
-    )
-
-    data object StoreScreen : Screens(
-        route = "dream_store",
-        title = "Store",
-        icon = Icons.Filled.Shop // Assuming filled version exists
-        // Assuming outlined version exists
-    )
-
-    data object Favorites : Screens(
-        route = "favorites",
-        title = "Favorites",
-        icon = Icons.Default.Star
-    )
-
-    data object AccountSettings : Screens(
-        route = "account_settings",
-        title = "Account Settings",
-        icon = Icons.Default.Settings
-    )
-
-//    data object AboutMe : Screens(
-//        route = "about_me",
-//        title = "About Me",
-//        icon = Icons.Default.Info
-//    )
-
-    data object Tools : Screens(
-        route = "tools",
-        title = "Tools",
-        icon = Icons.Default.Build
-    )
-
-    data object RandomDreamPicker : Screens(
-        route = "random_dream_picker",
-        title = "Random Dream Picker",
-        icon = Icons.Default.Casino
-    )
-
-    data object AnalyzeMultipleDreamsDetails : Screens(
-        route = "analyze_multiple_dream_details",
-        title = "Analyze Multiple Dreams Details",
-        icon = Icons.Default.Analytics
-    )
-
-    data object AnalyzeMultipleDreams : Screens(
-        route = "analyze_multiple_dream",
-        title = "Analyze Multiple Dreams",
-        icon = Icons.Default.Analytics
-    )
-
-    data object PaintDreamWorldDetails : Screens(
-        route = "paint_dream_world_details",
-        title = "Paint Dream World Details",
-        icon = Icons.Default.Brush
-    )
-
-    data object PaintDreamWorld : Screens(
-        route = "paint_dream_world",
-        title = "Paint Dream World",
-        icon = Icons.Default.Brush
-    )
-
-    data object Statistics : Screens(
-        route = "statistics",
-        title = "Statistics",
-        icon = Icons.Default.BarChart
-    )
-
-    data object NotificationSettings : Screens(
-        route = "notification_settings",
-        title = "Notification Settings",
-        icon = Icons.Default.Notifications
-    )
-
-    data object Nightmares : Screens(
-        route = "nightmares",
-        title = "Nightmares",
-        icon = Icons.Default.ErrorOutline
-    )
-
-    data object Symbol : Screens(
-        route = "symbol",
-        title = "Symbols",
-        icon = Icons.AutoMirrored.Filled.List
-    )
-
-//    data object DreamSettings : Screens(
-//        "dream_settings",
-//        "Dream Settings",
-//        Icons.Default.Bedtime
-//    )
-
-    data object DreamToolGraphScreen : Screens(
-        "dream_tool_graph_screen",
-        "Tools",
-        Icons.Default.Build
-    )
-
-    data object RateMyApp : Screens(
-        "rate_my_app",
-        "Rate this App",
-        Icons.Default.Favorite
-    )
-
-    data object OnboardingScreen : Screens(route = "welcome_screen", title = "Welcome", icon = null)
-    data object MainScreen : Screens(route = "main_screen", title = "Main", icon = null)
-    data object FullScreenImageScreen :
-        Screens(route = "full_screen_image", title = "Full Screen Image", icon = null)
 }

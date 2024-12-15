@@ -6,11 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_main.presentation.viewmodel.MainScreenViewModelState
@@ -35,7 +33,7 @@ fun DreamToolsGraph(
     SharedTransitionLayout {
         NavHost(
             navController = navController,
-            startDestination = Screens.Tools.route,
+            startDestination = Route.Tools,
         ) {
             composable<Route.Tools> {
                 DreamToolsScreen(
@@ -76,8 +74,8 @@ fun DreamToolsGraph(
                     imageID = args.imageID,
                     animatedVisibilityScope = this,
                     bottomPadding = bottomPaddingValue,
-                    navigateTo = { route ->
-                        navController.navigate(route)
+                    onNavigate = {
+                        navController.navigate(Route.AnalyzeMultipleDreams)
                     },
                     navigateUp = {
                         navController.navigateUp()
@@ -85,9 +83,7 @@ fun DreamToolsGraph(
                 )
             }
 
-            composable(
-                route = Screens.AnalyzeMultipleDreams.route
-            ) {
+            composable<Route.AnalyzeMultipleDreams> {
                 val interpretDreamsViewModel = koinViewModel<InterpretDreamsViewModel>()
                 val interpretDreamsScreenState = interpretDreamsViewModel.interpretDreamsScreenState
                     .collectAsStateWithLifecycle()
@@ -98,47 +94,38 @@ fun DreamToolsGraph(
                     onMainScreenEvent = { onMainEvent(it) },
                     navigateUp = {
                         navController.popBackStack()
-                        navController.navigate(Screens.Tools.route)
+                        navController.navigate(Route.Tools)
                     }
                 )
             }
 
-            composable(
-                route = Screens.PaintDreamWorldDetails.route + "/{image}",
-                arguments = listOf(
-                    navArgument("image") {
-                        type = NavType.IntType
-                    }
-                )
-            ) { it ->
-                val imageID = it.arguments?.getInt("image") ?: -1
+            composable<ToolRoute.PaintDreamWorld> {
+                val imageID = it.toRoute<ToolRoute.PaintDreamWorld>().imageID
                 PaintDreamWorldDetailScreen(
                     imageID = imageID,
                     animatedVisibilityScope = this,
                     bottomPadding = bottomPaddingValue,
-                    navigateTo = { route ->
-                        navController.navigate(route)
+                    onNavigate = {
+                        navController.navigate(Route.PaintDreamWorld)
                     },
                     navigateUp = {
                         navController.popBackStack()
-                        navController.navigate(Screens.Tools.route)
+                        navController.navigate(Route.Tools)
                     }
                 )
             }
 
-            composable(
-                route = Screens.PaintDreamWorld.route
-            ) {
+            composable<Route.PaintDreamWorld> {
                 PaintDreamWorldDetailScreen(
                     imageID = 0,
                     animatedVisibilityScope = this,
                     bottomPadding = bottomPaddingValue,
-                    navigateTo = { route ->
-                        navController.navigate(route)
+                    onNavigate = {
+                        navController.navigate(Route.PaintDreamWorld)
                     },
                     navigateUp = {
                         navController.popBackStack()
-                        navController.navigate(Screens.Tools.route)
+                        navController.navigate(Route.Tools)
                     }
                 )
             }

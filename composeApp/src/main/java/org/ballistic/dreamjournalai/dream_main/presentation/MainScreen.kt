@@ -215,7 +215,7 @@ fun MainScreenView(
                                         context.startActivity(intent)
                                     } else {
                                         navController.navigate(item.route) {
-                                            popUpTo(DrawerNavigation.DreamJournalScreen) {
+                                            popUpTo(DrawerNavigation.DreamJournalScreen.route) {
                                                 saveState = true
                                             }
                                             launchSingleTop = true
