@@ -4,6 +4,7 @@ kotlin = "2.1.0"
 googleServices = "4.3.15"
 secretsPlugin = "2.0.1"
 baselineProfile = "1.0.0"
+compose-multiplatform = "1.7.0"
 
 compose = "1.7.5"
 activityCompose = "1.9.3"
@@ -44,6 +45,12 @@ billingClient = "7.1.1"
 vico = "2.0.0-alpha.19"
 ycharts = "2.1.0"
 serialization = "1.7.3"
+jetbrainsKotlinMultiplatform = "2.1.0"
+androidKotlinMultiplatformLibrary = "8.8.0-rc01"
+kotlinStdlib = "2.1.0"
+kotlinTest = "2.1.0"
+runner = "1.6.2"
+core = "1.6.1"
 
 [libraries]
 activityCompose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -128,8 +135,16 @@ vicoCompose = { module = "com.patrykandpatrick.vico:compose", version.ref = "vic
 vicoComposeM3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "vico" }
 vicoCore = { module = "com.patrykandpatrick.vico:core", version.ref = "vico" }
 ychartsDreamjournalai = { module = "co.yml:ycharts-dreamjournalai", version.ref = "ycharts" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlinTest" }
+runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+core = { group = "androidx.test", name = "core", version.ref = "core" }
 
 
 
 [plugins]
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+jetbrains-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrainsKotlinMultiplatform" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidKotlinMultiplatformLibrary" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
