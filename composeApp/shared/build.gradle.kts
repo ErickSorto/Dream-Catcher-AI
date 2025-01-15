@@ -113,6 +113,9 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.coreSplashscreen)
             implementation(libs.kmpnotifier)
+            implementation(libs.vicoCore)
+            implementation(libs.vicoCompose)
+            implementation(libs.vicoComposeM3)
         }
 
         iosMain {

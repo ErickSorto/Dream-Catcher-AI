@@ -1,4 +1,4 @@
-package org.ballistic.dreamjournalai.dream_statistics.presentation.components
+package org.ballistic.dreamjournalai.shared.dream_statistics.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -36,13 +35,13 @@ import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shape.Shape
-import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.dream_statistics.presentation.viewmodel.DreamStatisticScreenState
+import org.ballistic.dreamjournalai.shared.dream_statistics.presentation.viewmodel.DreamStatisticScreenState
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.LightBlack
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.White
 import kotlin.math.ceil
 
-
 @Composable
-fun DreamChartBarChart(dreamStatisticScreenState: DreamStatisticScreenState) {
+actual fun DreamChartBarChart(dreamStatisticScreenState: DreamStatisticScreenState) {
     if (dreamStatisticScreenState.dreams.isEmpty()) {
         return
     }
@@ -117,7 +116,7 @@ fun DreamChartBarChart(dreamStatisticScreenState: DreamStatisticScreenState) {
             .imePadding()
             .clip(RoundedCornerShape(8.dp))
             .background(
-                colorResource(id = R.color.light_black).copy(alpha = 0.8f)
+                LightBlack.copy(alpha = 0.8f)
             )
             .fillMaxWidth()
     ) {
@@ -129,7 +128,7 @@ fun DreamChartBarChart(dreamStatisticScreenState: DreamStatisticScreenState) {
                 text = "Dream Types",
                 modifier = Modifier.padding(16.dp),
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = colorResource(id = R.color.white)
+                    color = White
                 ).copy(fontWeight = FontWeight.Normal),
             )
             CartesianChartHost(
@@ -147,7 +146,7 @@ fun DreamChartBarChart(dreamStatisticScreenState: DreamStatisticScreenState) {
                     bottomAxis = bottomAxis
                 ),
                 modelProducer = modelProducer.apply {
-                    colorResource(id = R.color.white)
+                    White
                 },
                 marker = rememberDefaultCartesianMarker(
                     label = rememberTextComponent(
@@ -168,6 +167,3 @@ fun DreamChartBarChart(dreamStatisticScreenState: DreamStatisticScreenState) {
         }
     }
 }
-
-
-

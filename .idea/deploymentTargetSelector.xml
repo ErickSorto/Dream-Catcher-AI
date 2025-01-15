@@ -2,13 +2,10 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="Generate Baseline Profile for app">
+      <SelectionState runConfigName="DreamJournalAI.composeApp">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="composeApp">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="composeApp.shared">
+      <SelectionState runConfigName="DreamJournalAI.composeApp.shared">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
