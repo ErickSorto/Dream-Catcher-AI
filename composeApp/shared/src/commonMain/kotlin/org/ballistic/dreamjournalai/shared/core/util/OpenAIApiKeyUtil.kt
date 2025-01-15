@@ -1,28 +1,28 @@
 package org.ballistic.dreamjournalai.shared.core.util
 
-import android.util.Log
-import com.google.firebase.functions.FirebaseFunctions
-import kotlinx.coroutines.tasks.await
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.functions.functions
 
 object OpenAIApiKeyUtil {
-    /**
-     * Asynchronously retrieves the OpenAI API key from Firebase Cloud Functions.
-     *
-     * @return The OpenAI API key as a String.
-     * @throws IllegalStateException if there is any issue during the call or the data retrieval.
-     */
+
     suspend fun getOpenAISecretKey(): String {
-        val functions = FirebaseFunctions.getInstance()
         return try {
+            val functions = Firebase.functions
+            // `invoke()` returns an HttpsCallableResult, then
+            // `.data<T>()` decodes it to the type you specify.
             val result = functions
-                .getHttpsCallable("getOpenAISecretKey")
-                .call()
-                .await()
-            val data = result.getData() as? Map<*, *> ?: throw IllegalStateException("Failed to fetch API Key")
-            data["apiKey"] as? String ?: throw IllegalStateException("API Key is not available")
+                .httpsCallable("getOpenAISecretKey")
+                .invoke()
+
+            // Convert HttpsCallableResult into a Map
+            val data = result.data<Map<String, Any>>()
+                ?: throw IllegalStateException("Failed to fetch API Key")
+
+            // Extract the key from the map
+            data["apiKey"] as? String
+                ?: throw IllegalStateException("API Key is not available in the response")
         } catch (e: Exception) {
-            Log.e("OpenAIApiKeyUtil", "Failed to retrieve API Key: ${e.localizedMessage}", e)
-            throw IllegalStateException("Failed to retrieve API Key: ${e.localizedMessage}", e)
+            throw IllegalStateException("Failed to retrieve API Key: ${e.message}", e)
         }
     }
 }

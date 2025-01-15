@@ -272,3 +272,10 @@ fun addMinutes(dateTime: LocalDateTime, minutesToAdd: Int): LocalDateTime {
 
     return LocalDateTime(year, month, day, newHour, newMinute, dateTime.second, dateTime.nanosecond)
 }
+
+//private fun formatTime(minutes: Float): String {
+//    val totalMinutes = minutes.toInt()
+//    val hours = totalMinutes / 60
+//    val mins = totalMinutes % 60
+//    return String.format("%02d:%02d", hours, mins)
+//}

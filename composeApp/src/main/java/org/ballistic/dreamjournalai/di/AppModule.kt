@@ -22,6 +22,7 @@ import org.koin.dsl.module
 
 
 val appModule = module {
+    single { ContextFactory(activity) }
     single<FirebaseFirestore> {  FirebaseFirestore.getInstance() }
     single<FirebaseAuth> { FirebaseAuth.getInstance() }
     single { FirebaseStorage.getInstance() }

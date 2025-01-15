@@ -14,7 +14,7 @@ import org.ballistic.dreamjournalai.R
 data class Dream (
     val title: String,
     val content: String,
-    val timestamp: Long = System.currentTimeMillis(),
+    val timestamp: Long = Clock.System.now().toEpochMilliseconds(),
     val date: String = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString(),
     val sleepTime: String = String.format("%02d:%02d", 23, 0),
     val wakeTime: String = String.format("%02d:%02d", 7, 0),

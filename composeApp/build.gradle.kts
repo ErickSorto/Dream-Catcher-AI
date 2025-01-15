@@ -8,7 +8,6 @@ plugins {
     id("kotlin-parcelize")
     id("androidx.baselineprofile")
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.0"
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -65,7 +64,7 @@ composeCompiler {
 
 dependencies {
     // AndroidX dependencies
-    implementation(libs.activityCompose)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.appcompat)
     implementation(libs.material3)
     implementation(libs.material3WindowSize)
@@ -122,7 +121,7 @@ dependencies {
     implementation(libs.credentialsPlayServicesAuth)
 
     // Koin
-    implementation(libs.koinAndroidxCompose)
+    implementation(libs.koin.androidx.compose)
     implementation(libs.koinComposeNavigation)
     testImplementation(libs.koinTest)
     testImplementation(libs.koinTestJunit5)

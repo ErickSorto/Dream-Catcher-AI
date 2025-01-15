@@ -15,6 +15,6 @@ dependencyResolutionManagement {
         maven { url "https://jitpack.io" }
     }
 }
-rootProject.name = "Dream Journal AI"
+rootProject.name = "DreamJournalAI"
 include ':composeApp'
 include ':composeApp:shared'

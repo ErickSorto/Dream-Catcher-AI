@@ -1,5 +1,9 @@
 package org.ballistic.dreamjournalai.shared.core.components
 
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.BrighterWhite
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.LightBlack
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.RedOrange
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.White
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,9 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import org.ballistic.dreamjournalai.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,20 +57,20 @@ fun ActionBottomSheet(
                 Text(
                     text = title,
                     style = Typography().titleLarge,
-                    color = colorResource(id = R.color.brighter_white)
+                    color = BrighterWhite
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
                     text = message,
                     style = Typography().bodySmall,
-                    color = colorResource(id = R.color.brighter_white)
+                    color = BrighterWhite
 
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(
                     onClick = onClick,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.RedOrange)
+                        containerColor = RedOrange
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
@@ -76,12 +78,12 @@ fun ActionBottomSheet(
                     Text(
                         text = buttonText,
                         style = typography.headlineLarge,
-                        color = colorResource(id = R.color.white)
+                        color = White
                     )
                 }
             }
         },
-        containerColor = colorResource(id = R.color.light_black)
+        containerColor = LightBlack
 
     )
 }

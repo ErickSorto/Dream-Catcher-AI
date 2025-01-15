@@ -1,13 +1,22 @@
 [versions]
-agp = "8.1.0"
+agp = "8.5.2"
+firebaseBom = "33.7.0"
+inAppReviewKmpGooglePlay = "3.1.24"
+kmpauthGoogle = "2.3.0-beta01"
+kmpnotifier = "1.4.0"
+koalaplotCore = "0.7.1"
 kotlin = "2.1.0"
 googleServices = "4.3.15"
+kotlinxSerializationJson = "1.8.0-RC"
+multiplatformSettings = "1.2.0"
+permissions = "0.18.1"
 secretsPlugin = "2.0.1"
 baselineProfile = "1.0.0"
 compose-multiplatform = "1.7.0"
+androidx-lifecycle = "2.8.4"
 
 compose = "1.7.5"
-activityCompose = "1.9.3"
+androidx-activityCompose = "1.9.3"
 appcompat = "1.7.0"
 material3 = "1.3.1"
 constraintlayout = "1.1.0"
@@ -51,10 +60,28 @@ kotlinStdlib = "2.1.0"
 kotlinTest = "2.1.0"
 runner = "1.6.2"
 core = "1.6.1"
+runtimeAndroid = "1.7.6"
+runtimeJvmstubs = "1.7.6"
+runtimeDesktop = "1.7.0"
+firebaseAuthCommon = "9.8.0"
+
+lexilabs-basic = "+" # gets the latest version
+
+purchases-kmp = "1.1.0+13.3.0"
 
 [libraries]
-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-common = { module = "dev.gitlive:firebase-common", version.ref = "firebase" }
+in1-app-review-kmp-google-play = { module = "io.github.sergeimikhailovskii:in-app-review-kmp-google-play", version.ref = "inAppReviewKmpGooglePlay" }
+kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauthGoogle" }
+kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauthGoogle" }
+kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauthGoogle" }
+kmpnotifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmpnotifier" }
+koalaplot-core = { module = "io.github.koalaplot:koalaplot-core", version.ref = "koalaplotCore" }
+kotlinx-serialization-json-v180rc = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+landscapist-coil3 = { module = "com.github.skydoves:landscapist-coil3", version.ref = "landscapist" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 material3WindowSize = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3" }
 animation = { module = "androidx.compose.animation:animation", version.ref = "compose" }
@@ -70,7 +97,11 @@ lifecycleRuntimeKtx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", ver
 lifecycleViewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 lifecycleViewModelKtx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 materialIconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
+multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
+multiplatform-settings-datastore = { module = "com.russhwolf:multiplatform-settings-datastore", version.ref = "multiplatformSettings" }
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+permissions = { module = "dev.icerock.moko:permissions", version.ref = "permissions" }
+permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "permissions" }
 roomKtx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileInstaller" }
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
@@ -96,8 +127,14 @@ playServicesAuth = { module = "com.google.android.gms:play-services-auth", versi
 playServicesAds = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 credentialsPlayServicesAuth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
-koinAndroidxCompose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koinComposeNavigation = { module = "io.insert-koin:koin-androidx-compose-navigation", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+
 koinTest = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 koinTestJunit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
@@ -134,17 +171,30 @@ billingClient = { module = "com.android.billingclient:billing", version.ref = "b
 vicoCompose = { module = "com.patrykandpatrick.vico:compose", version.ref = "vico" }
 vicoComposeM3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "vico" }
 vicoCore = { module = "com.patrykandpatrick.vico:core", version.ref = "vico" }
-ychartsDreamjournalai = { module = "co.yml:ycharts-dreamjournalai", version.ref = "ycharts" }
+ychartsDreamjournalai = { module = "co.yml:ycharts", version.ref = "ycharts" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlinTest" }
 runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 core = { group = "androidx.test", name = "core", version.ref = "core" }
 
+androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+firebase-auth-common = { group = "com.google.firebase", name = "firebase-auth-common", version.ref = "firebaseAuthCommon" }
 
+lexilabs-basic-ads = { module = "app.lexilabs.basic:basic-ads", version.ref = "lexilabs-basic"}
+
+purchases-core = { module = "com.revenuecat.purchases:purchases-kmp-core", version.ref = "purchases-kmp" }
+# Optional: adds extension properties representing timestamps as kotlinx-datetime Instants.
+purchases-datetime = { module = "com.revenuecat.purchases:purchases-kmp-datetime", version.ref = "purchases-kmp" }
+# Optional: adds suspending functions that return Arrow's Either to indicate success / failure.
+purchases-either = { module = "com.revenuecat.purchases:purchases-kmp-either", version.ref = "purchases-kmp" }
+# Optional: adds suspending functions that return kotlin.Result to indicate success / failure.
+purchases-result = { module = "com.revenuecat.purchases:purchases-kmp-result", version.ref = "purchases-kmp" }
 
 [plugins]
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-jetbrains-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrainsKotlinMultiplatform" }
-android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidKotlinMultiplatformLibrary" }
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "jetbrainsKotlinMultiplatform" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }

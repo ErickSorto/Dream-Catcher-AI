@@ -1,66 +1,99 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.jetbrains.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
-
-// Target declarations - add or remove as needed below. These define
-// which platforms this KMP module supports.
-// See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
-    androidLibrary {
-        namespace = "org.ballistic.dreamjournalai.shared"
-        compileSdk = 35
-        minSdk = 27
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
 
-// For iOS targets, this is also where you should
-// configure native binary output. For more information, see:
-// https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#build-xcframeworks
-
-// A step-by-step guide on how to include this library in an XCode
-// project can be found here:
-// https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "shared"
-
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            export("io.github.mirzemehdi:kmpnotifier:1.4.0")
+            baseName = "ComposeApp"
+            isStatic = true
         }
     }
 
-    iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-// Source set declarations.
-// Declaring a target automatically creates a source set with the same name. By default, the
-// Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
-// common to share sources between related targets.
-// See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
         commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
+            implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlin.stdlib)
             implementation(libs.datetime)
+
+
+            //Image
+            implementation(libs.landscapist.coil3)
+
+            implementation(libs.kotlinx.serialization.json.v180rc)
+
+            //firebase functions
+            implementation(libs.googleid)
+            implementation(libs.firebaseFirestore)
+            implementation(libs.firebaseFunctions)
+            implementation(libs.firebaseStorage)
+            implementation(libs.firebaseAuth)
+            implementation(libs.firebaseAnalytics)
+            implementation(libs.firebase.common)
+            implementation(libs.firebase.auth.common)
+
+            implementation(libs.lexilabs.basic.ads)
+            implementation(libs.playServicesAds)
+
+            // koin
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+
+            implementation(libs.kmpauth.google) //Google One Tap Sign-In
+            implementation(libs.kmpauth.firebase) //Integrated Authentications with Firebase
+            implementation(libs.kmpauth.uihelper) //UiHelper SignIn buttons (AppleSignIn, GoogleSignInButton)
+
+            //openai
+            implementation(project.dependencies.platform(libs.openaiClientBom))
+            implementation(libs.openaiClient)
+
+            implementation(compose.materialIconsExtended)
+
+            implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+
+            implementation(libs.in1.app.review.kmp.google.play)
+
+            implementation(libs.permissions)
+            implementation(libs.permissions.compose)
+
+            implementation(libs.purchases.core)
+            implementation(libs.purchases.datetime)   // Optional
+            implementation(libs.purchases.either)     // Optional
+            implementation(libs.purchases.result)
+
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.datastore)
+            implementation(libs.datastorePreferences)
+            implementation(libs.koalaplot.core)
         }
 
         commonTest {
@@ -69,20 +102,17 @@ kotlin {
             }
         }
 
-        androidMain {
-            dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
-            }
-        }
+        androidMain.dependencies {
+            implementation(compose.preview)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.firebaseFirestore)
+            implementation(project.dependencies.platform(libs.firebase.bom))
 
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.runner)
-                implementation(libs.core)
-                implementation(libs.androidxJunit)
-            }
+            //koin
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
+            implementation(libs.coreSplashscreen)
+            implementation(libs.kmpnotifier)
         }
 
         iosMain {
@@ -95,5 +125,58 @@ kotlin {
             }
         }
     }
-
 }
+
+android {
+    namespace = "org.ballistic.dreamjournalai.shared"
+    compileSdk = 35
+
+    defaultConfig {
+        applicationId = "org.ballistic.dreamjournalai"
+        minSdk = 27
+        targetSdk = 35
+        versionCode = 71
+        versionName = "1.2.8"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+
+    sourceSets {
+        getByName("main") {
+            res.srcDirs("src/androidMain/res")
+        }
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            // Adjust the signing config as necessary
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+

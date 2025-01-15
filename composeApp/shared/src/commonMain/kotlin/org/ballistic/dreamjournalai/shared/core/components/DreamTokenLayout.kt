@@ -11,11 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.ImageOptions
-import com.skydoves.landscapist.coil.CoilImage
-import org.ballistic.dreamjournalai.R
+import com.skydoves.landscapist.coil3.CoilImage
+import dreamjournalai.composeapp.shared.generated.resources.Res
+import dreamjournalai.composeapp.shared.generated.resources.dream_token
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.Black
 
 @Composable
 fun DreamTokenLayout(
@@ -27,12 +28,14 @@ fun DreamTokenLayout(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(
-                colorResource(id = R.color.black).copy(alpha = 0.3f)
+                Black.copy(alpha = 0.3f)
             ),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
     ) {
         CoilImage(
-            imageModel =  { R.drawable.dream_token },
+            imageModel =  {
+                Res.drawable.dream_token
+                          },
             modifier = Modifier
                 .size(40.dp)
                 .padding(4.dp, 4.dp, 0.dp, 4.dp),

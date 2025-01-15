@@ -18,13 +18,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.ballistic.dreamjournalai.R
 import org.ballistic.dreamjournalai.core.Resource
-import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 import org.ballistic.dreamjournalai.dream_authentication.domain.repository.AuthRepository
+import org.ballistic.dreamjournalai.dream_main.domain.MainScreenEvent
 
 
 class MainScreenViewModel(

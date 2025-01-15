@@ -1,22 +1,16 @@
 package org.ballistic.dreamjournalai.shared.core.domain
 
 
-import android.os.Parcelable
-import dev.gitlive.firebase.firestore.Timestamp
-import kotlinx.parcelize.Parcelize
-import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream
+import kotlinx.datetime.Clock
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class Flag(
     val dreamId: String? = null,            // Nullable dream ID
     val imageAddress: String,               // URL of the associated image
-    val timestamp: Long = System.currentTimeMillis(),
+    val timestamp: Long = Clock.System.now().toEpochMilliseconds(),
     val status: String = "pending"          // Flag status: pending, reviewed, resolved
-) : Parcelable   {
-    constructor() : this(
-        null,
-        "",
-        System.currentTimeMillis(),
-        "pending"
-    )
+) {
+    // For dev.gitlive firebase, you might keep a no-arg constructor if desired
+    constructor() : this(null, "", Clock.System.now().toEpochMilliseconds(), "pending")
 }
