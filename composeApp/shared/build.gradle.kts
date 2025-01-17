@@ -12,9 +12,10 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
         }
     }
 
@@ -57,11 +58,11 @@ kotlin {
             implementation(libs.firebaseStorage)
             implementation(libs.firebaseAuth)
             implementation(libs.firebaseAnalytics)
-            implementation(libs.firebase.common)
-            implementation(libs.firebase.auth.common)
 
             implementation(libs.lexilabs.basic.ads)
             implementation(libs.playServicesAds)
+
+
 
             // koin
             api(libs.koin.core)
@@ -105,17 +106,17 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.firebaseFirestore)
-            implementation(project.dependencies.platform(libs.firebase.bom))
 
             //koin
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
             implementation(libs.coreSplashscreen)
             implementation(libs.kmpnotifier)
             implementation(libs.vicoCore)
             implementation(libs.vicoCompose)
             implementation(libs.vicoComposeM3)
+            implementation(libs.ychartsDreamjournalai)
         }
 
         iosMain {
@@ -129,15 +130,23 @@ kotlin {
         }
     }
 }
-
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
 android {
     namespace = "org.ballistic.dreamjournalai.shared"
-    compileSdk = 35
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["main"].res.srcDirs("src/commonMain/resources", "src/androidMain/res")
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
         applicationId = "org.ballistic.dreamjournalai"
-        minSdk = 27
-        targetSdk = 35
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 71
         versionName = "1.2.8"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -145,24 +154,11 @@ android {
             useSupportLibrary = true
         }
     }
-
-    sourceSets {
-        getByName("main") {
-            res.srcDirs("src/androidMain/res")
-        }
-    }
-
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
@@ -175,10 +171,16 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    dependencies {
+        debugImplementation(libs.compose.ui.tooling)
+    }
+    buildFeatures.compose = true
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.toString()
     }
 }
 

@@ -95,7 +95,7 @@ dependencies {
     androidTestImplementation(libs.androidxJunit)
     androidTestImplementation(libs.uiTestJunit4)
     testImplementation(libs.mockk)
-    debugImplementation(libs.uiTooling)
+    debugImplementation(libs.compose.ui.tooling)
 
     // Testing
     debugImplementation(libs.uiTestManifest)
@@ -105,12 +105,12 @@ dependencies {
     implementation(libs.animatedList)
 
     // Firebase
-    implementation(libs.googleid)
-    implementation(libs.firebaseFirestore)
-    implementation(libs.firebaseFunctions)
-    implementation(libs.firebaseStorage)
-    implementation(libs.firebaseAuth)
-    implementation(libs.firebaseAnalytics)
+//    implementation(libs.googleid)
+//    implementation(libs.firebaseFirestore)
+//    implementation(libs.firebaseFunctions)
+//    implementation(libs.firebaseStorage)
+//    implementation(libs.firebaseAuth)
+//    implementation(libs.firebaseAnalytics)
 
     // Google Play Services
     implementation(libs.playServicesAuth)

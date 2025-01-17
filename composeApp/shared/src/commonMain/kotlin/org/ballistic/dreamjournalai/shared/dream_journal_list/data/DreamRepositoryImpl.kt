@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import org.ballistic.dreamjournalai.shared.core.Constants.USERS
 import org.ballistic.dreamjournalai.shared.core.Resource
 import org.ballistic.dreamjournalai.shared.core.domain.Flag
@@ -25,6 +26,7 @@ import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.repository.DreamRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
 
 class DreamRepositoryImpl(
     private val db: FirebaseFirestore
@@ -56,35 +58,9 @@ class DreamRepositoryImpl(
     }
 
     private fun DocumentSnapshot.toDream(): Dream? {
-        val data = this.data<Map<String, Any>>()
-        return Dream(
-            title         = data["title"]        as? String ?: "",
-            content       = data["content"]      as? String ?: "",
-            timestamp     = data["timestamp"]    as? Long   ?: 0,
-            date          = data["date"]         as? String ?: "",
-            sleepTime     = data["sleepTime"]    as? String ?: "",
-            wakeTime      = data["wakeTime"]     as? String ?: "",
-            AIResponse    = data["airesponse"]   as? String ?: "",
-            isFavorite    = data["favorite"]     as? Boolean ?: false,
-            isLucid       = data["lucid"]        as? Boolean ?: false,
-            isNightmare   = data["nightmare"]    as? Boolean ?: false,
-            isRecurring   = data["recurring"]    as? Boolean ?: false,
-            falseAwakening   = data["falseAwakening"] as? Boolean ?: false,
-            lucidityRating   = (data["lucidityRating"]  as? Long)?.toInt() ?: 1,
-            moodRating       = (data["moodRating"]      as? Long)?.toInt() ?: 1,
-            vividnessRating  = (data["vividnessRating"] as? Long)?.toInt() ?: 1,
-            timeOfDay        = data["timeOfDay"]        as? String ?: "",
-            backgroundImage  = (data["backgroundImage"] as? Long)?.toInt() ?: 0,
-            generatedImage   = data["generatedImage"]    as? String ?: "",
-            generatedDetails = data["generatedDetails"]  as? String ?: "",
-            dreamQuestion    = data["dreamQuestion"]     as? String ?: "",
-            dreamAIStory     = data["dreamAIStory"]      as? String ?: "",
-            dreamAIAdvice    = data["dreamAIAdvice"]     as? String ?: "",
-            dreamAIQuestionAnswer = data["dreamAIQuestionAnswer"] as? String ?: "",
-            dreamAIMood      = data["dreamAIMood"]       as? String ?: "",
-            id = this.id,
-            uid = data["uid"] as? String ?: ""
-        )
+        val dream = data<Dream>() ?: return null
+
+        return dream.copy(id = this.id)
     }
 
     override suspend fun getDream(id: String): Resource<Dream> {

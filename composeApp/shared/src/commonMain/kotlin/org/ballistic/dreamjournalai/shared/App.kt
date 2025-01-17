@@ -1,10 +1,10 @@
 package org.ballistic.dreamjournalai.shared
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
 import org.ballistic.dreamjournalai.shared.navigation.MainGraph
 import org.ballistic.dreamjournalai.shared.theme.DreamJournalAITheme
@@ -18,7 +18,7 @@ fun App(
     DreamJournalAITheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
+                color = Color.Transparent
             ) {
                 val navController = rememberNavController()
                 //  val screen by splashViewModel.state

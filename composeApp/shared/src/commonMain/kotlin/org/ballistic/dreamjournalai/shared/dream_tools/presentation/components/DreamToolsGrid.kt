@@ -24,12 +24,16 @@ fun SharedTransitionScope.DreamToolsGrid(
     modifier: Modifier
 ) {
     val lastClickTime = remember { mutableLongStateOf(0L) }
+    val dreamToolsList = DreamTools.entries // the enum’s values
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(5.dp),
         modifier = modifier
     ) {
-        items(DreamTools.entries) { tool ->
+        // Use 'items()' so the grid knows how many items there are
+        items(dreamToolsList.size) { index ->
+            val tool = dreamToolsList[index]
             DreamToolItem(
                 title = tool.title,
                 icon = tool.route.image,

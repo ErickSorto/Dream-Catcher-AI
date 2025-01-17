@@ -2,75 +2,84 @@ package org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.componen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.smarttoolfactory.animatedlist.AnimatedInfiniteLazyRow
-import org.ballistic.dreamjournalai.R
-import org.ballistic.dreamjournalai.dream_journal_list.domain.model.Dream.Companion.dreamBackgroundImages
-import org.ballistic.dreamjournalai.dream_add_edit.domain.AddEditDreamEvent
+import dreamjournalai.composeapp.shared.generated.resources.Res
+import dreamjournalai.composeapp.shared.generated.resources.background
+import org.ballistic.dreamjournalai.shared.dream_add_edit.domain.AddEditDreamEvent
+import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.model.Dream.Companion.dreamBackgroundImages
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DreamImageSelectionRow(
     onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},
-    dreamBackgroundImage: MutableState<Int>
+    // Turn this into a mutable state so we can update it
+    dreamBackgroundImage: MutableState<Int>,
+    // optional: pass a default if you want
+    defaultBackgroundIndex: Int = 0
 ) {
+    // If no value is set, default to something
+    if (dreamBackgroundImage.value == -1) {
+        dreamBackgroundImage.value = defaultBackgroundIndex
+    }
 
-    val initialSelectedItem = dreamBackgroundImages.indexOf(dreamBackgroundImage.value)
+    // A local state just to highlight the selected item visually, if needed.
+    val currentSelectedIndex = remember {
+        mutableStateOf(dreamBackgroundImage.value)
+    }
 
-    AnimatedInfiniteLazyRow(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
             .padding(vertical = 12.dp, horizontal = 8.dp),
-        items = dreamBackgroundImages,
-        initialFirstVisibleIndex = initialSelectedItem - 3,
-        selectorIndex = initialSelectedItem - 1,
-        visibleItemCount = 6,
-        spaceBetweenItems = 8.dp,
-        itemScaleRange = 1,
-        showPartialItem = true,
-        activeColor = Color.Cyan,
-        inactiveColor = Color.Gray,
-        itemContent = { animationProgress, _, imageResId, width ->
-            animationProgress.scale
-
-           //  selectedItem = animationProgress.itemIndex
-           // dreamBackgroundImage.value = selectedItem
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        dreamBackgroundImages.forEachIndexed { index, imageResId ->
             Box(
                 modifier = Modifier
-                    .width(width)
-                    .height(width)
+                    .size(70.dp)
                     .clip(CircleShape)
                     .background(Color.Transparent)
-                    .shadow(width, CircleShape)
                     .clickable {
-                        val imageIndex = dreamBackgroundImages.indexOf(imageResId)
-                        onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamBackgroundImage(imageIndex))
-                        dreamBackgroundImage.value = imageIndex
+                        dreamBackgroundImage.value = index
+                        currentSelectedIndex.value = index
+                        onAddEditDreamEvent(AddEditDreamEvent.ChangeDreamBackgroundImage(index))
                     }
-            ){
+                    // Optionally highlight if selected
+                    .border(
+                        width = if (index == currentSelectedIndex.value) 3.dp else 0.dp,
+                        color = if (index == currentSelectedIndex.value) Color.Cyan else Color.Transparent,
+                        shape = CircleShape
+                    )
+            ) {
                 Image(
                     painter = painterResource(imageResId),
-                    contentDescription = stringResource(R.string.background),
+                    contentDescription = stringResource(Res.string.background),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
             }
         }
-    )
+    }
 }

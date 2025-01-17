@@ -9,12 +9,12 @@ fun initKoin(config: KoinAppDeclaration? = null) {
         config?.invoke(this)
         modules(
             listOf(
+                platformModule,
                 appModule,
                 signInModule,
                 billingModule,
-                notificationModule,
+               // notificationModule,
                 viewModelModule,
-                platformModule
             )
         )
     }

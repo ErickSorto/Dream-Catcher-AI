@@ -40,7 +40,7 @@ import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.component
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.components.DreamImageSelectionRow
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.components.LucidFavoriteLayout
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.dream_notifications.presentation.components.DialWithDialogExample
+import org.ballistic.dreamjournalai.shared.dream_notifications.presentation.components.DialWithDialogExample
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.LightBlack
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.SkyBlue
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.White

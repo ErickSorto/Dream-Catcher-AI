@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
+import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dreamjournalai.composeapp.shared.generated.resources.Res
 import dreamjournalai.composeapp.shared.generated.resources.blue_lighthouse
 import kotlinx.coroutines.CoroutineScope
@@ -185,7 +186,7 @@ fun OnboardingScreen(
             MyGoogleSignInButton(
                 onGotToken = { googleIdToken ->
                     // 1) Build dev.gitlive credential
-                    val googleCredential = dev.gitlive.firebase.auth.GoogleAuthProvider.credential(
+                    val googleCredential = GoogleAuthProvider.credential(
                         idToken = googleIdToken,
                         accessToken = null
                     )

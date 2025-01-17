@@ -59,6 +59,7 @@ import dreamjournalai.composeapp.shared.generated.resources.Res
 import dreamjournalai.composeapp.shared.generated.resources.background_during_day
 import dreamjournalai.composeapp.shared.generated.resources.baseline_cached_24
 import dreamjournalai.composeapp.shared.generated.resources.baseline_star_24
+import dreamjournalai.composeapp.shared.generated.resources.beautiful_lighthouse
 import dreamjournalai.composeapp.shared.generated.resources.false_awakening_icon
 import dreamjournalai.composeapp.shared.generated.resources.lighthouse_vector
 import dreamjournalai.composeapp.shared.generated.resources.nightmare_icon
@@ -149,19 +150,17 @@ fun DreamItem(
                     .shadow(4.dp, RoundedCornerShape(8.dp), true)
 
             ) {
-                val model = if (dream.generatedImage != "") {
-                    dream.generatedImage
-                } else {
-                    imageResId
-                }
+//                val model = if (dream.generatedImage != "") {
+//                    dream.generatedImage
+//                } else {
+//                    imageResId
+//                }
 
-                CoilImage(
-                    imageModel = { model },
+                Image(
+                    painter =  painterResource(Res.drawable.beautiful_lighthouse),
                     modifier = Modifier.fillMaxSize().shimmerEffect(),
-                    imageOptions = ImageOptions(
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "Dream Image"
-                    )
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "Dream Image"
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))

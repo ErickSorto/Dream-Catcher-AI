@@ -124,8 +124,10 @@ fun StoreScreen(
 fun DreamBenefitInfoLayout(
     totalDreamTokens: Int = 0
 ) {
-    val orientation = LocalContext.current.resources.configuration.orientation
-    val pageAspectWidth = if (orientation == 1) .9f else .25f
+    //val orientation = LocalContext.current.resources.configuration.orientation
+    val pageAspectWidth = .9f
+
+       // if (orientation == 1) .9f else .25f
 
     //one page and a little bit of the next page is visible
     val oneAndABitPerViewport = object : PageSize {

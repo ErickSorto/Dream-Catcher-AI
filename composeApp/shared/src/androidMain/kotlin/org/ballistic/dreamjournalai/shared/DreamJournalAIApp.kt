@@ -14,10 +14,14 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import org.ballistic.dreamjournalai.shared.di.initKoin
 import org.koin.android.ext.koin.androidContext
+import com.mmk.kmpauth.google.GoogleAuthCredentials
+import com.mmk.kmpauth.google.GoogleAuthProvider
+import dreamjournalai.composeapp.shared.generated.resources.Res
 
 class DreamJournalAIApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = "433518106186-fas918qt78ffo3t0rl2eg86ta05sic89.apps.googleusercontent.com"))
 
         createNotificationChannel()
         initializeWorkManager()
@@ -28,7 +32,7 @@ class DreamJournalAIApp : Application() {
 
         Purchases.logLevel = LogLevel.DEBUG
         Purchases.configure(
-            apiKey = "<REVENUECAT_GOOGLE_API_KEY>" //TODO: Add your RevenueCat API Key
+            apiKey = "sk_PcnnTmbQrqhPRjdSNiooceABCQhny" //TODO: Add your RevenueCat API Key
         ) {
             // If you have an authenticated user, set this to their ID
             // or leave it null to let RevenueCat create an anonymous ID

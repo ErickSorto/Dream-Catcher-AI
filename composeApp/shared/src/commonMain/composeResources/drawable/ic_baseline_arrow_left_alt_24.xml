@@ -4,7 +4,7 @@
     android:tint="#000000" android:viewportHeight="24"
     android:viewportWidth="24" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:pivotX="12" android:pivotY="12" android:rotation="180">
-    <path android:fillColor="@android:color/white" android:pathData="M16.01,11H4v2h12.01v3L20,12l-3.99,-4z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M16.01,11H4v2h12.01v3L20,12l-3.99,-4z"/>
         </group>
 
 </vector>

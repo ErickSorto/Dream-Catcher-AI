@@ -8,6 +8,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import dev.icerock.moko.permissions.compose.BindEffect
+import dev.icerock.moko.permissions.compose.PermissionsControllerFactory
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import org.ballistic.dreamjournalai.shared.dream_authentication.presentation.signup_screen.viewmodel.LoginViewModel
 import org.ballistic.dreamjournalai.shared.dream_authentication.presentation.signup_screen.viewmodel.SignupViewModel
 import org.ballistic.dreamjournalai.shared.dream_main.presentation.MainScreenView
@@ -53,7 +56,8 @@ fun MainGraph(
 
         composable<Route.MainScreen> {
             val mainScreenViewModel = koinViewModel<MainScreenViewModel>()
-            val mainScreenViewModelState = mainScreenViewModel.mainScreenViewModelState.collectAsStateWithLifecycle().value
+            val mainScreenViewModelState = mainScreenViewModel.mainScreenViewModelState
+                .collectAsStateWithLifecycle().value
 
             MainScreenView(
                 mainScreenViewModelState = mainScreenViewModelState,

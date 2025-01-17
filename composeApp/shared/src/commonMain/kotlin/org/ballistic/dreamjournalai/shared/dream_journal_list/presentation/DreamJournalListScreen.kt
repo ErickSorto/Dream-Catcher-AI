@@ -79,14 +79,14 @@ fun DreamJournalListScreen(
         onMainEvent(MainScreenEvent.SetDrawerState(true))
     }
 
-    // The key part: trigger in-app review from the VM if conditions are met
-    LaunchedEffect(isRecentlySaved) {
-        if (dreamCount >= 2 && isRecentlySaved) {
-            delay(1000)
-            // Dispatch the "TriggerReview" event to the VM
-            onDreamListEvent(DreamListEvent.TriggerReview)
-        }
-    }
+//    // The key part: trigger in-app review from the VM if conditions are met
+//    LaunchedEffect(isRecentlySaved) {
+//        if (dreamCount >= 2 && isRecentlySaved) {
+//            delay(1000)
+//            // Dispatch the "TriggerReview" event to the VM
+//            onDreamListEvent(DreamListEvent.TriggerReview)
+//        }
+//    }
 
     if (dreamJournalListState.bottomDeleteCancelSheetState) {
         ActionBottomSheet(

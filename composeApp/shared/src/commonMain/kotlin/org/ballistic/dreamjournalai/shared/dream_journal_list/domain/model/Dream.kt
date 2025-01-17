@@ -2,17 +2,17 @@ package org.ballistic.dreamjournalai.shared.dream_journal_list.domain.model
 
 
 import dreamjournalai.composeapp.shared.generated.resources.Res
+import dreamjournalai.composeapp.shared.generated.resources.background_during_day
+import dreamjournalai.composeapp.shared.generated.resources.beautiful_lighthouse
+import dreamjournalai.composeapp.shared.generated.resources.blue_lighthouse
+import dreamjournalai.composeapp.shared.generated.resources.dark_night_lighthouse
+import dreamjournalai.composeapp.shared.generated.resources.full_life_lighthouse
+import dreamjournalai.composeapp.shared.generated.resources.green_lighthouse_background
 import dreamjournalai.composeapp.shared.generated.resources.heaven_lighthouse
 import dreamjournalai.composeapp.shared.generated.resources.purple_skies_lighthouse
 import dreamjournalai.composeapp.shared.generated.resources.red_lighthouse_background
-import dreamjournalai.composeapp.shared.generated.resources.green_lighthouse_background
-import dreamjournalai.composeapp.shared.generated.resources.blue_lighthouse
-import dreamjournalai.composeapp.shared.generated.resources.full_life_lighthouse
-import dreamjournalai.composeapp.shared.generated.resources.dark_night_lighthouse
-import dreamjournalai.composeapp.shared.generated.resources.yellow_lighthouse_background
-import dreamjournalai.composeapp.shared.generated.resources.beautiful_lighthouse
-import dreamjournalai.composeapp.shared.generated.resources.background_during_day
 import dreamjournalai.composeapp.shared.generated.resources.sunrise_lighthouse
+import dreamjournalai.composeapp.shared.generated.resources.yellow_lighthouse_background
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

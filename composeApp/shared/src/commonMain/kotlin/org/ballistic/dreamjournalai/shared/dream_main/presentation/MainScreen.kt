@@ -11,6 +11,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,12 +56,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.PermissionsControllerFactory
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+import dreamjournalai.composeapp.shared.generated.resources.Res
+import dreamjournalai.composeapp.shared.generated.resources.background_during_day
+import dreamjournalai.composeapp.shared.generated.resources.blue_lighthouse
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.shared.navigation.DrawerNavigation
 import org.ballistic.dreamjournalai.shared.navigation.Route
@@ -69,6 +77,7 @@ import org.ballistic.dreamjournalai.shared.dream_main.presentation.components.Dr
 import org.ballistic.dreamjournalai.shared.dream_main.presentation.viewmodel.MainScreenViewModelState
 import org.ballistic.dreamjournalai.shared.navigation.ScreenGraph
 import org.ballistic.dreamjournalai.shared.dream_main.presentation.components.BottomNavigation
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun MainScreenView(
@@ -78,12 +87,11 @@ fun MainScreenView(
     onDataLoaded: () -> Unit
 ) {
     val factory: PermissionsControllerFactory = rememberPermissionsControllerFactory()
-    val controller: PermissionsController =
-        remember(factory) { factory.createPermissionsController() }
-    val scope = rememberCoroutineScope()
-
+    val controller: PermissionsController = remember(factory) { factory.createPermissionsController() }
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    BindEffect(controller)
     LaunchedEffect(Unit) {
-        scope.launch {
+        coroutineScope.launch {
             // Check if we already have the notification permission
             val alreadyGranted = controller.isPermissionGranted(Permission.REMOTE_NOTIFICATION)
             if (!alreadyGranted) {
@@ -148,14 +156,13 @@ fun MainScreenView(
         onDispose { navController.removeOnDestinationChangedListener(listener) }
     }
 
-    CoilImage(
-        imageModel = { mainScreenViewModelState.backgroundResource },
+    Image(
+        painter = painterResource(Res.drawable.blue_lighthouse),
+        contentScale = ContentScale.Crop,
         modifier = Modifier
             .fillMaxSize()
             .blur(15.dp),
-        imageOptions = ImageOptions(
-            contentScale = ContentScale.Crop
-        )
+        contentDescription = "Background Image"
     )
 
     ModalNavigationDrawer(
@@ -189,7 +196,7 @@ fun MainScreenView(
                                 selected = item == selectedItem.value,
                                 onClick = {
                                     onMainEvent(MainScreenEvent.TriggerVibration)
-                                    scope.launch {
+                                    coroutineScope.launch {
                                         mainScreenViewModelState.drawerMain.close()
                                     }
                                     selectedItem.value = item

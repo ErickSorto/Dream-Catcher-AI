@@ -13,7 +13,6 @@ import org.ballistic.dreamjournalai.shared.ui.theme.Purple40
 import org.ballistic.dreamjournalai.shared.ui.theme.Purple80
 import org.ballistic.dreamjournalai.shared.ui.theme.PurpleGrey40
 import org.ballistic.dreamjournalai.shared.ui.theme.PurpleGrey80
-import org.ballistic.dreamjournalai.shared.ui.theme.Typography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -103,7 +102,7 @@ fun DreamJournalAITheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = MaterialTheme.typography,
         content = content
     )
 }

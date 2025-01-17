@@ -103,43 +103,42 @@ fun AboutMeScreen(
                 }
             }
 
-            `VerticalBarPlot`
-            AnimatedVisibility(
-                visible = showButton.value,
-                modifier = Modifier
-                    .fillMaxWidth(.8f)
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 32.dp),
-            ) {
-                Spacer(Modifier.height(16.dp))
-
-                Button(
-                    modifier = Modifier.padding(16.dp),
-                    shape = RoundedCornerShape(6.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = RedOrange
-                    ),
-                    onClick = {
-                        val url = "https://ko-fi.com/ericksorto"
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                        openUrlLauncher.launch(intent)
-                    }
-                ) {
-                    Text(
-                        text = "Buy me a burrito!",
-                        modifier = Modifier.padding(start = 8.dp),
-                        fontSize = 18.sp,
-                        color = Color.White
-                    )
-                    Image(
-                        painter = painterResource(
-                            Res.drawable.burrito_icon
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-            }
+//            AnimatedVisibility(
+//                visible = showButton.value,
+//                modifier = Modifier
+//                    .fillMaxWidth(.8f)
+//                    .align(Alignment.BottomCenter)
+//                    .padding(bottom = 32.dp),
+//            ) {
+//                Spacer(Modifier.height(16.dp))
+//
+//                Button(
+//                    modifier = Modifier.padding(16.dp),
+//                    shape = RoundedCornerShape(6.dp),
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = RedOrange
+//                    ),
+//                    onClick = {
+//                        val url = "https://ko-fi.com/ericksorto"
+//                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//                        openUrlLauncher.launch(intent)
+//                    }
+//                ) {
+//                    Text(
+//                        text = "Buy me a burrito!",
+//                        modifier = Modifier.padding(start = 8.dp),
+//                        fontSize = 18.sp,
+//                        color = Color.White
+//                    )
+//                    Image(
+//                        painter = painterResource(
+//                            Res.drawable.burrito_icon
+//                        ),
+//                        contentDescription = null,
+//                        modifier = Modifier.padding(start = 8.dp)
+//                    )
+//                }
+//            }
         }
     }
 }

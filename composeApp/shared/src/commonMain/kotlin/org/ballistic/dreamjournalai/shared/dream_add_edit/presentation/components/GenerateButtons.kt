@@ -44,13 +44,13 @@ import dreamjournalai.composeapp.shared.generated.resources.watch_ad
 import kotlinx.coroutines.launch
 import org.ballistic.dreamjournalai.shared.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.shared.dream_add_edit.domain.ButtonType
-import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.RedOrange
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.SkyBlue
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.White
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import dreamjournalai.composeapp.shared.generated.resources.dream_token
+import org.ballistic.dreamjournalai.shared.dream_store.presentation.store_screen.components.singleClick
 
 @Composable
 fun GenerateButtonsLayout(

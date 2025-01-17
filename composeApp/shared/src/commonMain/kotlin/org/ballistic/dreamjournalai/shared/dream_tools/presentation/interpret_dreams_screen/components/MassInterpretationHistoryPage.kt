@@ -10,7 +10,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -59,7 +58,6 @@ fun MassInterpretationHistoryPage(
             for (interpretation in interpretDreamsScreenState.massMassInterpretations) {
                 MassInterpretationItem(
                     interpretDreamsScreenState = interpretDreamsScreenState,
-                    vibrator = vibrator,
                     pagerState = pagerState,
                     massInterpretation = interpretation,
                     onEvent = { onEvent(it) },

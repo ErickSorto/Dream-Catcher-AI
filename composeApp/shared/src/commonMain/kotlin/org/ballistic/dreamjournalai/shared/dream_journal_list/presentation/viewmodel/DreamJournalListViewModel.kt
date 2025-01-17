@@ -22,8 +22,8 @@ import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.DreamListEv
 
 class DreamJournalListViewModel(
     private val dreamUseCases: DreamUseCases,
-    private val vibratorUtil: VibratorUtil,
-    private val reviewComponent: ReviewComponent
+//    private val vibratorUtil: VibratorUtil,
+ //   private val reviewComponent: ReviewComponent
 ) : ViewModel() {
 
     private val _dreamJournalListState = MutableStateFlow(DreamJournalListState())
@@ -55,15 +55,15 @@ class DreamJournalListViewModel(
                 // or load from DB, or pass in from the composable, etc.
 
                 if (dreamCount >= 2) {
-                    viewModelScope.launch {
-                        reviewComponent.requestInAppReview().collect { resultCode ->
-                           //TODO: Handle result code
-                        }
-                    }
+//                    viewModelScope.launch {
+//                        reviewComponent.requestInAppReview().collect { resultCode ->
+//                           //TODO: Handle result code
+//                        }
+//                    }
                 }
             }
             is DreamListEvent.TriggerVibration -> {
-                vibratorUtil.triggerVibration()
+               // vibratorUtil.triggerVibration()
             }
             is DreamListEvent.ToggleOrderSection -> {
                 _dreamJournalListState.value = _dreamJournalListState.value.copy(

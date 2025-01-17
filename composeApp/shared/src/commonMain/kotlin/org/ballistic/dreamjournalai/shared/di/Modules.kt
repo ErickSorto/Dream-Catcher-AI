@@ -27,12 +27,7 @@ import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.use_case.Ge
 import org.ballistic.dreamjournalai.shared.dream_journal_list.presentation.viewmodel.DreamJournalListViewModel
 import org.ballistic.dreamjournalai.shared.dream_main.presentation.viewmodel.MainScreenViewModel
 import org.ballistic.dreamjournalai.shared.dream_nightmares.presentation.viewmodel.DreamNightmareScreenViewModel
-import org.ballistic.dreamjournalai.shared.dream_notifications.data.repository.NotificationRepositoryImpl
-import org.ballistic.dreamjournalai.shared.dream_notifications.domain.NotificationRepository
 import org.ballistic.dreamjournalai.shared.dream_notifications.domain.createDataStore
-import org.ballistic.dreamjournalai.shared.dream_notifications.domain.usecases.ScheduleDailyReminderUseCase
-import org.ballistic.dreamjournalai.shared.dream_notifications.domain.usecases.ScheduleLucidityNotificationUseCase
-import org.ballistic.dreamjournalai.shared.dream_notifications.presentation.viewmodel.NotificationScreenViewModel
 import org.ballistic.dreamjournalai.shared.dream_statistics.presentation.viewmodel.DreamStatisticScreenViewModel
 import org.ballistic.dreamjournalai.shared.dream_store.data.repository.RevenueCatBillingRepositoryImpl
 import org.ballistic.dreamjournalai.shared.dream_store.domain.repository.BillingRepository
@@ -44,7 +39,6 @@ import org.ballistic.dreamjournalai.shared.dream_tools.presentation.dream_tools_
 import org.ballistic.dreamjournalai.shared.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsViewModel
 import org.ballistic.dreamjournalai.shared.dream_tools.presentation.random_dream_screen.RandomDreamToolScreenViewModel
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 

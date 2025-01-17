@@ -42,7 +42,7 @@ import org.ballistic.dreamjournalai.shared.dream_add_edit.domain.AIPageType
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.components.ArcRotationAnimation
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.viewmodel.AIData
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.viewmodel.AddEditDreamState
-import org.ballistic.dreamjournalai.dream_store.presentation.store_screen.components.singleClick
+import org.ballistic.dreamjournalai.shared.dream_store.presentation.store_screen.components.singleClick
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.BrighterWhite
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.White
 import org.ballistic.dreamjournalai.shared.core.components.TypewriterText

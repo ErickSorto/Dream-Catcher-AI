@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.ballistic.dreamjournalai.shared.core.Resource
+import org.ballistic.dreamjournalai.shared.core.domain.VibratorUtil
 import org.ballistic.dreamjournalai.shared.core.util.OpenAIApiKeyUtil.getOpenAISecretKey
 import org.ballistic.dreamjournalai.shared.dream_tools.domain.MassInterpretationRepository
 import org.ballistic.dreamjournalai.shared.dream_tools.domain.event.InterpretDreamsToolEvent
@@ -28,9 +29,11 @@ import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.use_case.Dr
 import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.util.OrderType
 import org.ballistic.dreamjournalai.shared.dream_authentication.domain.repository.AuthRepository
 
+//TODO: Make sure ads work as intended
 class InterpretDreamsViewModel(
     private val dreamUseCases: DreamUseCases,
     private val authRepository: AuthRepository,
+    private val vibratorUtil: VibratorUtil,
     private val massInterpretationRepository: MassInterpretationRepository,
 ) : ViewModel() {
     private val _interpretDreamsScreenState = MutableStateFlow(
@@ -74,7 +77,6 @@ class InterpretDreamsViewModel(
                         command = "Find common themes, symbols, and meanings in the following dreams:\n" +
                                 currentDreams.joinToString("\n") { it.content },
                         cost = event.cost,
-                        isAd = event.isAd,
                         updateLoadingState = { isLoading ->
                             _interpretDreamsScreenState.update {
                                 it.copy(isLoading = isLoading)
@@ -155,6 +157,11 @@ class InterpretDreamsViewModel(
                             }
                         }
                     }
+                }
+            }
+            is InterpretDreamsToolEvent.TriggerVibration -> {
+                viewModelScope.launch{
+                    vibratorUtil.triggerVibration()
                 }
             }
         }
@@ -268,41 +275,6 @@ class InterpretDreamsViewModel(
         } catch (e: Exception) {
             updateLoadingState(false)
             handleError(e.message ?: "An error occurred")
-        }
-    }
-
-    private fun runAd(
-        activity: Activity, onRewardedAd: () -> Unit, onAdFailed: () -> Unit
-    ) {
-        activity.runOnUiThread {
-            adManagerRepository.loadRewardedAd(activity) {
-                //show ad
-                adManagerRepository.showRewardedAd(activity, object : AdCallback {
-                    override fun onAdClosed() {
-                        //to be added later
-                    }
-
-                    override fun onAdRewarded(reward: RewardItem) {
-                        onRewardedAd()
-                    }
-
-                    override fun onAdLeftApplication() {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onAdLoaded() {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onAdFailedToLoad(errorCode: Int) {
-                        onAdFailed()
-                    }
-
-                    override fun onAdOpened() {
-                        TODO("Not yet implemented")
-                    }
-                })
-            }
         }
     }
 }

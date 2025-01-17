@@ -1,4 +1,8 @@
 [versions]
+android-compileSdk = "35"
+android-minSdk = "27"
+android-targetSdk = "35"
+
 agp = "8.5.2"
 firebaseBom = "33.7.0"
 inAppReviewKmpGooglePlay = "3.1.24"
@@ -113,7 +117,7 @@ espressoCore = { module = "androidx.test.espresso:espresso-core", version.ref = 
 androidxJunit = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
 uiTestJunit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
 junit = { module = "junit:junit", version.ref = "junit" }
 animatedList = { module = "com.github.SmartToolFactory:Compose-AnimatedList", version.ref = "animatedList" }
