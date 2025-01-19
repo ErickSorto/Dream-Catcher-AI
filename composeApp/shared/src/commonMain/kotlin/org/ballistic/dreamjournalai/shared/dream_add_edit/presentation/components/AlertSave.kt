@@ -35,7 +35,7 @@ fun AlertSave(
                     onConfirm()
                 }
             ) {
-                Text(stringResource(Res.string.save_dream))
+                Text(stringResource(Res.string.save_dream), color = BrighterWhite)
             }
         },
         dismissButton = {

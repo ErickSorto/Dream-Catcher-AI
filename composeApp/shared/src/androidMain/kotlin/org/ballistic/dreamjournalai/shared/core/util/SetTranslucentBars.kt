@@ -2,7 +2,6 @@ package org.ballistic.dreamjournalai.shared.core.util
 
 import android.app.Activity
 import android.view.View
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
