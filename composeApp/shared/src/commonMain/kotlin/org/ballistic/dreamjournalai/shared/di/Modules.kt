@@ -2,6 +2,7 @@ package org.ballistic.dreamjournalai.shared.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.SavedStateHandle
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
@@ -39,6 +40,7 @@ import org.ballistic.dreamjournalai.shared.dream_tools.presentation.dream_tools_
 import org.ballistic.dreamjournalai.shared.dream_tools.presentation.interpret_dreams_screen.viewmodel.InterpretDreamsViewModel
 import org.ballistic.dreamjournalai.shared.dream_tools.presentation.random_dream_screen.RandomDreamToolScreenViewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -51,7 +53,6 @@ val appModule = module {
     single { Firebase.firestore }
     single { Firebase.auth }
     single { Firebase.storage }
-
 
     single<MassInterpretationRepository> { MassInterpretationRepositoryImpl(get()) }
     single<DreamRepository> { DreamRepositoryImpl(get()) }

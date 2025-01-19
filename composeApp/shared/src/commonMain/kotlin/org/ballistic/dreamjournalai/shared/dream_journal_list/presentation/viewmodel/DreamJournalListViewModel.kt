@@ -12,17 +12,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.ballistic.dreamjournalai.shared.core.domain.VibratorUtil
+import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.DreamListEvent
 import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.model.Dream
 import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.use_case.DreamUseCases
 import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.util.OrderType
-import org.ballistic.dreamjournalai.shared.core.domain.ReviewComponent
-import org.ballistic.dreamjournalai.shared.core.domain.VibratorUtil
-import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.DreamListEvent
 
 
 class DreamJournalListViewModel(
     private val dreamUseCases: DreamUseCases,
-//    private val vibratorUtil: VibratorUtil,
+    private val vibratorUtil: VibratorUtil,
  //   private val reviewComponent: ReviewComponent
 ) : ViewModel() {
 
@@ -63,7 +62,7 @@ class DreamJournalListViewModel(
                 }
             }
             is DreamListEvent.TriggerVibration -> {
-               // vibratorUtil.triggerVibration()
+                vibratorUtil.triggerVibration()
             }
             is DreamListEvent.ToggleOrderSection -> {
                 _dreamJournalListState.value = _dreamJournalListState.value.copy(

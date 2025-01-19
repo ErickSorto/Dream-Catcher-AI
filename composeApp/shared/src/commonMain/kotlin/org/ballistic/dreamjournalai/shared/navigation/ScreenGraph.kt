@@ -2,15 +2,25 @@ package org.ballistic.dreamjournalai.shared.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import co.touchlab.kermit.Logger
+import dreamjournalai.composeapp.shared.generated.resources.Res
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.ballistic.dreamjournalai.shared.dream_account.AccountSettingsScreen
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.AddEditDreamScreen
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.viewmodel.AddEditDreamViewModel
@@ -34,7 +44,9 @@ import org.ballistic.dreamjournalai.shared.dream_store.presentation.store_screen
 import org.ballistic.dreamjournalai.shared.dream_symbols.presentation.SymbolScreen
 import org.ballistic.dreamjournalai.shared.dream_symbols.presentation.viewmodel.DictionaryScreenViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import presentation.AboutMeScreen
+import org.koin.core.parameter.parametersOf
+
+private val logger = KotlinLogging.logger {}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -94,11 +106,26 @@ fun ScreenGraph(
                 )
             }
 
-            composable<Route.AddEditDreamScreen> {
-                val args = it.toRoute<Route.AddEditDreamScreen>()
+            composable<Route.AddEditDreamScreen> { backStackEntry ->
+                val args = backStackEntry.toRoute<Route.AddEditDreamScreen>()
                 val image = args.backgroundID
 
-                val addEditDreamViewModel = koinViewModel<AddEditDreamViewModel>()
+                backStackEntry.savedStateHandle["dreamID"] = args.dreamID
+
+                val addEditDreamViewModel = koinViewModel<AddEditDreamViewModel>(
+                    parameters = { parametersOf(backStackEntry.savedStateHandle) }
+                )
+
+
+
+                Box(Modifier.fillMaxSize()) {
+                    Text(
+                        text = "Dream ID: ${backStackEntry.savedStateHandle.get<String>("dreamID")}",
+                        fontSize = 24.sp,
+                        color = Color.Black,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
                 val addEditDreamState =
                     addEditDreamViewModel.addEditDreamState.collectAsStateWithLifecycle().value
                 val dreamTitle =
@@ -106,6 +133,8 @@ fun ScreenGraph(
                 val dreamContent =
                     addEditDreamViewModel.contentTextFieldState.collectAsStateWithLifecycle().value
 
+                //println("Dream ID: ${navController.currentBackStackEntry?.savedStateHandle?.get<String>("dreamID")}")
+                Logger.d("ScreenGraph") { "Dream ID: ${navController.currentBackStackEntry?.savedStateHandle?.get<String>("dreamID")}" }
                 AddEditDreamScreen(
                     dreamImage = image,
                     dreamTitleState = dreamTitle,

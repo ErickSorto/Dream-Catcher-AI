@@ -58,7 +58,7 @@ class DreamRepositoryImpl(
     }
 
     private fun DocumentSnapshot.toDream(): Dream? {
-        val dream = data<Dream>() ?: return null
+        val dream = data<Dream>()
 
         return dream.copy(id = this.id)
     }
@@ -74,9 +74,8 @@ class DreamRepositoryImpl(
 
             // 3) Check if the document exists, parse the data
             if (snapshot.exists) {
-                val data = snapshot.data<Map<String, Any>>()
 
-                val dream = data.toDream(snapshot.id)  // see extension below
+                val dream = snapshot.getDream()  // see extension below
 
                 Resource.Success(dream)
             } else {
@@ -88,36 +87,12 @@ class DreamRepositoryImpl(
         }
     }
 
-    private fun Map<String, Any>.toDream(docId: String): Dream {
-        return Dream(
-            title       = this["title"]         as? String ?: "",
-            content     = this["content"]       as? String ?: "",
-            timestamp   = this["timestamp"]     as? Long   ?: 0,
-            date        = this["date"]          as? String ?: "",
-            sleepTime   = this["sleepTime"]     as? String ?: "",
-            wakeTime    = this["wakeTime"]      as? String ?: "",
-            AIResponse  = this["airesponse"]    as? String ?: "",
-            isFavorite  = this["favorite"]      as? Boolean ?: false,
-            isLucid     = this["lucid"]         as? Boolean ?: false,
-            isNightmare = this["nightmare"]     as? Boolean ?: false,
-            isRecurring = this["recurring"]     as? Boolean ?: false,
-            falseAwakening = this["falseAwakening"] as? Boolean ?: false,
-            lucidityRating   = (this["lucidityRating"]   as? Long)?.toInt() ?: 1,
-            moodRating       = (this["moodRating"]       as? Long)?.toInt() ?: 1,
-            vividnessRating  = (this["vividnessRating"]  as? Long)?.toInt() ?: 1,
-            timeOfDay        = this["timeOfDay"]         as? String ?: "",
-            backgroundImage  = (this["backgroundImage"]  as? Long)?.toInt() ?: 0,
-            generatedImage   = this["generatedImage"]     as? String ?: "",
-            generatedDetails = this["generatedDetails"]   as? String ?: "",
-            dreamQuestion    = this["dreamQuestion"]      as? String ?: "",
-            dreamAIStory     = this["dreamAIStory"]       as? String ?: "",
-            dreamAIAdvice    = this["dreamAIAdvice"]      as? String ?: "",
-            dreamAIQuestionAnswer = this["dreamAIQuestionAnswer"] as? String ?: "",
-            dreamAIMood      = this["dreamAIMood"]        as? String ?: "",
-            id  = docId,
-            uid = this["uid"] as? String ?: ""
-        )
+    private fun DocumentSnapshot.getDream(): Dream? {
+        val dream = data<Dream>()
+
+        return dream
     }
+
 
 
     override suspend fun getCurrentDreamId(): Resource<String> {

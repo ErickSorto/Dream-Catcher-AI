@@ -10,6 +10,8 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import co.touchlab.kermit.Logger
 import com.aallam.openai.api.chat.ChatCompletion
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
@@ -18,6 +20,7 @@ import com.aallam.openai.api.image.ImageCreation
 import com.aallam.openai.api.image.ImageSize
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -43,6 +46,7 @@ import org.ballistic.dreamjournalai.shared.core.util.formatLocalTime
 import org.ballistic.dreamjournalai.shared.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.shared.dream_authentication.domain.repository.AuthRepository
 import org.ballistic.dreamjournalai.shared.dream_symbols.presentation.viewmodel.DictionaryWord
+import org.ballistic.dreamjournalai.shared.navigation.Route
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -54,12 +58,14 @@ private val currentDate = now.date
 private val sleepTime = LocalTime(23, 0) // 11 PM
 private val wakeTime = LocalTime(7, 0)   // 7 A
 
+private val logger = KotlinLogging.logger {}
+
 class AddEditDreamViewModel(
+    private val savedStateHandle: SavedStateHandle,
     private val dreamUseCases: DreamUseCases,
     private val authRepository: AuthRepository,
     private val dictionaryRepository: DictionaryRepository,
     private val vibratorUtil: VibratorUtil,
-    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _addEditDreamState = MutableStateFlow(
@@ -78,6 +84,7 @@ class AddEditDreamViewModel(
 
     val flow = Unit
     private suspend fun listenForContentChanges() {
+        logger.debug { "Listening for content changes" }
         snapshotFlow {
             contentTextFieldState.value.text
         }.collect { text ->
@@ -107,6 +114,7 @@ class AddEditDreamViewModel(
 
     init {
         savedStateHandle.get<String>("dreamID")?.let { dreamId ->
+            Logger.d("AddEditDreamViewModel") { "Dream ID: $dreamId" }
             if (dreamId.isNotEmpty()) {
                 viewModelScope.launch {
                     _addEditDreamState.value = addEditDreamState.value.copy(isLoading = true)
@@ -175,7 +183,14 @@ class AddEditDreamViewModel(
                         }
 
                         is Resource.Error<*> -> {
-                            // handle error
+                            Logger.e("AddEditDreamViewModel") { resource.message.toString() }
+
+                            viewModelScope.launch{
+                                _addEditDreamState.value.snackBarHostState.value.showSnackbar(
+                                    message = "Couldn't get dream :(",
+                                    actionLabel = "Dismiss"
+                                )
+                            }
                         }
 
                         is Resource.Loading<*> -> {

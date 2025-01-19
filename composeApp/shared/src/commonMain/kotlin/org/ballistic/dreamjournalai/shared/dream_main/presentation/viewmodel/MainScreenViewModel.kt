@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import dev.icerock.moko.permissions.PermissionsController
 import dreamjournalai.composeapp.shared.generated.resources.Res
 import dreamjournalai.composeapp.shared.generated.resources.background_during_day
@@ -40,6 +41,7 @@ class MainScreenViewModel(
     val mainScreenViewModelState: StateFlow<MainScreenViewModelState> = _mainScreenViewModelState.asStateFlow()
 
     init {
+        Logger.d("MainScreenViewModel") { "MainScreenViewModel initialized" }
         updateBackgroundPeriodically()
         _mainScreenViewModelState.value = _mainScreenViewModelState.value.copy(
             backgroundResource = getBackgroundResource()

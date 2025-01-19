@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -44,6 +45,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlin.stdlib)
             implementation(libs.datetime)
+
 
 
             //Image
@@ -95,6 +97,8 @@ kotlin {
             implementation(libs.multiplatform.settings.datastore)
             implementation(libs.datastorePreferences)
             implementation(libs.koalaplot.core)
+
+            implementation("co.touchlab:kermit:2.0.4")
         }
 
         commonTest {
