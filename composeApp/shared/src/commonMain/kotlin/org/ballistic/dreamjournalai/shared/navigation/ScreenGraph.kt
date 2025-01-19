@@ -20,7 +20,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import co.touchlab.kermit.Logger
 import dreamjournalai.composeapp.shared.generated.resources.Res
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.ballistic.dreamjournalai.shared.dream_account.AccountSettingsScreen
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.AddEditDreamScreen
 import org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.viewmodel.AddEditDreamViewModel
@@ -45,8 +44,6 @@ import org.ballistic.dreamjournalai.shared.dream_symbols.presentation.SymbolScre
 import org.ballistic.dreamjournalai.shared.dream_symbols.presentation.viewmodel.DictionaryScreenViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-
-private val logger = KotlinLogging.logger {}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

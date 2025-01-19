@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,8 +65,13 @@ import dreamjournalai.composeapp.shared.generated.resources.false_awakening_icon
 import dreamjournalai.composeapp.shared.generated.resources.lighthouse_vector
 import dreamjournalai.composeapp.shared.generated.resources.nightmare_icon
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.BrighterWhite
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.Green
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.LightBlack
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.Purple
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.RedOrange
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.SkyBlue
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.White
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.Yellow
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -150,18 +156,31 @@ fun DreamItem(
                     .shadow(4.dp, RoundedCornerShape(8.dp), true)
 
             ) {
-//                val model = if (dream.generatedImage != "") {
-//                    dream.generatedImage
-//                } else {
-//                    imageResId
-//                }
+                val generatedImage = if (dream.generatedImage != "") {
+                    dream.generatedImage
+                } else {
+                    null
+                }
 
-                Image(
-                    painter =  painterResource(Res.drawable.beautiful_lighthouse),
-                    modifier = Modifier.fillMaxSize().shimmerEffect(),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "Dream Image"
-                )
+                val chosenBackground = imageResId
+
+                if (generatedImage != null) {
+                    CoilImage(
+                        imageModel = { generatedImage },
+                        modifier = Modifier.fillMaxSize().shimmerEffect(),
+                        imageOptions = ImageOptions(
+                            contentScale = ContentScale.Crop,
+                            contentDescription = "Dream Image"
+                        )
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(chosenBackground),
+                        modifier = Modifier.fillMaxSize().shimmerEffect(),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "Dream Image"
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(8.dp))
             Column(
@@ -197,58 +216,57 @@ fun DreamItem(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 if (dream.isFavorite) {
-                    Image(
+                    Icon(
                         painter = painterResource(Res.drawable.baseline_star_24),
+                        tint = Yellow,
                         contentDescription = "Favorite",
                         modifier = Modifier
                             .size(26.dp)
                             .padding(bottom = 4.dp),
-                        alignment = Alignment.Center
                     )
                 }
 
                 if (dream.isNightmare) {
-                    Image(
+                    Icon(
                         painter = painterResource(Res.drawable.nightmare_icon),
+                        tint = RedOrange,
                         contentDescription = "Nightmare",
                         modifier = Modifier
                             .size(26.dp)
                             .padding(bottom = 4.dp),
-                        alignment = Alignment.Center
                     )
                 }
 
                 if (dream.isRecurring) {
-                    Image(
+                    Icon(
                         painter = painterResource(Res.drawable.baseline_cached_24),
+                        tint = Green,
                         contentDescription = "Recurring",
                         modifier = Modifier
                             .size(26.dp)
                             .padding(bottom = 4.dp),
-                        alignment = Alignment.Center
                     )
                 }
 
                 if (dream.falseAwakening) {
-                    Image(
+                    Icon(
                         painter = painterResource(Res.drawable.false_awakening_icon),
+                        tint = Purple,
                         contentDescription = "Day Dream",
                         modifier = Modifier
                             .size(26.dp)
                             .padding(bottom = 4.dp),
-                        alignment = Alignment.Center
                     )
                 }
 
                 if (dream.isLucid) {
-                    Image(
+                    Icon(
                         painter = painterResource(Res.drawable.lighthouse_vector),
+                        tint = SkyBlue,
                         contentDescription = "Lucid",
                         modifier = Modifier
                             .size(26.dp)
                             .padding(bottom = 4.dp),
-                        alignment = Alignment.TopCenter
-
                     )
                 }
             }

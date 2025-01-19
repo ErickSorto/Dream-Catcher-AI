@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -170,6 +171,7 @@ fun SharedTransitionScope.AddEditDreamScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.height(72.dp).dynamicBottomNavigationPadding(),
                 title = {
                     Box(
                         modifier = Modifier.fillMaxHeight()
@@ -230,7 +232,6 @@ fun SharedTransitionScope.AddEditDreamScreen(
                     titleContentColor = Color.Black,
                     actionIconContentColor = Color.Black
                 ),
-                modifier = Modifier.dynamicBottomNavigationPadding()
             )
         },
         snackbarHost = {

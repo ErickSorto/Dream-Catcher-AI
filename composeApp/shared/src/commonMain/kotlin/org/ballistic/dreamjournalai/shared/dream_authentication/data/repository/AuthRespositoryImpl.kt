@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.shared.dream_authentication.data.repository
 
+import co.touchlab.kermit.Logger
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.AuthResult
@@ -166,36 +167,41 @@ class AuthRepositoryImpl (
         }
     }
 
-    override suspend fun getUnlockedWords(): Flow<Resource<List<String>>> {
-        return flow {
-            emit(Resource.Loading())
+    override suspend fun getUnlockedWords(): Flow<Resource<List<String>>> = flow {
+        emit(Resource.Loading())
 
-            // Get the current user from dev.gitlive
-            val user = Firebase.auth.currentUser
-            if (user == null) {
-                emit(Resource.Error("No user is logged in."))
-                return@flow
-            }
+        // Retrieve the current user
+        val currentUser = Firebase.auth.currentUser
+        if (currentUser == null) {
+            emit(Resource.Error("No user is logged in."))
+            return@flow
+        }
 
-            try {
-                // Build reference: USERS/{uid}
-                val userDocRef = Firebase.firestore.collection(USERS).document(user.uid)
+        try {
+            // Reference to the user's document: USERS/{uid}
+            val userDocRef = Firebase.firestore
+                .collection(USERS)
+                .document(currentUser.uid)
 
-                // Get the document snapshot (suspend call)
-                val snapshot = userDocRef.get()
+            // Fetch the user document (suspend call)
+            val snapshot = userDocRef.get()
 
-                // Decode the data into a Map
-                val data = snapshot.data<Map<String, Any>>() ?: emptyMap()
+            // Check if the document exists
+            if (snapshot.exists) {
+                // Retrieve the 'unlockedWords' field as a List<String>
+                val unlockedWords = snapshot.get("unlockedWords") as? List<String> ?: emptyList()
 
-                // Extract 'unlockedWords' from the map as a List of Strings
-                val unlockedWords = (data["unlockedWords"] as? List<String>) ?: emptyList()
-
+                Logger.d("Unlocked words: $unlockedWords")
                 emit(Resource.Success(unlockedWords))
-            } catch (e: Exception) {
-                emit(Resource.Error("Failed to get unlocked words: ${e.message}"))
+            } else {
+                emit(Resource.Error("User document does not exist."))
             }
+        } catch (e: Exception) {
+            Logger.e("Failed to get unlocked words", e)
+            emit(Resource.Error("Failed to get unlocked words: ${e.message}"))
         }
     }
+
 
     override suspend fun recordUserInteraction() {
         // If you need to reload the user, do it via dev.gitlive as well
@@ -213,7 +219,7 @@ class AuthRepositoryImpl (
                 )
 
             } catch (e: Exception) {
-                // Log or handle error if needed
+                Logger.e("AuthRepositoryImpl"){ "Failed to record user interaction: $e" }
             }
         }
     }

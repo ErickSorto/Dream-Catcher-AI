@@ -10,7 +10,6 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import co.touchlab.kermit.Logger
 import com.aallam.openai.api.chat.ChatCompletion
 import com.aallam.openai.api.chat.ChatCompletionRequest
@@ -20,7 +19,6 @@ import com.aallam.openai.api.image.ImageCreation
 import com.aallam.openai.api.image.ImageSize
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -34,9 +32,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.model.Dream
-import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.model.InvalidDreamException
-import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.use_case.DreamUseCases
 import org.ballistic.dreamjournalai.shared.core.Resource
 import org.ballistic.dreamjournalai.shared.core.domain.DictionaryRepository
 import org.ballistic.dreamjournalai.shared.core.domain.VibratorUtil
@@ -45,8 +40,10 @@ import org.ballistic.dreamjournalai.shared.core.util.formatLocalDate
 import org.ballistic.dreamjournalai.shared.core.util.formatLocalTime
 import org.ballistic.dreamjournalai.shared.dream_add_edit.domain.AddEditDreamEvent
 import org.ballistic.dreamjournalai.shared.dream_authentication.domain.repository.AuthRepository
+import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.model.Dream
+import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.model.InvalidDreamException
+import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.use_case.DreamUseCases
 import org.ballistic.dreamjournalai.shared.dream_symbols.presentation.viewmodel.DictionaryWord
-import org.ballistic.dreamjournalai.shared.navigation.Route
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -57,8 +54,6 @@ private val currentDate = now.date
 // Static sleep and wake times
 private val sleepTime = LocalTime(23, 0) // 11 PM
 private val wakeTime = LocalTime(7, 0)   // 7 A
-
-private val logger = KotlinLogging.logger {}
 
 class AddEditDreamViewModel(
     private val savedStateHandle: SavedStateHandle,
@@ -84,7 +79,6 @@ class AddEditDreamViewModel(
 
     val flow = Unit
     private suspend fun listenForContentChanges() {
-        logger.debug { "Listening for content changes" }
         snapshotFlow {
             contentTextFieldState.value.text
         }.collect { text ->
@@ -610,6 +604,7 @@ class AddEditDreamViewModel(
                             }
 
                             is Resource.Error -> {
+                                Logger.e("AddEditDreamViewModel") { result.message.toString() }
                                 _addEditDreamState.value.snackBarHostState.value.showSnackbar(
                                     message = "Couldn't get unlocked words :(",
                                     actionLabel = "Dismiss"

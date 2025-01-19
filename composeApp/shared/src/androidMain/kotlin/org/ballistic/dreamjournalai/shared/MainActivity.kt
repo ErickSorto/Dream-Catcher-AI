@@ -7,7 +7,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.mikhailovskii.inappreview.InAppReviewDelegate
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform.getKoin
@@ -18,10 +17,6 @@ object Static {
     }
 }
 private val static = Static
-
-private val logger = KotlinLogging.logger {
-
-}
 
 class MainActivity : ComponentActivity() {
 
@@ -38,7 +33,6 @@ class MainActivity : ComponentActivity() {
         installSplashScreen().setKeepOnScreenCondition {
             keepSplashOpened
         }
-        logger.debug { "onCreate" }
         setContent {
             App(
                 onSplashFinished = {
