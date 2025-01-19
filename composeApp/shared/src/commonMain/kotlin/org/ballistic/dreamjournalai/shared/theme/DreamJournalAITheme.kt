@@ -7,6 +7,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import org.ballistic.dreamjournalai.shared.core.util.setTranslucentBars
 import org.ballistic.dreamjournalai.shared.ui.theme.Pink40
 import org.ballistic.dreamjournalai.shared.ui.theme.Pink80
 import org.ballistic.dreamjournalai.shared.ui.theme.Purple40
@@ -96,7 +97,7 @@ fun DreamJournalAITheme(
 ) {
     // For KMM, simply pick Dark or Light color scheme.
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-
+    setTranslucentBars(darkTheme)
     // No references to `LocalView` or `SideEffect` for system UI.
     // That is platform-specific, so we remove it in the KMM-friendly version.
 

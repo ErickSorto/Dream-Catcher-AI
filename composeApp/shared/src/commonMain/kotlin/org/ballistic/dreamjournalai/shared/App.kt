@@ -19,7 +19,6 @@ fun App(
 ) {
 
     Logger.d { "Kermit Testing!" }
-
     DreamJournalAITheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
