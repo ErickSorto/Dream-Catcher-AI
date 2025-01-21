@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.shared.core.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import com.skydoves.landscapist.coil3.CoilImage
 import dreamjournalai.composeapp.shared.generated.resources.Res
 import dreamjournalai.composeapp.shared.generated.resources.dream_token
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.Black
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun DreamTokenLayout(
@@ -32,17 +34,15 @@ fun DreamTokenLayout(
             ),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
     ) {
-        CoilImage(
-            imageModel =  {
-                Res.drawable.dream_token
-                          },
+        Image(
+            painter = painterResource(Res.drawable.dream_token),
+            contentDescription = "Dream Token",
             modifier = Modifier
                 .size(40.dp)
                 .padding(4.dp, 4.dp, 0.dp, 4.dp),
-            imageOptions = ImageOptions(
-                contentScale = ContentScale.Fit,
-            )
+            contentScale = ContentScale.Fit,
         )
+
         AnimatedContent(targetState = totalDreamTokens, label = "") { totalDreamTokens ->
             TypewriterText(
                 modifier = Modifier.padding(4.dp, 4.dp, 8.dp, 4.dp),

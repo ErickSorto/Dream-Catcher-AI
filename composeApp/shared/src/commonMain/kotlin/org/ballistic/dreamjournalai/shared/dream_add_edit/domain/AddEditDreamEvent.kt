@@ -67,7 +67,7 @@ sealed class AddEditDreamEvent {
 
     data object LoadWords : AddEditDreamEvent()
 
-    data object StartListening : AddEditDreamEvent()
+    data object ContentHasChanged : AddEditDreamEvent()
 
     data object FilterDreamWordInDictionary : AddEditDreamEvent()
 

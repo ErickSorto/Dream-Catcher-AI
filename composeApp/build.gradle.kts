@@ -132,7 +132,7 @@ dependencies {
     implementation(libs.kotlinxCoroutinesPlayServices)
 
     // Networking
-    implementation(libs.ktorClientOkhttp)
+  //  implementation(libs.ktor
 
     // OpenAI
     implementation(platform(libs.openaiClientBom))

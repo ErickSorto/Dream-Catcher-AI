@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import co.touchlab.kermit.Logger
 import dreamjournalai.composeapp.shared.generated.resources.Res
 import dreamjournalai.composeapp.shared.generated.resources.hint_description
 import dreamjournalai.composeapp.shared.generated.resources.hint_title
@@ -34,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 fun DreamPage(
     titleTextFieldState: TextFieldState,
     contentTextFieldState: TextFieldState,
-    onAddEditDreamEvent: (AddEditDreamEvent) -> Unit = {},
+    onAddEditDreamEvent: (AddEditDreamEvent) -> Unit,
     animateToPage: (Int) -> Unit,
     snackBarState: () -> Unit
 ) {
@@ -45,6 +46,7 @@ fun DreamPage(
             .background(color = Color.Transparent)
             .padding(bottom = 16.dp, start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
+        Logger.d("DreamPage") { "focusManager: $focusManager" }
         //make content disappear and reappear super quickly
         TransparentHintTextField(
             hint = stringResource(Res.string.hint_title),
@@ -60,7 +62,11 @@ fun DreamPage(
                 .onKeyboardDismiss {
                     focusManager.clearFocus()
                 },
-            textFieldState = titleTextFieldState
+            textFieldState = titleTextFieldState,
+            onEvent = {
+                Logger.d("DreamPage") { "onAddEditDreamEvent: $it" }
+                onAddEditDreamEvent(it)
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -90,9 +96,11 @@ fun DreamPage(
                         focusManager.clearFocus()
                     },
                 modifier2 = Modifier.fillMaxSize(),
-                textFieldState = contentTextFieldState
+                textFieldState = contentTextFieldState,
+                onEvent = {
+                    onAddEditDreamEvent(it)
+                }
             )
-
 
             GenerateButtonsLayout(
                 onAddEditEvent = onAddEditDreamEvent,

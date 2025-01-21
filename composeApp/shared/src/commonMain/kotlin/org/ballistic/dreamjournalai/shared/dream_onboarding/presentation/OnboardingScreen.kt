@@ -3,6 +3,7 @@ package org.ballistic.dreamjournalai.shared.dream_onboarding.presentation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ import org.ballistic.dreamjournalai.shared.dream_authentication.presentation.sig
 import org.ballistic.dreamjournalai.shared.dream_authentication.presentation.signup_screen.viewmodel.LoginViewModelState
 import org.ballistic.dreamjournalai.shared.dream_authentication.presentation.signup_screen.viewmodel.SignupViewModelState
 import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.LightBlack
+import org.jetbrains.compose.resources.painterResource
 import kotlin.uuid.ExperimentalUuidApi
 
 
@@ -94,12 +96,11 @@ fun OnboardingScreen(
     )
 
     Box {
-        CoilImage(
-            imageModel = { Res.drawable.blue_lighthouse },
+        Image(
+            painter = painterResource(Res.drawable.blue_lighthouse),
             modifier = Modifier.fillMaxSize(),
-            imageOptions = ImageOptions(
-                contentScale = ContentScale.Crop,
-            )
+            contentScale = ContentScale.Crop,
+            contentDescription = "Dream Journal AI",
         )
     }
 
@@ -197,7 +198,8 @@ fun OnboardingScreen(
                     // Show a snackbar, set isLoading=false, etc.
                     onLoginEvent(LoginEvent.ToggleLoading(false))
                     println("Google sign-in error: $errorMsg")
-                }
+                },
+                isLoading = !isLoading
             )
 
             if (!isUserAnonymous) {

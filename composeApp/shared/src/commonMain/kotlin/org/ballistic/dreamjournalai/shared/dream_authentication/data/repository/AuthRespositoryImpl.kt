@@ -493,8 +493,8 @@ class AuthRepositoryImpl (
 
             // 2) Collect snapshots in this same flow builder
             docRef.snapshots().collect { snapshot ->
-                val data = snapshot.data<Map<String, Any>>()
-                val dreamTokens = (data["dreamTokens"] as? Long)?.toString() ?: "0"
+                val data = snapshot.get<String>("dreamTokens")
+                val dreamTokens = data.toString()
                 _dreamTokens.value = dreamTokens.toInt()
 
                 // 3) Emit a success each time we get new data

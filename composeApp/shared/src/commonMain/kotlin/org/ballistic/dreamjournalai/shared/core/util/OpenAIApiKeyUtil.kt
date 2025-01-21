@@ -14,13 +14,8 @@ object OpenAIApiKeyUtil {
                 .httpsCallable("getOpenAISecretKey")
                 .invoke()
 
-            // Convert HttpsCallableResult into a Map
-            val data = result.data<Map<String, Any>>()
-                ?: throw IllegalStateException("Failed to fetch API Key")
-
             // Extract the key from the map
-            data["apiKey"] as? String
-                ?: throw IllegalStateException("API Key is not available in the response")
+            result.data<String>()
         } catch (e: Exception) {
             throw IllegalStateException("Failed to retrieve API Key: ${e.message}", e)
         }

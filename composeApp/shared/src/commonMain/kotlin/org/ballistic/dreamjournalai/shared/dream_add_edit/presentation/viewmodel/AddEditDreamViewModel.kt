@@ -5,7 +5,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -56,7 +55,7 @@ private val sleepTime = LocalTime(23, 0) // 11 PM
 private val wakeTime = LocalTime(7, 0)   // 7 A
 
 class AddEditDreamViewModel(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val dreamUseCases: DreamUseCases,
     private val authRepository: AuthRepository,
     private val dictionaryRepository: DictionaryRepository,
@@ -71,35 +70,12 @@ class AddEditDreamViewModel(
     val addEditDreamState: StateFlow<AddEditDreamState> = _addEditDreamState.asStateFlow()
 
     private val _titleTextFieldState = MutableStateFlow(TextFieldState())
-
     val titleTextFieldState: StateFlow<TextFieldState> = _titleTextFieldState.asStateFlow()
 
     private val _contentTextFieldState = MutableStateFlow(TextFieldState())
     val contentTextFieldState: StateFlow<TextFieldState> = _contentTextFieldState.asStateFlow()
 
     val flow = Unit
-    private suspend fun listenForContentChanges() {
-        snapshotFlow {
-            contentTextFieldState.value.text
-        }.collect { text ->
-            if (text.isNotEmpty()) {
-                _addEditDreamState.value = addEditDreamState.value.copy(
-                    dreamHasChanged = true,
-                    dreamContentChanged = true
-                )
-            }
-        }
-
-        snapshotFlow {
-            titleTextFieldState.value.text
-        }.collect { text ->
-            if (text.isNotEmpty()) {
-                _addEditDreamState.value = addEditDreamState.value.copy(
-                    dreamHasChanged = true,
-                )
-            }
-        }
-    }
 
     override fun onCleared() {
         super.onCleared()
@@ -166,9 +142,6 @@ class AddEditDreamViewModel(
                                 )
                             }
                             onEvent(
-                                AddEditDreamEvent.StartListening
-                            )
-                            onEvent(
                                 AddEditDreamEvent.ToggleDreamHasChanged(false)
                             )
                             onEvent(AddEditDreamEvent.GetUnlockedWords)
@@ -193,9 +166,6 @@ class AddEditDreamViewModel(
                     }
                 }
             } else {
-                onEvent(
-                    AddEditDreamEvent.StartListening
-                )
                 onEvent(AddEditDreamEvent.GetUnlockedWords)
                 onEvent(AddEditDreamEvent.LoadWords)
                 onEvent(AddEditDreamEvent.GetDreamTokens)
@@ -368,27 +338,6 @@ class AddEditDreamViewModel(
                     onEvent(AddEditDreamEvent.SaveDream {
                         onEvent(AddEditDreamEvent.ToggleDreamHasChanged(false))
                     })
-
-//                        runAd(onRewardedAd = {
-//                            onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
-//                            viewModelScope.launch {
-//                                getAIDetailsResponse(0).await()
-//                                getOpenAIImageResponse(0).await()
-//                                onEvent(AddEditDreamEvent.SaveDream {
-//                                    onEvent(AddEditDreamEvent.ToggleDreamHasChanged(false))
-//                                })
-//                            }
-//                        }, onAdFailed = {
-//                            _addEditDreamState.value =
-//                                addEditDreamState.value.copy(isDreamExitOff = false)
-//                            viewModelScope.launch {
-//                                addEditDreamState.value.snackBarHostState.value.showSnackbar(
-//                                    "Ad failed to load",
-//                                    duration = SnackbarDuration.Short,
-//                                    actionLabel = "Dismiss"
-//                                )
-//                            }
-//                        })
                 }
             }
 
@@ -580,9 +529,10 @@ class AddEditDreamViewModel(
                 }
             }
 
-            is AddEditDreamEvent.StartListening -> {
-                viewModelScope.launch {
-                    listenForContentChanges()
+            is AddEditDreamEvent.ContentHasChanged -> {
+                Logger.d("AddEditDreamViewModel") { "Content updated succesfully)" }
+                _addEditDreamState.update {
+                    it.copy(dreamContentChanged = true, dreamHasChanged = true)
                 }
             }
 
@@ -813,7 +763,7 @@ class AddEditDreamViewModel(
                             }
 
                             is Resource.Error -> {
-                                // Handle error
+                                Logger.e("AddEditDreamViewModel") { resource.message.toString() }
                             }
 
                             is Resource.Loading -> {
@@ -991,6 +941,7 @@ class AddEditDreamViewModel(
 
             if (cost > 0) authRepository.consumeDreamTokens(cost)
         } catch (e: Exception) {
+            Logger.e("AddEditDreamViewModel") { e.message.toString() }
             updateLoadingState(false)
             _addEditDreamState.value.snackBarHostState.value.showSnackbar(
                 "Error getting AI response", "Dismiss"

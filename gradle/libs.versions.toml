@@ -49,8 +49,8 @@ playServicesAds = "23.5.0"
 credentials = "1.3.0"
 koin = "4.1.0-Beta5"
 kotlinxCoroutines = "1.9.0"
-ktor = "2.3.11"
-openaiBom = "3.8.2"
+ktor = "3.0.0"
+openaiBom = "4.0.0-beta01"
 parceler = "1.1.13"
 coil = "2.7.0"
 landscapist = "2.4.4"
@@ -85,6 +85,9 @@ kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.r
 kmpnotifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmpnotifier" }
 koalaplot-core = { module = "io.github.koalaplot:koalaplot-core", version.ref = "koalaplotCore" }
 kotlinx-serialization-json-v180rc = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 landscapist-coil3 = { module = "com.github.skydoves:landscapist-coil3", version.ref = "landscapist" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 material3WindowSize = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3" }
@@ -150,7 +153,7 @@ kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-cor
 kotlinxCoroutinesPlayServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
 
 # Networking
-ktorClientOkhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+
 
 # OpenAI
 openaiClientBom = { module = "com.aallam.openai:openai-client-bom", version.ref = "openaiBom" }
@@ -194,6 +197,9 @@ purchases-datetime = { module = "com.revenuecat.purchases:purchases-kmp-datetime
 purchases-either = { module = "com.revenuecat.purchases:purchases-kmp-either", version.ref = "purchases-kmp" }
 # Optional: adds suspending functions that return kotlin.Result to indicate success / failure.
 purchases-result = { module = "com.revenuecat.purchases:purchases-kmp-result", version.ref = "purchases-kmp" }
+
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

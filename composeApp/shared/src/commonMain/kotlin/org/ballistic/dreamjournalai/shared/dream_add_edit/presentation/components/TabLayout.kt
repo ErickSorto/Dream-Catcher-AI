@@ -191,12 +191,11 @@ fun SharedTransitionScope.TabLayout(
                             pagerState2.animateScrollToPage(index)
                         }
                     },
+                    onAddEditDreamEvent = onAddEditDreamEvent,
                 )
             }
 
             1 -> {
-                keyboardController?.hide()
-                focusManager.clearFocus(true)
                 AIPage(
                     pages = pages2,
                     pagerState2 = pagerState2,
@@ -216,6 +215,8 @@ fun SharedTransitionScope.TabLayout(
             }
 
             3 -> {
+                keyboardController?.hide()
+                focusManager.clearFocus(true)
                 InfoPage(
                     dreamBackgroundImage,
                     addEditDreamState = addEditDreamState,

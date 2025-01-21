@@ -97,6 +97,7 @@ kotlin {
             implementation(libs.multiplatform.settings.datastore)
             implementation(libs.datastorePreferences)
             implementation(libs.koalaplot.core)
+            implementation(libs.ktor.client.core)
 
             implementation("co.touchlab:kermit:2.0.4")
         }
@@ -121,10 +122,19 @@ kotlin {
             implementation(libs.vicoCompose)
             implementation(libs.vicoComposeM3)
             implementation(libs.ychartsDreamjournalai)
+
+
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.android)
+            implementation(libs.ktor.serialization.kotlinx.json)
+
+            implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.0")
+            implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.0")
         }
 
         iosMain {
             dependencies {
+                implementation("io.ktor:ktor-client-darwin:3.0.0")
                 // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
                 // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
                 // part of KMP’s default source set hierarchy. Note that this source set depends
