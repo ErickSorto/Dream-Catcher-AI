@@ -953,6 +953,7 @@ class AddEditDreamViewModel(
     ) {
         try {
             val apiKey = getOpenAISecretKey()
+            Log.d("AddEditDreamViewModel", "API Key: $apiKey")
             val openAI = OpenAI(apiKey)
             val currentLocale = Locale.getDefault().language
 

@@ -1,6 +1,7 @@
 package org.ballistic.dreamjournalai.shared.dream_journal_list.data
 
 
+import co.touchlab.kermit.Logger
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.CollectionReference
@@ -27,6 +28,7 @@ import org.ballistic.dreamjournalai.shared.dream_journal_list.domain.repository.
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+private val logger = Logger.withTag("DreamRepositoryImpl")
 
 class DreamRepositoryImpl(
     private val db: FirebaseFirestore
@@ -101,118 +103,91 @@ class DreamRepositoryImpl(
 
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun insertDream(dream: Dream): Resource<Unit> {
-        println("DreamInsert: Attempting to insert/update dream with ID: ${dream.id}")
+        logger.d { "insertDream: Attempting to insert/update dream with ID: ${dream.id}" }
 
         return try {
-            // 1) Check if dream with this ID already exists
             val existingDream = if (!dream.id.isNullOrEmpty()) getDream(dream.id) else null
+            logger.d { "insertDream: Existing dream: $existingDream" }
 
-            // Helper to upload the image if needed (and delete old if present)
             suspend fun uploadImageIfNeeded(dreamToUpdate: Dream, oldImageUrl: String = ""): Dream {
-                // If the new "generatedImage" is a local or raw URL, and not a direct link to Firebase
                 if (dreamToUpdate.generatedImage.isNotBlank() &&
                     !dreamToUpdate.generatedImage.startsWith("https://firebasestorage.googleapis.com/")
                 ) {
-                    println("DreamInsert: Uploading new image for dream")
+                    logger.d { "uploadImageIfNeeded: Uploading new image for dream" }
 
-                    // We'll do all the heavy lifting in IO context
                     return withContext(Dispatchers.IO) {
                         val randomFileName = "${Uuid.random()}.jpg"
+                        logger.d { "uploadImageIfNeeded: Generated random filename: $randomFileName" }
 
-                        // 1) Build a reference: e.g. "users/{uid}/images/<random>.jpg"
-                        // Using GitLive's Firebase.storage
                         val storageRef = Firebase.storage
                             .reference(location = "${userID()}/images/$randomFileName")
 
-                        // 2) Download image bytes from the original URL
                         val imageBytes = downloadImageBytes(dreamToUpdate.generatedImage)
+                        logger.d { "uploadImageIfNeeded: Downloaded image bytes (${imageBytes.size} bytes)" }
 
                         val gitLiveData: Data = imageBytes.toGitLiveData()
-
-                        // 3) Upload the image bytes to Firebase Storage
                         storageRef.putData(gitLiveData)
+                        logger.d { "uploadImageIfNeeded: Uploaded new image to Firebase Storage" }
 
-                        // 4) Obtain the download URL
                         val downloadUrl = storageRef.getDownloadUrl()
+                        logger.d { "uploadImageIfNeeded: New image download URL: $downloadUrl" }
 
-                        // 5) Delete the old image if it exists
+                        // Parse the relative path from the oldImageUrl
                         if (oldImageUrl.isNotBlank()) {
-                            val oldRef = Firebase.storage.reference(oldImageUrl)
+                            val relativePath = parseFirebaseStoragePath(oldImageUrl)
+                            logger.d { "uploadImageIfNeeded: Deleting old image at relative path: $relativePath" }
+
+                            val oldRef = Firebase.storage.reference(relativePath)
                             oldRef.delete()
                         }
 
-                        println("DreamInsert: Image uploaded and old image deleted")
-
-                        // Return a copy of dream with the new downloadUrl
                         dreamToUpdate.copy(generatedImage = downloadUrl.toString())
                     }
                 }
                 return dreamToUpdate
             }
 
-            // 2) If dream already exists, we update it. Otherwise, we create a new doc.
             if (existingDream is Resource.Success && existingDream.data != null) {
-                println("DreamInsert: Dream exists, updating")
+                logger.d { "insertDream: Dream exists, updating" }
 
                 val updatedDream = existingDream.data.copy(
                     title = dream.title,
                     content = dream.content,
-                    timestamp = dream.timestamp,
-                    date = dream.date,
-                    sleepTime = dream.sleepTime,
-                    wakeTime = dream.wakeTime,
-                    AIResponse = dream.AIResponse,
-                    isFavorite = dream.isFavorite,
-                    isLucid = dream.isLucid,
-                    isNightmare = dream.isNightmare,
-                    isRecurring = dream.isRecurring,
-                    falseAwakening = dream.falseAwakening,
-                    lucidityRating = dream.lucidityRating,
-                    moodRating = dream.moodRating,
-                    vividnessRating = dream.vividnessRating,
-                    timeOfDay = dream.timeOfDay,
-                    backgroundImage = dream.backgroundImage,
-                    generatedImage = dream.generatedImage,
-                    generatedDetails = dream.generatedDetails,
-                    dreamQuestion = dream.dreamQuestion,
-                    dreamAIQuestionAnswer = dream.dreamAIQuestionAnswer,
-                    dreamAIStory = dream.dreamAIStory,
-                    dreamAIAdvice = dream.dreamAIAdvice,
-                    dreamAIMood = dream.dreamAIMood
+                    generatedImage = dream.generatedImage
                 )
+                logger.d { "insertDream: Updated dream details: $updatedDream" }
 
-                // 2a) Possibly upload the new image & remove the old
-                val updatedWithImage = uploadImageIfNeeded(
-                    updatedDream,
-                    existingDream.data.generatedImage
-                )
+                val updatedWithImage = uploadImageIfNeeded(updatedDream, existingDream.data.generatedImage)
+                logger.d { "insertDream: Updated dream with new image details: $updatedWithImage" }
 
-                // 2b) Update doc in Firestore
-                val docRef = getCollectionReferenceForDreams()
-                    ?.document(updatedWithImage.id ?: "")
-                docRef?.set(updatedWithImage) // GitLive => suspend
-
+                val docRef = getCollectionReferenceForDreams()?.document(updatedWithImage.id ?: "")
+                logger.d { "insertDream: Firestore reference for update: ${docRef?.path}" }
+                docRef?.set(updatedWithImage)
             } else {
-                println("DreamInsert: Creating new dream")
+                logger.d { "insertDream: Creating new dream" }
 
-                // 3a) Possibly upload image
                 val newDreamWithImage = uploadImageIfNeeded(dream)
+                logger.d { "insertDream: New dream with image: $newDreamWithImage" }
 
-                // 3b) Insert doc in Firestore
                 val docRef = getCollectionReferenceForDreams()?.document(dream.id ?: "")
+                logger.d { "insertDream: Firestore reference for new dream: ${docRef?.path}" }
                 docRef?.set(newDreamWithImage)
             }
 
-            println("DreamInsert: Dream successfully inserted/updated")
+            logger.d { "insertDream: Dream successfully inserted/updated" }
             Resource.Success(Unit)
-
         } catch (e: Exception) {
-            println("DreamInsert: Error inserting dream: ${e.message}")
-            e.printStackTrace()
+            logger.e(e) { "insertDream: Error inserting dream" }
             Resource.Error("Error inserting dream: ${e.message}")
         }
     }
 
+    fun parseFirebaseStoragePath(fullUrl: String): String {
+        val regex = """https://firebasestorage.googleapis.com/v0/b/[^/]+/o/(.*)\?""".toRegex()
+        val match = regex.find(fullUrl)
+        return match?.groupValues?.get(1)?.replace("%2F", "/") // Decode URL-encoded path
+            ?: throw IllegalArgumentException("Invalid Firebase Storage URL: $fullUrl")
+    }
 
 
     override suspend fun deleteDream(id: String): Resource<Unit> {

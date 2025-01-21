@@ -53,6 +53,7 @@ private val currentDate = now.date
 // Static sleep and wake times
 private val sleepTime = LocalTime(23, 0) // 11 PM
 private val wakeTime = LocalTime(7, 0)   // 7 A
+private val logger = Logger.withTag("AddEditViewModel")
 
 class AddEditDreamViewModel(
     savedStateHandle: SavedStateHandle,
@@ -190,7 +191,7 @@ class AddEditDreamViewModel(
                 getAIResponse(
                     command = "Please interpret the following dream: ${
                         contentTextFieldState.value.text
-                    } ",
+                    }",
                     cost = event.cost,
                     updateLoadingState = { isLoading ->
                         _addEditDreamState.value = addEditDreamState.value.copy(
@@ -922,6 +923,7 @@ class AddEditDreamViewModel(
         try {
 
             val apiKey = OpenAIApiKeyUtil.getOpenAISecretKey()
+            Logger.d("AddEditDreamViewModel") { "API Key: $apiKey" }
             val openAI = OpenAI(apiKey)
             val currentLocale = Locale.current.language
 
@@ -1025,6 +1027,8 @@ class AddEditDreamViewModel(
     private fun getOpenAIImageResponse(
         cost: Int
     ): Deferred<Unit> = viewModelScope.async {
+        logger.d { "getOpenAIImageResponse: Starting image generation with cost: $cost" }
+
         // Indicate loading state
         _addEditDreamState.value = addEditDreamState.value.copy(
             dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
@@ -1034,24 +1038,22 @@ class AddEditDreamViewModel(
 
         try {
             val apiKey = OpenAIApiKeyUtil.getOpenAISecretKey()
-            val openAI = OpenAI(apiKey)
+            logger.d { "getOpenAIImageResponse: Retrieved OpenAI API Key successfully" }
 
+            val openAI = OpenAI(apiKey)
             val imageCreation = ImageCreation(
                 prompt = addEditDreamState.value.dreamGeneratedDetails.response,
-                model = ModelId(
-                    if (cost <= 1) {
-                        "dall-e-2"
-                    } else "dall-e-3"
-                ), // Adjust the model as per your requirement
+                model = ModelId(if (cost <= 1) "dall-e-2" else "dall-e-3"),
                 n = 1,
-                size = if (cost <= 1) ImageSize.is512x512 else ImageSize.is1024x1024,
+                size = if (cost <= 1) ImageSize.is512x512 else ImageSize.is1024x1024
             )
+            logger.d { "getOpenAIImageResponse: Image creation request: $imageCreation" }
 
-            val images =
-                openAI.imageURL(imageCreation) // Assuming imageURL returns a list of URLs
+            val images = openAI.imageURL(imageCreation)
+            logger.d { "getOpenAIImageResponse: Received images: $images" }
 
-            // Assuming the first image's URL is what you need
-            val imageUrl = images.firstOrNull()?.url ?: ""
+            val imageUrl = images.firstOrNull()?.url.orEmpty()
+            logger.d { "getOpenAIImageResponse: Selected image URL: $imageUrl" }
 
             _addEditDreamState.value = addEditDreamState.value.copy(
                 dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
@@ -1060,11 +1062,14 @@ class AddEditDreamViewModel(
             )
 
             authRepository.consumeDreamTokens(cost)
+            logger.d { "getOpenAIImageResponse: Tokens consumed for cost: $cost" }
+
             _addEditDreamState.value = addEditDreamState.value.copy(
                 isDreamExitOff = false
             )
         } catch (e: Exception) {
-            // Handle error state
+            logger.e(e) { "getOpenAIImageResponse: Error getting AI image response" }
+
             addEditDreamState.value.snackBarHostState.value.showSnackbar(
                 "Error getting AI image response",
                 duration = SnackbarDuration.Short,
@@ -1074,9 +1079,7 @@ class AddEditDreamViewModel(
             _addEditDreamState.value = addEditDreamState.value.copy(
                 dreamAIImage = addEditDreamState.value.dreamAIImage.copy(
                     isLoading = false
-                )
-            )
-            _addEditDreamState.value = addEditDreamState.value.copy(
+                ),
                 isDreamExitOff = false
             )
         }
