@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.shared.dream_add_edit.presentation.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -252,8 +253,9 @@ fun DreamTokenGenerateButton(
             .fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = SkyBlue),
     ) {
-        CoilImage(
-            imageModel = {Res.drawable.dream_token},
+        Image(
+            painter = painterResource(Res.drawable.dream_token),
+            contentDescription = "DreamToken",
             modifier = Modifier
                 .size(40.dp)
         )

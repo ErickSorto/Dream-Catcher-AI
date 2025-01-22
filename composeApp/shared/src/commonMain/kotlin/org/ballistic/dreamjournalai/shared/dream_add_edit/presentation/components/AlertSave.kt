@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import dreamjournalai.composeapp.shared.generated.resources.Res
 import dreamjournalai.composeapp.shared.generated.resources.do_you_want_to_save_this_dream
 import dreamjournalai.composeapp.shared.generated.resources.save_dream
@@ -35,7 +36,8 @@ fun AlertSave(
                     onConfirm()
                 }
             ) {
-                Text(stringResource(Res.string.save_dream), color = BrighterWhite)
+                //light white cloud blue
+                Text(stringResource(Res.string.save_dream), color = Color(0xFFE1F5FE))
             }
         },
         dismissButton = {

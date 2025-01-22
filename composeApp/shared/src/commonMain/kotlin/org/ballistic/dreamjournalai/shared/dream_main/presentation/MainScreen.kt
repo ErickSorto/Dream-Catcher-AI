@@ -59,6 +59,8 @@ import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
+import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
@@ -92,10 +94,20 @@ fun MainScreenView(
     BindEffect(controller)
     LaunchedEffect(Unit) {
         coroutineScope.launch {
-            // Check if we already have the notification permission
+            // Check if permission is already granted
             val alreadyGranted = controller.isPermissionGranted(Permission.REMOTE_NOTIFICATION)
             if (!alreadyGranted) {
-                controller.providePermission(Permission.REMOTE_NOTIFICATION)
+                try {
+                    // Request the permission
+                    controller.providePermission(Permission.REMOTE_NOTIFICATION)
+                } catch (deniedAlways: DeniedAlwaysException) {
+                    // The user has denied the permission *always* (Don’t ask again).
+                    // Handle your fallback scenario here — e.g., show a dialog explaining
+                    // that notifications won't work, or navigate the user somewhere else.
+                } catch (denied: DeniedException) {
+                    // The user has denied the permission (but not “don’t ask again”).
+                    // You could decide to ask again or show rationale to the user.
+                }
             }
         }
     }

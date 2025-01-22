@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.shared.dream_store.data.repository
 
+import co.touchlab.kermit.Logger
 import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.PurchasesDelegate
 import com.revenuecat.purchases.kmp.models.CustomerInfo
@@ -10,21 +11,20 @@ import com.revenuecat.purchases.kmp.models.StoreProduct
 import com.revenuecat.purchases.kmp.models.StoreTransaction
 import org.ballistic.dreamjournalai.shared.dream_store.domain.repository.BillingRepository
 
+private val logger = Logger.withTag("RevenueCatBillingRepositoryImpl")
 
 class RevenueCatBillingRepositoryImpl: BillingRepository {
     init {
-        // If you want to do something whenever purchases update (e.g., award tokens),
-        // set a delegate:
         Purchases.sharedInstance.delegate = object : PurchasesDelegate {
             override fun onCustomerInfoUpdated(customerInfo: CustomerInfo) {
-                // Called whenever entitlements or purchases change
+                logger.d { "CustomerInfo updated: $customerInfo" }
             }
 
             override fun onPurchasePromoProduct(
                 product: StoreProduct,
                 startPurchase: ((PurchasesError, Boolean) -> Unit, (StoreTransaction, CustomerInfo) -> Unit) -> Unit
             ) {
-                // Typically not needed unless you handle iOS promotional in-app purchases
+                logger.d { "Purchase promo product initiated for $product" }
             }
         }
     }
@@ -33,11 +33,14 @@ class RevenueCatBillingRepositoryImpl: BillingRepository {
         onError: (PurchasesError) -> Unit,
         onSuccess: (Offerings) -> Unit
     ) {
+        logger.d { "Fetching offerings..." }
         Purchases.sharedInstance.getOfferings(
             onError = { error ->
+                logger.e { "Error fetching offerings: $error" }
                 onError(error)
             },
             onSuccess = { offerings ->
+                logger.d { "Offerings fetched successfully: $offerings" }
                 onSuccess(offerings)
             }
         )
@@ -48,12 +51,15 @@ class RevenueCatBillingRepositoryImpl: BillingRepository {
         onError: (PurchasesError) -> Unit,
         onSuccess: (List<StoreProduct>) -> Unit
     ) {
+        logger.d { "Fetching products: $productIds" }
         Purchases.sharedInstance.getProducts(
             productIds,
             onError = { error ->
+                logger.e { "Error fetching products: $error" }
                 onError(error)
             },
             onSuccess = { storeProducts ->
+                logger.d { "Products fetched successfully: $storeProducts" }
                 onSuccess(storeProducts)
             }
         )
@@ -64,12 +70,15 @@ class RevenueCatBillingRepositoryImpl: BillingRepository {
         onError: (PurchasesError, userCancelled: Boolean) -> Unit,
         onSuccess: (StoreTransaction, CustomerInfo) -> Unit
     ) {
+        logger.d { "Initiating purchase for product: $product" }
         Purchases.sharedInstance.purchase(
             storeProduct = product,
             onError = { error, userCancelled ->
+                logger.e { "Error purchasing product $product: $error, UserCancelled: $userCancelled" }
                 onError(error, userCancelled)
             },
             onSuccess = { storeTransaction, customerInfo ->
+                logger.d { "Purchase successful: $storeTransaction, CustomerInfo: $customerInfo" }
                 onSuccess(storeTransaction, customerInfo)
             }
         )
@@ -77,31 +86,16 @@ class RevenueCatBillingRepositoryImpl: BillingRepository {
 
     override fun purchasePackage(
         packageToPurchase: Package,
-        onError: (PurchasesError, userCancelled: Boolean) -> Unit,
+        onError: (PurchasesError, Boolean) -> Unit,
         onSuccess: (StoreTransaction, CustomerInfo) -> Unit
     ) {
-        Purchases.sharedInstance.purchase(
-            packageToPurchase,
-            onError = { error, userCancelled ->
-                onError(error, userCancelled)
-            },
-            onSuccess = { storeTransaction, customerInfo ->
-                onSuccess(storeTransaction, customerInfo)
-            }
-        )
+        TODO("Not yet implemented")
     }
 
     override fun restorePurchases(
         onError: (PurchasesError) -> Unit,
         onSuccess: (CustomerInfo) -> Unit
     ) {
-        Purchases.sharedInstance.restorePurchases(
-            onError = { error ->
-                onError(error)
-            },
-            onSuccess = { customerInfo ->
-                onSuccess(customerInfo)
-            }
-        )
+        TODO("Not yet implemented")
     }
 }

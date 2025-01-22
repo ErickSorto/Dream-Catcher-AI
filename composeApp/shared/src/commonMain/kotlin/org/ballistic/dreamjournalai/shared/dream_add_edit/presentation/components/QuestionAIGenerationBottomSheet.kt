@@ -91,7 +91,7 @@ fun QuestionAIGenerationBottomSheet(
                         .padding(8.dp, 8.dp, 8.dp, 16.dp),
                     textStyle = MaterialTheme.typography.bodyLarge,
                     singleLine = false,
-                    maxLines = 2,
+                    maxLines = 3,
                     // Define the colors for the text field
                     colors = // Define the colors as per your theme
                     OutlinedTextFieldDefaults.colors(

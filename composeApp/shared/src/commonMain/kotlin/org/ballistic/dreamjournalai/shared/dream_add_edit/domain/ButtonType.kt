@@ -2,6 +2,8 @@ package org.ballistic.dreamjournalai.shared.dream_add_edit.domain
 
 import androidx.compose.ui.graphics.Color
 import dreamjournalai.composeapp.shared.generated.resources.Res
+import dreamjournalai.composeapp.shared.generated.resources.analyze_mood_description
+import dreamjournalai.composeapp.shared.generated.resources.analyze_mood_title
 import dreamjournalai.composeapp.shared.generated.resources.ask_a_question_description
 import dreamjournalai.composeapp.shared.generated.resources.ask_a_question_title
 import dreamjournalai.composeapp.shared.generated.resources.baseline_auto_fix_high_24
@@ -93,8 +95,8 @@ enum class ButtonType(
         }
     ),
     MOOD(
-        Res.string.create_story_title,
-        Res.string.create_story_description,
+        Res.string.analyze_mood_title,
+        Res.string.analyze_mood_description,
         Res.drawable.baseline_mood_24,
         5,
         White,

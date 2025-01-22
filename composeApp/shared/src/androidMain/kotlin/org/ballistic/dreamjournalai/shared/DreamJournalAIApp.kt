@@ -32,7 +32,7 @@ class DreamJournalAIApp : Application() {
 
         Purchases.logLevel = LogLevel.DEBUG
         Purchases.configure(
-            apiKey = "sk_PcnnTmbQrqhPRjdSNiooceABCQhny" //TODO: Add your RevenueCat API Key
+            apiKey = "goog_gvSGrQtANSlegqEvLGguJATSvTG" //TODO: Add your RevenueCat API Key
         ) {
             // If you have an authenticated user, set this to their ID
             // or leave it null to let RevenueCat create an anonymous ID

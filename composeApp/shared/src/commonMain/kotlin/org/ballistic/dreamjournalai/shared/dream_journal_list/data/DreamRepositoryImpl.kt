@@ -62,7 +62,10 @@ class DreamRepositoryImpl(
     private fun DocumentSnapshot.toDream(): Dream? {
         val dream = data<Dream>()
 
-        return dream.copy(id = this.id)
+        return dream.copy(
+            id = this.id,
+            uid = this.reference.parent.parent?.id ?: ""
+        )
     }
 
     override suspend fun getDream(id: String): Resource<Dream> {
@@ -104,7 +107,6 @@ class DreamRepositoryImpl(
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun insertDream(dream: Dream): Resource<Unit> {
         logger.d { "insertDream: Attempting to insert/update dream with ID: ${dream.id}" }
-
         return try {
             val existingDream = if (!dream.id.isNullOrEmpty()) getDream(dream.id) else null
             logger.d { "insertDream: Existing dream: $existingDream" }
@@ -153,7 +155,30 @@ class DreamRepositoryImpl(
                 val updatedDream = existingDream.data.copy(
                     title = dream.title,
                     content = dream.content,
-                    generatedImage = dream.generatedImage
+                    timestamp = dream.timestamp,
+                    date = dream.date,
+                    sleepTime = dream.sleepTime,
+                    wakeTime = dream.wakeTime,
+                    AIResponse = dream.AIResponse,
+                    isFavorite = dream.isFavorite,
+                    isLucid = dream.isLucid,
+                    isNightmare = dream.isNightmare,
+                    isRecurring = dream.isRecurring,
+                    falseAwakening = dream.falseAwakening,
+                    lucidityRating = dream.lucidityRating,
+                    moodRating = dream.moodRating,
+                    vividnessRating = dream.vividnessRating,
+                    timeOfDay = dream.timeOfDay,
+                    backgroundImage = dream.backgroundImage,
+                    generatedImage = dream.generatedImage,
+                    generatedDetails = dream.generatedDetails,
+                    dreamQuestion = dream.dreamQuestion,
+                    dreamAIQuestionAnswer = dream.dreamAIQuestionAnswer,
+                    dreamAIStory = dream.dreamAIStory,
+                    dreamAIAdvice = dream.dreamAIAdvice,
+                    dreamAIMood = dream.dreamAIMood,
+                    id = existingDream.data.id,
+                    uid = existingDream.data.uid
                 )
                 logger.d { "insertDream: Updated dream details: $updatedDream" }
 

@@ -100,8 +100,8 @@ class AuthRepositoryImpl (
 
                 // 3) Fetch the snapshot (this is already a suspend call with dev.gitlive)
                 val snapshot = userDocRef.get()
-                val data: Map<String, Any> = snapshot.data<Map<String, Any>>()
-                val tokens = data["dreamTokens"] as? Long ?: 0L
+                val data = snapshot.get<String>("dreamTokens")
+                val tokens = data.toLong()
 
 
                 // 4) Check if user has enough tokens, then update
@@ -132,11 +132,8 @@ class AuthRepositoryImpl (
                 val snapshot = userDocRef.get()
 
                 // 4) Decode the snapshot's data into a Map
-                val data = snapshot.data<Map<String, Any>>()
-
-                // 5) Extract fields
-                val unlockedWords = (data["unlockedWords"] as? List<*>)?.toMutableList() ?: mutableListOf()
-                val userTokens = data["dreamTokens"] as? Long ?: 0L
+                val unlockedWords = snapshot.get<List<String>>("unlockedWords").toMutableList()
+                val userTokens = snapshot.get<String>("dreamTokens").toLong()
 
                 // 6) If the word is already unlocked, just return success
                 if (unlockedWords.contains(word)) {
@@ -298,7 +295,7 @@ class AuthRepositoryImpl (
                     .invoke(data)
 
                 // Decode the result into a Map
-                val dataMap = result.data<Map<String, Any>>()
+                val dataMap = result.data<Map<String, Any>>() //TODO: Remove ANY
 
                 // Extract the "message" field
                 val message = dataMap["message"] as? String
@@ -453,7 +450,7 @@ class AuthRepositoryImpl (
                     )
 
                 // Decode the response into a map
-                val data = result.data<Map<String, Any>>()
+                val data = result.data<Map<String, Any>>() //TODO: Remove ANY
                 val success = data["success"] == true
 
                 if (success) {

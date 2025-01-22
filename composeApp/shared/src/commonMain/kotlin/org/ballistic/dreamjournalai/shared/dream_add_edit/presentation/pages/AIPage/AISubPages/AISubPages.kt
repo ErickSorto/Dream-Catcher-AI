@@ -137,7 +137,6 @@ fun StandardAIPageLayout(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = title,
@@ -151,6 +150,7 @@ fun StandardAIPageLayout(
                 style = typography.bodyMedium,
                 modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 16.dp),
                 color = White,
+                useMarkdown = true
             )
         }
     }

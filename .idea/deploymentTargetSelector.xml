@@ -8,6 +8,9 @@
       <SelectionState runConfigName="DreamJournalAI.composeApp.shared">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="composeApp.shared">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

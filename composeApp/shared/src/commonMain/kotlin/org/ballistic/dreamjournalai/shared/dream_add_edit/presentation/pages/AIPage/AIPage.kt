@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
@@ -83,7 +84,8 @@ import org.ballistic.dreamjournalai.shared.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.shared.dream_add_edit.domain.AddEditDreamEvent
 import org.jetbrains.compose.resources.painterResource
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
     DependsOnGoogleMobileAds::class
 )
 @Composable
@@ -242,7 +244,7 @@ fun SharedTransitionScope.AIPage(
                 onAddEditDreamEvent(AddEditDreamEvent.ToggleDreamInterpretationPopUpState(false))
                 scope.launch {
                     onAddEditDreamEvent(
-                        AddEditDreamEvent.AdAIImageToggle(
+                        AddEditDreamEvent.AdAIResponseToggle(
                             true
                         )
                     )
@@ -276,7 +278,7 @@ fun SharedTransitionScope.AIPage(
         )
     }
 
-    if(addEditDreamState.isAdResponse){
+    if (addEditDreamState.isAdResponse) {
         RewardedAd(
             activity = LocalPlatformContext.current,
             adUnitId = "ca-app-pub-8710979310678386/8178296701",
@@ -338,7 +340,7 @@ fun SharedTransitionScope.AIPage(
             },
         )
     }
-    if(addEditDreamState.isAdAdvice){
+    if (addEditDreamState.isAdAdvice) {
         RewardedAd(
             activity = LocalPlatformContext.current,
             adUnitId = "ca-app-pub-8710979310678386/8178296701",
@@ -539,9 +541,124 @@ fun SharedTransitionScope.AIPage(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 16.dp, start = 16.dp, end = 16.dp, top = 16.dp),
+            .padding(bottom = 16.dp, start = 16.dp, end = 16.dp, top = 16.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(LightBlack.copy(alpha = 0.7f)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            text = "AI Tools Selection",
+            style = typography.labelMedium,
+            color = White,
+            modifier = Modifier.padding(4.dp, 8.dp, 4.dp, 4.dp)
+        )
+
+        SecondaryTabRow(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 0.dp, bottom = 8.dp)
+                .clip(
+                    RoundedCornerShape(8.dp)
+                ),
+            selectedTabIndex = pagerState2.currentPage,
+            indicator = {
+                TabRowDefaults.SecondaryIndicator(
+                    color = White,
+                    modifier = Modifier.tabIndicatorOffset(pagerState2.currentPage)
+                )
+            },
+            divider = {},
+            contentColor = White,
+            containerColor = LightBlack.copy(alpha = 0.5f),
+        ) {
+            pages.forEachIndexed { index, page ->
+                val isSelected = pagerState2.currentPage == index
+
+                // Setup for on-click and selection-based scaling
+                val targetScale = if (isSelected) 1.15f else .97f
+                val scale = remember { Animatable(targetScale) }
+
+                // Continuous floating effect setup
+                val floatingScale by infiniteTransition.animateFloat(
+                    initialValue = 1f,
+                    targetValue = 1.15f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 2000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ), label = ""
+                )
+
+                val iconColor by animateColorAsState(
+                    targetValue = if (isSelected) {
+                        if (textFieldState.text.length >= 20) {
+                            AITool.entries[index].color
+                        } else White
+                    } else Color.LightGray.copy(alpha = 0.6f),
+                    animationSpec = tween(durationMillis = 500), label = ""
+                )
+
+                // Apply immediate scale change on selection
+                LaunchedEffect(isSelected) {
+                    scale.animateTo(
+                        targetValue = targetScale,
+                        animationSpec = tween(durationMillis = 400)
+                    )
+                }
+
+                val gradientBackground = if (isSelected) {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            BrighterWhite.copy(alpha = 0.12f),
+                            BrighterWhite.copy(alpha = 0.02f)
+                        ),
+                        start = Offset(0f, 0f),
+                        end = Offset(100f, 100f)
+                    )
+                } else {
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.1f),
+                            Color.Transparent,
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.1f)
+                        ),
+                        startY = 0f,
+                        endY = Float.POSITIVE_INFINITY
+                    )
+                }
+
+                Tab(
+                    text = {
+                        Icon(
+                            painter = painterResource(AITool.entries[index].icon),
+                            contentDescription = page,
+                            tint = iconColor,
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    val finalScale =
+                                        if (isSelected) floatingScale * scale.value else scale.value
+                                    scaleX = finalScale
+                                    scaleY = finalScale
+                                }
+                                .size(26.dp)
+                        )
+                    },
+                    selected = isSelected,
+                    onClick = {
+                        onAddEditDreamEvent(AddEditDreamEvent.TriggerVibration)
+                        scope.launch {
+                            pagerState2.animateScrollToPage(
+                                index,
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .background(
+                            brush = gradientBackground
+                        )
+                )
+            }
+        }
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
@@ -555,11 +672,12 @@ fun SharedTransitionScope.AIPage(
                 state = pagerState2,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f)
+                    .align(Alignment.CenterHorizontally)
                     .background(
-                        color = LightBlack.copy(alpha = 0.8f)
+                        color = LightBlack.copy(alpha = 0.0f)
                     ),
-                beyondViewportPageCount = 2,
+                beyondViewportPageCount = 0,
+                verticalAlignment = Alignment.Top
             ) { page ->
 
                 // Get the AI page type corresponding to the current page index
@@ -589,316 +707,201 @@ fun SharedTransitionScope.AIPage(
                 )
             }
 
-            Text(
-                text = "AI Tools Selection",
-                style = typography.labelMedium,
-                color = White,
-                modifier = Modifier.padding(4.dp, 4.dp, 4.dp, 4.dp)
-            )
-
-            SecondaryTabRow(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 0.dp, bottom = 8.dp)
-                    .clip(
-                        RoundedCornerShape(8.dp)
-                    ),
-                selectedTabIndex = pagerState2.currentPage,
-                indicator = {
-                    TabRowDefaults.SecondaryIndicator(
-                        color = White,
-                        modifier = Modifier.tabIndicatorOffset(pagerState2.currentPage)
-                    )
-                },
-                divider = {},
-                contentColor = White,
-                containerColor = LightBlack,
-            ) {
-                pages.forEachIndexed { index, page ->
-                    val isSelected = pagerState2.currentPage == index
-
-                    // Setup for on-click and selection-based scaling
-                    val targetScale = if (isSelected) 1.15f else .97f
-                    val scale = remember { Animatable(targetScale) }
-
-                    // Continuous floating effect setup
-                    val floatingScale by infiniteTransition.animateFloat(
-                        initialValue = 1f,
-                        targetValue = 1.15f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(durationMillis = 2000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ), label = ""
-                    )
-
-                    val iconColor by animateColorAsState(
-                        targetValue = if (isSelected) {
-                            if (textFieldState.text.length >= 20) {
-                                AITool.entries[index].color
-                            } else White
-                        } else Color.LightGray.copy(alpha = 0.6f),
-                        animationSpec = tween(durationMillis = 500), label = ""
-                    )
-
-                    // Apply immediate scale change on selection
-                    LaunchedEffect(isSelected) {
-                        scale.animateTo(
-                            targetValue = targetScale,
-                            animationSpec = tween(durationMillis = 400)
-                        )
-                    }
-
-                    val gradientBackground = if (isSelected) {
-                        Brush.linearGradient(
-                            colors = listOf(
-                                BrighterWhite.copy(alpha = 0.12f),
-                                BrighterWhite.copy(alpha = 0.02f)
-                            ),
-                            start = Offset(0f, 0f),
-                            end = Offset(100f, 100f)
-                        )
-                    } else {
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.1f),
-                                Color.Transparent,
-                                Color.Transparent,
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.1f)
-                            ),
-                            startY = 0f,
-                            endY = Float.POSITIVE_INFINITY
-                        )
-                    }
-
-                    Tab(
-                        text = {
-                            Icon(
-                                painter = painterResource(AITool.entries[index].icon),
-                                contentDescription = page,
-                                tint = iconColor,
-                                modifier = Modifier
-                                    .graphicsLayer {
-                                        val finalScale =
-                                            if (isSelected) floatingScale * scale.value else scale.value
-                                        scaleX = finalScale
-                                        scaleY = finalScale
-                                    }
-                                    .size(26.dp)
-                            )
-                        },
-                        selected = isSelected,
-                        onClick = {
-                            onAddEditDreamEvent(AddEditDreamEvent.TriggerVibration)
-                            scope.launch {
-                                pagerState2.animateScrollToPage(
-                                    index,
-                                )
-                            }
-                        },
-                        modifier = Modifier
-                            .background(
-                                brush = gradientBackground
-                            )
-                    )
-                }
-            }
             Spacer(modifier = Modifier.weight(1f))
+        }
 
-            Box(
-                contentAlignment = Alignment.Center,
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp, top = 4.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 16.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                Spacer(
                     modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .weight(1f)
+                        .weight(1f)
+                )
+                Text(
+                    text = "Tokens",
+                    style = typography.titleMedium.copy(BrighterWhite),
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                DreamTokenLayout(
+                    totalDreamTokens = dreamTokens,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            IconButton(
+                onClick = {
+                    flagContentBottomSheetState.value = true
+                },
+                modifier = Modifier.align(
+                    Alignment.CenterEnd
+                )
 
-                    )
-                    Text(
-                        text = "Tokens",
-                        style = typography.titleMedium.copy(BrighterWhite),
-                        fontWeight = FontWeight.Light,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    DreamTokenLayout(
-                        totalDreamTokens = dreamTokens,
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                IconButton(
+            ) {
+                Icon(
+                    painterResource(Res.drawable.baseline_report_24),
+                    contentDescription = "Report",
+                    tint = Color.White,
+                )
+            }
+        }
+
+        when (pagerState2.currentPage) {
+            0 -> {
+                AIButton(
+                    text = "Generate Painting",
+                    color = SkyBlue,
                     onClick = {
-                        flagContentBottomSheetState.value = true
+                        if (textFieldState.text.length >= 20) {
+                            onAddEditDreamEvent(
+                                AddEditDreamEvent.ToggleDreamImageGenerationPopUpState(
+                                    true
+                                )
+                            )
+                        } else {
+                            scope.launch {
+                                addEditDreamState.snackBarHostState.value.showSnackbar(
+                                    message = "Dream is too short",
+                                    actionLabel = "Dismiss",
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
                     },
-                    modifier = Modifier.align(
-                        Alignment.CenterEnd
-                    )
-
-                ) {
-                    Icon(
-                        painterResource(Res.drawable.baseline_report_24),
-                        contentDescription = "Back",
-                        tint = Color.White,
-                    )
-                }
+                    onAddEditDreamEvent = onAddEditDreamEvent
+                )
             }
 
-            when (pagerState2.currentPage) {
-                0 -> {
-                    AIButton(
-                        text = "Generate Painting",
-                        color = SkyBlue,
-                        onClick = {
-                            if (textFieldState.text.length >= 20) {
-                                onAddEditDreamEvent(
-                                    AddEditDreamEvent.ToggleDreamImageGenerationPopUpState(
-                                        true
-                                    )
+            1 -> {
+                AIButton(
+                    text = "Generate Interpretation",
+                    color = Purple,
+                    onClick = {
+                        if (textFieldState.text.length >= 20) {
+                            onAddEditDreamEvent(
+                                AddEditDreamEvent.ToggleDreamInterpretationPopUpState(
+                                    true
                                 )
-                            } else {
-                                scope.launch {
-                                    addEditDreamState.snackBarHostState.value.showSnackbar(
-                                        message = "Dream is too short",
-                                        actionLabel = "Dismiss",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
+                            )
+                        } else {
+                            scope.launch {
+                                addEditDreamState.snackBarHostState.value.showSnackbar(
+                                    message = "Dream is too short",
+                                    actionLabel = "Dismiss",
+                                    duration = SnackbarDuration.Short
+                                )
                             }
-                        },
-                        onAddEditDreamEvent = onAddEditDreamEvent
-                    )
-                }
+                        }
+                    },
+                    onAddEditDreamEvent = onAddEditDreamEvent
+                )
+            }
 
-                1 -> {
-                    AIButton(
-                        text = "Generate Interpretation",
-                        color = Purple,
-                        onClick = {
-                            if (textFieldState.text.length >= 20) {
-                                onAddEditDreamEvent(
-                                    AddEditDreamEvent.ToggleDreamInterpretationPopUpState(
-                                        true
-                                    )
+            2 -> {
+                AIButton(
+                    text = "Generate Advice",
+                    color = Yellow,
+                    onClick = {
+                        if (textFieldState.text.length >= 20) {
+                            onAddEditDreamEvent(
+                                AddEditDreamEvent.ToggleDreamAdvicePopUpState(
+                                    true
                                 )
-                            } else {
-                                scope.launch {
-                                    addEditDreamState.snackBarHostState.value.showSnackbar(
-                                        message = "Dream is too short",
-                                        actionLabel = "Dismiss",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
+                            )
+                        } else {
+                            scope.launch {
+                                addEditDreamState.snackBarHostState.value.showSnackbar(
+                                    message = "Dream is too short",
+                                    actionLabel = "Dismiss",
+                                    duration = SnackbarDuration.Short
+                                )
                             }
-                        },
-                        onAddEditDreamEvent = onAddEditDreamEvent
-                    )
-                }
+                        }
+                    },
+                    onAddEditDreamEvent = onAddEditDreamEvent
+                )
+            }
 
-                2 -> {
-                    AIButton(
-                        text = "Generate Advice",
-                        color = Yellow,
-                        onClick = {
-                            if (textFieldState.text.length >= 20) {
-                                onAddEditDreamEvent(
-                                    AddEditDreamEvent.ToggleDreamAdvicePopUpState(
-                                        true
-                                    )
+            3 -> {
+                AIButton(
+                    text = "Ask a Question",
+                    color = RedOrange,
+                    onClick = {
+                        if (textFieldState.text.length >= 20) {
+                            onAddEditDreamEvent(
+                                AddEditDreamEvent.ToggleDreamQuestionPopUpState(
+                                    true
                                 )
-                            } else {
-                                scope.launch {
-                                    addEditDreamState.snackBarHostState.value.showSnackbar(
-                                        message = "Dream is too short",
-                                        actionLabel = "Dismiss",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
+                            )
+                        } else {
+                            scope.launch {
+                                addEditDreamState.snackBarHostState.value.showSnackbar(
+                                    message = "Dream is too short",
+                                    actionLabel = "Dismiss",
+                                    duration = SnackbarDuration.Short
+                                )
                             }
-                        },
-                        onAddEditDreamEvent = onAddEditDreamEvent
-                    )
-                }
+                        }
+                    },
+                    onAddEditDreamEvent = onAddEditDreamEvent
+                )
+            }
 
-                3 -> {
-                    AIButton(
-                        text = "Ask a Question",
-                        color = RedOrange,
-                        onClick = {
-                            if (textFieldState.text.length >= 20) {
-                                onAddEditDreamEvent(
-                                    AddEditDreamEvent.ToggleDreamQuestionPopUpState(
-                                        true
-                                    )
+            4 -> {
+                AIButton(
+                    text = "Generate Story",
+                    color = LighterYellow,
+                    onClick = {
+                        if (textFieldState.text.length >= 20) {
+                            onAddEditDreamEvent(
+                                AddEditDreamEvent.ToggleDreamStoryPopUpState(
+                                    true
                                 )
-                            } else {
-                                scope.launch {
-                                    addEditDreamState.snackBarHostState.value.showSnackbar(
-                                        message = "Dream is too short",
-                                        actionLabel = "Dismiss",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
+                            )
+                        } else {
+                            scope.launch {
+                                addEditDreamState.snackBarHostState.value.showSnackbar(
+                                    message = "Dream is too short",
+                                    actionLabel = "Dismiss",
+                                    duration = SnackbarDuration.Short
+                                )
                             }
-                        },
-                        onAddEditDreamEvent = onAddEditDreamEvent
-                    )
-                }
+                        }
+                    },
+                    onAddEditDreamEvent = onAddEditDreamEvent
+                )
+            }
 
-                4 -> {
-                    AIButton(
-                        text = "Generate Story",
-                        color = LighterYellow,
-                        onClick = {
-                            if (textFieldState.text.length >= 20) {
-                                onAddEditDreamEvent(
-                                    AddEditDreamEvent.ToggleDreamStoryPopUpState(
-                                        true
-                                    )
+            5 -> {
+                AIButton(
+                    text = "Generate Mood Analysis",
+                    color = Green,
+                    onClick = {
+                        if (textFieldState.text.length >= 20) {
+                            onAddEditDreamEvent(
+                                AddEditDreamEvent.ToggleDreamMoodPopUpState(
+                                    true
                                 )
-                            } else {
-                                scope.launch {
-                                    addEditDreamState.snackBarHostState.value.showSnackbar(
-                                        message = "Dream is too short",
-                                        actionLabel = "Dismiss",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
-                            }
-                        },
-                        onAddEditDreamEvent = onAddEditDreamEvent
-                    )
-                }
-
-                5 -> {
-                    AIButton(
-                        text = "Generate Mood Analysis",
-                        color = Green,
-                        onClick = {
-                            if (textFieldState.text.length >= 20) {
-                                onAddEditDreamEvent(
-                                    AddEditDreamEvent.ToggleDreamMoodPopUpState(
-                                        true
-                                    )
+                            )
+                        } else {
+                            scope.launch {
+                                addEditDreamState.snackBarHostState.value.showSnackbar(
+                                    message = "Dream is too short",
+                                    actionLabel = "Dismiss",
+                                    duration = SnackbarDuration.Short
                                 )
-                            } else {
-                                scope.launch {
-                                    addEditDreamState.snackBarHostState.value.showSnackbar(
-                                        message = "Dream is too short",
-                                        actionLabel = "Dismiss",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
                             }
-                        },
-                        onAddEditDreamEvent = onAddEditDreamEvent
-                    )
-                }
+                        }
+                    },
+                    onAddEditDreamEvent = onAddEditDreamEvent
+                )
             }
         }
     }
@@ -918,7 +921,7 @@ fun AIButton(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp, 8.dp, 16.dp, 8.dp)
             .border(
                 width = 4.dp,
                 color = LightBlack.copy(alpha = 0.3f),

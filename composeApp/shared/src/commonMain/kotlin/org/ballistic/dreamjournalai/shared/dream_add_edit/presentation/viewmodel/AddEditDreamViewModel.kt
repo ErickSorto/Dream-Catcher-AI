@@ -189,9 +189,21 @@ class AddEditDreamViewModel(
             is AddEditDreamEvent.ClickGenerateAIResponse -> {
                 onEvent(AddEditDreamEvent.ToggleDreamHasChanged(true))
                 getAIResponse(
-                    command = "Please interpret the following dream: ${
-                        contentTextFieldState.value.text
-                    }",
+                    command = """
+            Please interpret the following dream:
+            
+            ${contentTextFieldState.value.text}
+            
+            Markdown is supported. Use the following style guidelines:
+            - Begin with an introductory paragraph to provide context.
+            - Use bullet points (`-`) for key elements.
+            - Start each bullet point with a **bolded title** (e.g., `**Title**:`).
+            - The title and body text should touch (no blank line between them).
+            - Ensure the body text is concise and directly follows the title.
+            - Titles should use the same size as the body text but be bold for emphasis.
+            - Use short paragraphs to maintain readability on mobile devices.
+            - Avoid excessive formatting or long paragraphs for better readability.
+        """.trimIndent(),
                     cost = event.cost,
                     updateLoadingState = { isLoading ->
                         _addEditDreamState.value = addEditDreamState.value.copy(
@@ -206,7 +218,8 @@ class AddEditDreamViewModel(
                                 response = response
                             )
                         )
-                    })
+                    }
+                )
             }
 
             is AddEditDreamEvent.AdAIResponseToggle -> {
@@ -355,6 +368,7 @@ class AddEditDreamViewModel(
                         dreamLucidity = event.lucidity
                     )
                 )
+                Logger.d("AddEditViewModel") { "Lucidity updated to ${event.lucidity}" }
             }
 
             is AddEditDreamEvent.ChangeVividness -> {
@@ -691,7 +705,7 @@ class AddEditDreamViewModel(
                             dreamAIAdvice = addEditDreamState.value.dreamAIAdvice.response,
                             dreamAIMood = addEditDreamState.value.dreamAIMoodAnalyser.response
                         )
-
+                        logger.d { "Saving Dream: $dreamToSave" }
                         dreamUseCases.addDream(dreamToSave)
 
                         _addEditDreamState.update {
