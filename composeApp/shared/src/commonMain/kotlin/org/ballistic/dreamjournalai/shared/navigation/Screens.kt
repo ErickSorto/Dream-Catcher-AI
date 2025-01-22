@@ -7,13 +7,10 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.vector.ImageVector
-import kotlinx.serialization.Serializable
-import org.jetbrains.compose.resources.DrawableResource
 import dreamjournalai.composeapp.shared.generated.resources.Res
 import dreamjournalai.composeapp.shared.generated.resources.dicetool
 import dreamjournalai.composeapp.shared.generated.resources.dream_journal_reminder_tool
@@ -21,7 +18,8 @@ import dreamjournalai.composeapp.shared.generated.resources.dream_statistic_anal
 import dreamjournalai.composeapp.shared.generated.resources.dream_world_painter_tool
 import dreamjournalai.composeapp.shared.generated.resources.mass_interpretation_tool
 import dreamjournalai.composeapp.shared.generated.resources.reality_check_reminder_tool
-import org.koin.core.component.getScopeName
+import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.DrawableResource
 
 sealed class Route{
     @Serializable
@@ -208,6 +206,7 @@ enum class BottomNavigationRoutes(val title: String?, val icon: ImageVector, val
     DreamJournalScreen("My Dreams", Icons.Filled.Book, Route.DreamJournalScreen),
     StoreScreen("Store", Icons.Default.Shop, Route.StoreScreen)
 }
+
 
 fun DreamDrawable.toDrawableResource(): DrawableResource {
     return when (this) {

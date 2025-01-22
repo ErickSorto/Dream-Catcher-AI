@@ -139,7 +139,7 @@ fun MainScreenView(
             title = "Settings",
             items = listOf(
                 DrawerNavigation.AccountSettings,
-                DrawerNavigation.NotificationSettings,
+             //   DrawerNavigation.NotificationSettings,
                 //    Screens.DreamSettings,
             )
         ),
