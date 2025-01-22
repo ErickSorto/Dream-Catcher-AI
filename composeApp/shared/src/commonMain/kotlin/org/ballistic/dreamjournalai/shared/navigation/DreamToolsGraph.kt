@@ -46,6 +46,7 @@ fun DreamToolsGraph(
             }
             composable<ToolRoute.RandomDreamPicker> {
                 val args = it.toRoute<ToolRoute.RandomDreamPicker>()
+
                 val randomDreamToolScreenViewModel = koinViewModel<RandomDreamToolScreenViewModel>()
                 val randomDreamToolScreenState =
                     randomDreamToolScreenViewModel.randomDreamToolScreenState
@@ -53,7 +54,8 @@ fun DreamToolsGraph(
 
                 RandomDreamToolScreen(
                     animatedVisibilityScope = this,
-                    imageID = args.imageID,
+                    imageID =  args.imageID.toDrawableResource(),
+                    imagePath = args.imageID.name,
                     bottomPadding = bottomPaddingValue,
                     randomDreamToolScreenState = randomDreamToolScreenState.value,
                     onEvent = {
@@ -68,13 +70,18 @@ fun DreamToolsGraph(
                 )
             }
 
-            composable<ToolRoute.AnalyzeMultipleDreamsDetails> {
-                val args = it.toRoute<ToolRoute.AnalyzeMultipleDreamsDetails>()
+            composable<ToolRoute.AnalyzeMultipleDreamsDetails> { backStackEntry ->
+                // 1) Get the typed route from the NavBackStackEntry.
+                val route = backStackEntry.toRoute<ToolRoute.AnalyzeMultipleDreamsDetails>()
+
+                // 3) Pass the resulting DrawableResource to the screen.
                 InterpretDreamsDetailScreen(
-                    imageID = args.imageID,
-                    animatedVisibilityScope = this,
+                    imageID = route.imageID.toDrawableResource(),
+                    imagePath = route.imageID.name,
+                    animatedVisibilityScope = this,  // from SharedTransitionScope
                     bottomPadding = bottomPaddingValue,
                     onNavigate = {
+                        // Possibly navigate to the actual multi-dream analysis screen
                         navController.navigate(Route.AnalyzeMultipleDreams)
                     },
                     navigateUp = {

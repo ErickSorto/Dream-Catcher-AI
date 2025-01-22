@@ -51,6 +51,7 @@ import org.jetbrains.compose.resources.painterResource
 fun SharedTransitionScope.RandomDreamToolScreen(
     randomDreamToolScreenState: RandomDreamToolScreenState,
     imageID: DrawableResource,
+    imagePath: String,
     animatedVisibilityScope: AnimatedVisibilityScope,
     bottomPadding: Dp,
     onEvent: (RandomToolEvent) -> Unit,
@@ -109,7 +110,7 @@ fun SharedTransitionScope.RandomDreamToolScreen(
                         .aspectRatio(16 / 9f)
                         .fillMaxWidth()
                         .sharedElement(
-                            rememberSharedContentState(key = "image/$imageID"),
+                            rememberSharedContentState(key = "image/$imagePath"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
                                 tween(500)

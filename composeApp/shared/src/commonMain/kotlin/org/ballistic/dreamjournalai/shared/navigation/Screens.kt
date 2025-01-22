@@ -21,6 +21,7 @@ import dreamjournalai.composeapp.shared.generated.resources.dream_statistic_anal
 import dreamjournalai.composeapp.shared.generated.resources.dream_world_painter_tool
 import dreamjournalai.composeapp.shared.generated.resources.mass_interpretation_tool
 import dreamjournalai.composeapp.shared.generated.resources.reality_check_reminder_tool
+import org.koin.core.component.getScopeName
 
 sealed class Route{
     @Serializable
@@ -85,19 +86,109 @@ sealed class Route{
 }
 
 
-sealed class ToolRoute(val image: DrawableResource){
+/**
+ * A sealed class representing each "tool route"
+ * in a type-safe, serializable manner for KMM & Compose Navigation.
+ */
+@Serializable
+sealed class ToolRoute(
+    val image: DreamDrawable
+) {
+    @Serializable
+    data class AnalyzeMultipleDreamsDetails(
+        val imageID: DreamDrawable
+    ) : ToolRoute(imageID)
 
-    data class AnalyzeMultipleDreamsDetails(val imageID: DrawableResource) : ToolRoute(imageID)
+    @Serializable
+    data class RandomDreamPicker(
+        val imageID: DreamDrawable
+    ) : ToolRoute(imageID)
 
-    data class RandomDreamPicker(val imageID: DrawableResource) : ToolRoute(imageID)
+    @Serializable
+    data class PaintDreamWorld(
+        val imageID: DreamDrawable
+    ) : ToolRoute(imageID)
 
-    data class PaintDreamWorld(val imageID: DrawableResource) : ToolRoute(imageID)
+    @Serializable
+    data class DreamJournalReminder(
+        val imageID: DreamDrawable
+    ) : ToolRoute(imageID)
 
-    data class DreamJournalReminder(val imageID: DrawableResource) : ToolRoute(imageID)
+    @Serializable
+    data class DynamicLucidChecker(
+        val imageID: DreamDrawable
+    ) : ToolRoute(imageID)
 
-    data class DynamicLucidChecker(val imageID: DrawableResource) : ToolRoute(imageID)
+    @Serializable
+    data class Statistics(
+        val imageID: DreamDrawable
+    ) : ToolRoute(imageID)
+}
 
-    data class Statistics(val imageID: DrawableResource) : ToolRoute(imageID)
+enum class DreamTools(
+    val title: String,
+    val description: String,
+    val route: ToolRoute,
+    val enabled: Boolean
+) {
+    AnalyzeDreams(
+        title = "Interpret Multiple Dreams",
+        description = "Interpret multiple dreams at once using AI",
+        route = ToolRoute.AnalyzeMultipleDreamsDetails(
+            imageID = DreamDrawable.MASS_INTERPRETATION_TOOL
+        ),
+        enabled = true
+    ),
+    RandomDreamPicker(
+        title = "Random Dream Picker",
+        description = "Pick a random dream from your dream journal",
+        route = ToolRoute.RandomDreamPicker(
+            imageID = DreamDrawable.DICE_TOOL
+        ),
+        enabled = true
+    ),
+    AnalyzeStatistics(
+        title = "Analyze Statistics",
+        description = "Analyze your dream statistics using AI",
+        route = ToolRoute.Statistics(
+            imageID = DreamDrawable.DREAM_STATISTIC_ANALYZER_TOOL
+        ),
+        enabled = false
+    ),
+    DynamicLucidChecker(
+        title = "Dynamic Lucid Checker",
+        description = "Dynamic Lucid Reminder Task",
+        route = ToolRoute.DynamicLucidChecker(
+            imageID = DreamDrawable.REALITY_CHECK_REMINDER_TOOL
+        ),
+        enabled = false
+    ),
+    DreamJournalReminder(
+        title = "Dream Journal Reminder",
+        description = "Set a reminder to write in your dream journal",
+        route = ToolRoute.DreamJournalReminder(
+            imageID = DreamDrawable.DREAM_JOURNAL_REMINDER_TOOL
+        ),
+        enabled = false
+    ),
+    DREAM_WORLD(
+        title = "Dream World",
+        description = "Dream World Painter",
+        route = ToolRoute.PaintDreamWorld(
+            imageID = DreamDrawable.DREAM_WORLD_PAINTER_TOOL
+        ),
+        enabled = false
+    );
+}
+
+@Serializable
+enum class DreamDrawable {
+    MASS_INTERPRETATION_TOOL,
+    DICE_TOOL,
+    DREAM_STATISTIC_ANALYZER_TOOL,
+    REALITY_CHECK_REMINDER_TOOL,
+    DREAM_JOURNAL_REMINDER_TOOL,
+    DREAM_WORLD_PAINTER_TOOL
 }
 
 enum class DrawerNavigation(val title: String?, val icon: ImageVector, val route: Route){
@@ -106,7 +197,7 @@ enum class DrawerNavigation(val title: String?, val icon: ImageVector, val route
     Favorites("Favorites", Icons.Default.Star, Route.Favorites),
     AccountSettings("Account Settings", Icons.Default.Settings, Route.AccountSettings),
     Statistics("Statistics", Icons.Default.BarChart, Route.Statistics),
-    NotificationSettings("Notification Settings", Icons.Default.Notifications, Route.NotificationSettings),
+  //  NotificationSettings("Notification Settings", Icons.Default.Notifications, Route.NotificationSettings),
     Nightmares("Nightmares", Icons.Default.ErrorOutline, Route.Nightmares),
     Symbol("Symbols", Icons.AutoMirrored.Filled.List, Route.Symbol),
     RateMyApp("Rate this App", Icons.Default.Favorite, Route.RateMyApp),
@@ -118,11 +209,17 @@ enum class BottomNavigationRoutes(val title: String?, val icon: ImageVector, val
     StoreScreen("Store", Icons.Default.Shop, Route.StoreScreen)
 }
 
-enum class DreamTools(val title: String, val description: String, val route: ToolRoute, val enabled: Boolean) {
-    AnalyzeDreams("Interpret Multiple Dreams", "Interpret multiple dreams at once using AI", ToolRoute.AnalyzeMultipleDreamsDetails(Res.drawable.mass_interpretation_tool), true),
-    RandomDreamPicker("Random Dream Picker",  "Pick a random dream from your dream journal", ToolRoute.RandomDreamPicker(Res.drawable.dicetool), true),
-    AnalyzeStatistics("Analyze Statistics", "Analyze your dream statistics using AI", ToolRoute.Statistics(Res.drawable.dream_statistic_analyzer_tool), false), //Analyze Statistics
-    DynamicLucidChecker("Dynamic Lucid Checker",  "Dynamic Lucid Reminder Task", ToolRoute.DynamicLucidChecker(Res.drawable.reality_check_reminder_tool), false), //Analyze Statistics
-    DreamJournalReminder("Dream Journal Reminder",  "Set a reminder to write in your dream journal", ToolRoute.DreamJournalReminder(Res.drawable.dream_journal_reminder_tool), false), //Dream Journal Reminder
-    DREAM_WORLD("Dream World", "Dream World Painter", ToolRoute.PaintDreamWorld(Res.drawable.dream_world_painter_tool), false), //Dream World Painter
+fun DreamDrawable.toDrawableResource(): DrawableResource {
+    return when (this) {
+        DreamDrawable.MASS_INTERPRETATION_TOOL -> Res.drawable.mass_interpretation_tool
+        DreamDrawable.DICE_TOOL                -> Res.drawable.dicetool
+        DreamDrawable.DREAM_STATISTIC_ANALYZER_TOOL -> Res.drawable.dream_statistic_analyzer_tool
+        DreamDrawable.REALITY_CHECK_REMINDER_TOOL    -> Res.drawable.reality_check_reminder_tool
+        DreamDrawable.DREAM_JOURNAL_REMINDER_TOOL    -> Res.drawable.dream_journal_reminder_tool
+        DreamDrawable.DREAM_WORLD_PAINTER_TOOL       -> Res.drawable.dream_world_painter_tool
+    }
 }
+
+
+
+

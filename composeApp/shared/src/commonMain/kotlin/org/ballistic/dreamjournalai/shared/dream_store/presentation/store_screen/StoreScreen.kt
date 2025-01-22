@@ -1,5 +1,6 @@
 package org.ballistic.dreamjournalai.shared.dream_store.presentation.store_screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,11 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.skydoves.landscapist.ImageOptions
-import com.skydoves.landscapist.coil3.CoilImage
 import dreamjournalai.composeapp.shared.generated.resources.Res
 import dreamjournalai.composeapp.shared.generated.resources.check_mark
-import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.LightBlack
 import org.ballistic.dreamjournalai.shared.core.components.DreamTokenLayout
 import org.ballistic.dreamjournalai.shared.core.components.dynamicBottomNavigationPadding
 import org.ballistic.dreamjournalai.shared.dream_main.domain.MainScreenEvent
@@ -43,6 +41,8 @@ import org.ballistic.dreamjournalai.shared.dream_store.domain.StoreEvent
 import org.ballistic.dreamjournalai.shared.dream_store.presentation.anonymous_store_screen.AnonymousStoreScreen
 import org.ballistic.dreamjournalai.shared.dream_store.presentation.store_screen.components.CustomButtonLayout
 import org.ballistic.dreamjournalai.shared.dream_store.presentation.store_screen.viewmodel.StoreScreenViewModelState
+import org.ballistic.dreamjournalai.shared.theme.OriginalXmlColors.LightBlack
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun StoreScreen(
@@ -173,14 +173,13 @@ fun DreamTokenBenefitItem(
                 .background(LightBlack.copy(alpha = 0.8f))
                 .verticalScroll(rememberScrollState())
         ) {
-            CoilImage(
-                imageModel = { dreamTokenBenefit.image },
+            Image(
+                painter = painterResource(dreamTokenBenefit.image),
+                contentDescription = "Dream Token Benefit",
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(16f / 9f),
-                imageOptions = ImageOptions(
-                    contentScale = ContentScale.Crop
-                ),
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.size(16.dp))
             Text(
@@ -227,12 +226,11 @@ fun CheckAndBenefit(benefit: String) {
         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CoilImage(
-            imageModel = {Res.drawable.check_mark},
+        Image(
+            painter = painterResource(Res.drawable.check_mark),
+            contentDescription = "Check Mark",
             modifier = Modifier.size(32.dp),
-            imageOptions = ImageOptions(
-                contentScale = ContentScale.FillBounds
-            ),
+            contentScale = ContentScale.FillBounds
         )
         Spacer(modifier = Modifier.size(8.dp))
         Text(

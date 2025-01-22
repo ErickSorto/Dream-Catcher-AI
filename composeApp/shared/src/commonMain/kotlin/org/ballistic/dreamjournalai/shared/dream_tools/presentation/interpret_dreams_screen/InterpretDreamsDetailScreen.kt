@@ -45,6 +45,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun SharedTransitionScope.InterpretDreamsDetailScreen(
     imageID: DrawableResource,
+    imagePath: String,
     animatedVisibilityScope: AnimatedVisibilityScope,
     bottomPadding: Dp,
     onNavigate: () -> Unit,
@@ -83,7 +84,7 @@ fun SharedTransitionScope.InterpretDreamsDetailScreen(
                         .aspectRatio(16 / 9f)
                         .fillMaxWidth()
                         .sharedElement(
-                            rememberSharedContentState(key = "image/$imageID"),
+                            rememberSharedContentState(key = "image/$imagePath"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
                                 tween(500)
